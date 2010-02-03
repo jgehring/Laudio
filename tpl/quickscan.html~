@@ -1,8 +1,0 @@
-{% extends 'base.html' %}
-
-{% block title %}LAudio{% endblock %}
-
-
-{% block content %}
-<p>Scanned {{scanned}} files, added {{added}} files!</p>
-{% endblock %}
