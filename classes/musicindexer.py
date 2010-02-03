@@ -27,12 +27,10 @@ from laudio.models import Song
 import mutagen
 import time
 
-"""
-    An indexer which searches for existing music
-"""
 class MusicIndexer (object):
     
     def __init__(self, musicDir):
+        """ Instances some attributes and sets the music directory """
         self.musicDir = musicDir
         self.scanned = 0
         self.added = 0
@@ -40,9 +38,7 @@ class MusicIndexer (object):
          
          
     def scan(self):
-        """
-        Scans a directory recursively for ogg files
-        """
+        """ Scans a directory recursively for ogg files """
         for root, directories, files in os.walk(self.musicDir):
             for name in files:
                 songpath = os.path.join(root, name)
@@ -52,15 +48,16 @@ class MusicIndexer (object):
               
               
     def addSong(self, songpath):
+        """ Add a song to the database.
+
+        Keyword arguments:
+        songpath -- the full path to the song
+
         """
-        Adds a song to the db if it doesnt already exist
-        
-        @param String songpath:      The path to the ogg file 
-        """  
         # get songpath relative to musicdirectory so change of directory wont
         # render db useless
         relSongPath = songpath.replace(self.musicDir, '')
-        lastModified = int(os.path.getmtime(songpath))
+        lastModified = int( os.path.getmtime(songpath) )
         try:
             # check if the unique path exists in the db
             song = Song.objects.get(path=relSongPath)
@@ -77,11 +74,11 @@ class MusicIndexer (object):
                     song.path = relSongPath
                     song.save()
                     self.modified += 1
+                # ignore broken ogg files
                 except mutagen.oggvorbis.OggVorbisHeaderError:
                     pass
         except Song.DoesNotExist:
             # if song does not exist, add a new line to the db
-            # try checks for broken ogg files and skips them
             try: 
                 ogg = OGGSong(songpath)
                 song = Song(title=ogg.title,
@@ -95,6 +92,7 @@ class MusicIndexer (object):
                             )
                 song.save()
                 self.added += 1
+            # ignore broken ogg files
             except mutagen.oggvorbis.OggVorbisHeaderError:
                 pass
 

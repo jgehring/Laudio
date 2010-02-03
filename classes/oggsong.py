@@ -26,12 +26,17 @@ from time import time
 from mutagen.oggvorbis import OggVorbis
 from song import Song
 
-"""
-    A class for an ogg song
-"""
 class OGGSong (Song):
 
     def __init__(self, path):
+        """ Read metainformation from an ogg file
+        
+        The multiple KeyErrors check if tags are not Null
+        
+        Keyword arguments:
+        path -- the full path to the song
+        
+        """
         self.path = path
         self.song = OggVorbis(self.path)
         try:

@@ -39,10 +39,12 @@ def index(request):
         msg = ("Cannot run program correctly, one of the required libraries: \
                 lxml, mutagen or sqlite is missing!")
         return render_to_response('error.html', {'msg': msg,})
-    # get songs from db
+        
+    # get first song from db so we can set src of the audio element
     songs = Song.objects.all().extra(select=
     {'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 'ltrnr': 'tracknumber',}
     ).order_by('lartist', "lalbum", "ltrnr")[:1]
+    
     # generate the letters and numbers for the artists selection
     letters = map(chr, range(97, 123))
     for i in xrange(0,10):
@@ -57,10 +59,11 @@ def index(request):
 
 # this is the site for the playlist tab    
 def playlist(request):
-    # get songs from db
+    # get first song from db so we can set src of the audio element
     songs = Song.objects.all().extra(select=
     {'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 'ltrnr': 'tracknumber',}
     ).order_by('lartist', "lalbum", "ltrnr")[:1]
+    
     # generate the letters and numbers for the artists selection
     letters = map(chr, range(97, 123))
     for i in xrange(0,10):
@@ -72,8 +75,8 @@ def playlist(request):
     return render_to_response('playlist.html', {'firstsong': firstsong, 'letters': letters})    
 
 """
-    START getting data via jquery
-    This basically loads the data rows for the jquery requests
+START getting data via jquery
+This basically loads the data rows for the jquery requests
 """
 def slim_collection(request, artist, playlist=False):
     # get selected artist and songs from db
@@ -83,6 +86,7 @@ def slim_collection(request, artist, playlist=False):
     # return html data for jquery
     return render_to_response('songs.html', {'songs': songs, 'playlist': playlist})
 
+
 def whole_collection(request, playlist=False):
     # get selected artist and songs from db
     songs = Song.objects.all().extra(select=
@@ -90,6 +94,7 @@ def whole_collection(request, playlist=False):
     ).order_by('lartist', "lalbum", "ltrnr")
     # return html data for jquery
     return render_to_response('songs.html', {'songs': songs, 'playlist': playlist})
+
 
 def search_collection(request, search, playlist=False):
     # FIXME:    seperate keywords by space and check db for each element
@@ -108,6 +113,7 @@ def search_collection(request, search, playlist=False):
             ).order_by('lartist', "lalbum", "ltrnr")
     return render_to_response('songs.html', {'songs': songs, 'playlist': playlist})   
 
+
 def adv_search(request, playlist=False):
     title = request.GET["title"]
     artist = request.GET["artist"]
@@ -123,7 +129,7 @@ def adv_search(request, playlist=False):
         ).order_by('lartist', "lalbum", "ltrnr")
     return render_to_response('songs.html', {'songs': songs, 'playlist': playlist})   
 """
-    END getting data via jquery
+END getting data via jquery
 """
 
 
@@ -141,7 +147,7 @@ def search(request):
 def laudio_settings(request):
     msg = ""
     # get ip and check if it is localhost
-    # only localhost can set the path
+    # only localhost can access settings (for now)
     ip = request.META.get('REMOTE_ADDR')
     if ip != "127.0.0.1":
         return HttpResponseForbidden()
@@ -154,7 +160,7 @@ def laudio_settings(request):
         collection = ""
     # if collection is being passed via get set the symlink
     try:
-        # get the collection
+        # get the collection get variable
         collPath = request.GET["collection"]
         # if the given path exists add a symlink
         if os.path.exists(collPath):

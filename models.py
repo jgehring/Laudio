@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 from django.db import models
 
-# Create your models here.
 class Song(models.Model):
     title = models.CharField(max_length=250)
     artist = models.CharField(max_length=150)

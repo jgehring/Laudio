@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 import os.path
 
 # Django settings for laudio project.
-
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
