@@ -152,7 +152,7 @@ h1 {
 }
 
 #simplesearchfield {
-    height: 26px;
+    height: 20px;
     width: 250px;
     font-size: 11pt;
     padding: 3px;
@@ -167,7 +167,7 @@ h1 {
 #searchForm {
     display: none;
     background-color: #25292B;
-    
+    color: #fafafa;
     clear: both;
     width: 100%;
     margin: 0;
@@ -177,10 +177,6 @@ h1 {
 
 #searchForm table {
     margin: auto;
-}
-
-#searchForm th {
-    color: #fafafa;
 }
 
 /**
