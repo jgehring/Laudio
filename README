@@ -1,7 +1,27 @@
+LAUDIO is a webbased audio player written in python and javascript.
+Dont expect it to be perfect, im not so sure about the file rights and the chmod commands,
+help would be appreciated.
+
+I basically wrote it as a replacement for DAAP which is currently really broken.
+
+I tested this things on my Gentoo stable machine with Django 1.1.1 and Firefox 3.5
+
+TODO:
+* Make nicer comments (pydoc)
+* Add Playlist features: save, open, rename, delete
+* Support drag and drop for the playlist
+* Develop a webserver for IP Registration and friends management where you can
+  set who can access your music
+* Add a friends search where you can search music from your friends shares
+* Design improvements (logo)
+
+
 Dependencies:
 
 [UBUNTU]
-sudo apt-get install python-lxml python-django python-mutagen apache2 sqlite3 libapache2-mod-wsgi 
+sudo apt-get install python-lxml python-django python-mutagen apache2 sqlite3 libapache2-mod-wsgi python-pysqlite
+[GENTOO]
+emerge -av dev-python/django dev-python/lxml media-libs/mutagen dev-python/pysqlite dev-db/sqlite www-apache/mod_wsgi www-servers/apache
 
 
 To get it running install laudio into /opt/laudio then run the following command:
