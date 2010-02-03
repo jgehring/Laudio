@@ -29,7 +29,7 @@ function changeSong(id){
     var playButton = document.getElementById("playButton");
     // get previous song and set its colors to normal
     var lastSongId = document.getElementById("songId").innerHTML;
-    if(document.getElementById(lastSongId) != null){
+    if(document.getElementById(lastSongId) !== null){
         document.getElementById(lastSongId).style.color = "";
         document.getElementById(lastSongId).style.backgroundColor = "";
     }
@@ -45,7 +45,7 @@ function changeSong(id){
     var path = tds[5].children[0].href;
     
     // update Now Playing site title
-    document.getElementById("siteTitle").innerHTML = "Laudio Now Playing: " + artist + " - " + title;
+    document.title = "Laudio Now Playing: " + artist + " - " + title;
     // set nice color for tr when playing but first save the existing one
     currentTr.style.backgroundColor = "#59798c";
     currentTr.style.color = "#fafafa";    
@@ -107,7 +107,7 @@ function nextSong(){
     if (currentTr == null){
         currentTr = document.getElementById("row0");
     }
-    if(currentTr.nextElementSibling != null){
+    if(currentTr.nextElementSibling !== null){
         var nextTrId = currentTr.nextElementSibling.id;
         changeSong(nextTrId);
     }
@@ -119,7 +119,7 @@ function nextSong(){
 function prevSong(){
     var songId = document.getElementById("songId").innerHTML;
     var currentTr = document.getElementById(songId);
-    if(currentTr.previousElementSibling != null && currentTr.previousElementSibling.id != "row0"){
+    if(currentTr.previousElementSibling !== null && currentTr.previousElementSibling.id != "row0"){
         var prevTrId = currentTr.previousElementSibling.id;
         changeSong(prevTrId);
     }
@@ -222,7 +222,7 @@ function rmFromPlaylist(id){
  */
 function playPlaylist(){
     tr = document.getElementById("row0").nextElementSibling;
-    if (tr != null){
+    if (tr !== null){
         changeSong(tr.id);
     }
 }
@@ -235,7 +235,7 @@ function clearPlaylist(){
     // reset playlist counter
     var counter = document.getElementById("playlistIdCounter");
     counter.innerHTML = 1;
-    while(tr.nextSibling != null){
+    while(tr.nextSibling !== null){
         rmTr = tr.nextElementSibling;
         rmTr.parentNode.removeChild(rmTr);
     }
@@ -248,7 +248,7 @@ function clearPlaylist(){
 function songPosPlaylist(id, direction){
     var currentTr = document.getElementById(id);
     // check if we can move up or down
-    if (currentTr.previousElementSibling != null && 
+    if (currentTr.previousElementSibling !== null && 
         currentTr.previousElementSibling.id != "row0" &&
         direction == "up"){
         prevTr = currentTr.previousElementSibling;
@@ -258,7 +258,7 @@ function songPosPlaylist(id, direction){
         prevTr.parentNode.replaceChild(clone1, prevTr);
         updatePlaylistClasses();
         
-    } else if(currentTr.nextElementSibling != null && 
+    } else if(currentTr.nextElementSibling !== null && 
               currentTr.nextElementSibling != "row0" &&
               direction == "down") {
         nextTr = currentTr.nextElementSibling;
