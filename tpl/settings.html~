@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}LAudio - Settings{% endblock %}
+
+
+{% block content %}
+<div id="text">
+    <h1>Setttings</h1>
+    
+    <p class="settingsmsg">{{msg|noescape}}</p>
+    
+    <form class="settingsform" method="get" action=".">
+        <table>
+            <tr>
+                <th>Path to Music Collection</th>
+                <td><input value="{{collection}}" class="settingsinput" name="collection" type="text"/></td>
+            </tr>
+            <tr>
+                <th>Completely Reset Music Collection</th>
+                <td><input type="checkbox" name="drop" value="true" /></td>
+            </tr>
+            <tr>
+                <th>Scan Music Collection (This can take a long time!)</th>
+                <td><input type="checkbox" name="scan" value="true" /></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" value="save" /></td>
+            </tr>
+        </table>
+    </form>
+    
+    
+    
+</div>
+{% endblock %}

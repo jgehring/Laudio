@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}LAudio - Local Music Collection Playlist Management{% endblock %}
+{% block controls %}
+    <li onclick="playSong()" class="controls"><a id="playButton" href="#">Play</a></li>
+    <li onclick="nextSong()" class="controls"><a href="#">Next</a></li>
+    <li onclick="prevSong()" class="controls"><a href="#">Previous</a></li>
+{% endblock %}
+{% block content %}
+        
+        <span id="songId">row1</span>
+        <span id="playlistIdCounter">1</span>      
+        <audio id="player" src="/laudio/media/audio/{{firstsong}}" controls="controls"></audio>
+        <div class="playlistHeader">
+            <ul>
+                <li><a href="#" id="togglePlaylist">Playlist: </a></li>
+                <li><a href="#" onclick="playPlaylist()">Play</a></li>
+                <li><a href="#" onclick="clearPlaylist()">Clear</a></li>
+                <li><a href="#" onclick="openPlaylist()">Open</a></li>
+                <li><a href="#" onclick="savePlaylist()">Save</a></li>
+                <li><a href="#" onclick="renamePlaylist()">Rename</a></li>
+                <li><a href="#" onclick="deletePlaylist()">Delete</a></li>
+            </ul>
+        </div>
+        <table id="playlist" cellspacing="0">
+            <tr id="row0">
+                <th class="collNr">Nr</th>
+                <th class="collTitle">Title</th>
+                <th class="collArtist">Artist</th>
+                <th class="collAlbum">Album</th>
+                <th class="collGenre">Genre</th>
+                <th class="collDownload">Download</th>
+                <th class="collUp">Up</th>
+                <th class="collDown">Down</th>
+                <th class="collRm">Del</th>
+            </tr>
+
+        </table>
+       <div class="collectionHeader">
+            <ul>            
+                <li><a href="#" id="toggleCollection">Collection: </a></li>
+                <li><a id="showArtists" href="#">Artists</a></li>
+                <li><a id="showSearch" href="#">Advanced Search</a></li>
+            </ul>
+            <span id="simplesearch">
+                <input type="text" id="simplesearchfield" name="simplesearch" value="type keyword and hit enter" 
+                onclick="if(this.value == 'type keyword and hit enter')this.value='';" 
+                onblur="if(this.value == '') this.value='type keyword and hit enter';" />
+            </span>
+        </div>
+        <div class="collectionHeader" id="artistList">
+            <ul>
+                <li><a id="wholeColl" href="#">All</a></li>
+                {% for i in letters %}
+                        <li><a class="letters" title="{{i}}" href="#">{{i}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div id="searchForm">
+            <form action="#" method="post">
+                <table>
+                    <tr>
+                        <th>Title</th>
+                        <th>Artist</th>
+                        <th>Album</th>
+                        <th>Genre</th>
+                        <th>Search</th>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="advSearchTitle" /></td>
+                        <td><input type="text" id="advSearchArtist" /></td>
+                        <td><input type="text" id="advSearchAlbum" /></td>
+                        <td><input type="text" id="advSearchGenre" /></td>
+                        <td><input type="button" value="search" id="advSearchSubmit" /></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div class="loading">Loading...</div> 
+        <table id="collection" cellspacing="0">
+        </table>
+    
+{% endblock %}
+
+{% block jquery %}
+<script type="text/javascript">
+    // register some handlers on the audio element
+    var audio = document.getElementById("player");
+    var nextSongFunc = function() { nextSong(); }
+    var updatePlayPauseFunc = function() { updatePlayPause(); }
+    audio.addEventListener("ended", nextSongFunc, true);
+    audio.addEventListener("playing", updatePlayPauseFunc, true);
+    audio.addEventListener("pause", updatePlayPauseFunc, true);
+    
+    // jquery code
+    $(function(){
+        var $col = $('#collection');
+        var $playlist = $('#playlist');
+        var $loading = $('.loading');
+        var $searchArtists = $('#showArtists');
+        var $artistsList = $('#artistList');
+        var $searchColl = $('#showSearch');
+        var $searchForm = $('#searchForm');
+        var $simpleSearchField = $('#simplesearchfield');
+        var $advSearch = $('#advSearchSubmit');
+        
+        $searchArtists.click(function(){
+            $artistsList.slideToggle();
+        });
+        
+        $searchColl.click(function(){
+            $searchForm.slideToggle();
+        });
+        
+        $('#toggleCollection').click(function() {
+            $col.slideToggle();
+        });
+        
+        $('#togglePlaylist').click(function() {
+            $playlist.slideToggle();
+        });
+        
+        $('.letters').click(function() {
+            $col.fadeOut('fast');
+            $loading.fadeIn("slow"); 
+            var content_show = $(this).attr("title");
+            $col.load("/laudio/playlist/artist/" + content_show + "/",
+                      function () { 
+                        $loading.fadeOut('fast'); 
+                        $col.fadeIn('slow');
+                      });
+        });
+
+        $('#wholeColl').click(function() {
+            $col.fadeOut('fast');
+            $loading.fadeIn("slow"); 
+            $col.load("/laudio/playlist/collection/",
+                      function () { 
+                        $loading.fadeOut('fast'); 
+                        $col.fadeIn('slow');
+                      });
+        });
+
+        $simpleSearchField.keyup(function(e) {
+            //alert(e.keyCode);
+            if(e.keyCode == 13) {
+                $col.fadeOut('fast');
+                $loading.fadeIn("slow"); 
+                var content_show = $(this).attr("title");
+                $col.load("/laudio/playlist/searchall/" + encodeURIComponent($simpleSearchField.attr("value")) + "/",
+                          function () { 
+                            $loading.fadeOut('fast'); 
+                            $col.fadeIn('slow');
+                          });
+            }
+        });
+        
+        $advSearch.click(function() {
+            $col.fadeOut('fast');
+            $loading.fadeIn("slow"); 
+            var title = $('#advSearchTitle').attr("value");
+            var artist = $('#advSearchArtist').attr("value");
+            var album = $('#advSearchAlbum').attr("value");
+            var genre = $('#advSearchGenre').attr("value");
+            var url = "/laudio/playlist/advsearch/";
+            var query = "?artist=" + artist + "&amp;title=" + title + "&amp;genre=" + genre + "&amp;album=" + album;
+            $col.load(url + query,
+                      function () { 
+                        $loading.fadeOut('fast'); 
+                        $col.fadeIn('slow');
+                      });
+        });
+        
+
+
+        
+    });
+</script>
+
+{% endblock%}

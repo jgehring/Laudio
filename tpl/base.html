@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+    <head>
+        <title id="siteTitle">{% block title %}{% endblock %}</title>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+        <link rel="stylesheet" href="/laudio/media/style/style.css" type="text/css" media="all" charset="utf-8" />
+        <script src="/laudio/media/js/jquery.js" type="text/javascript" charset="utf-8"></script>
+        <script src="/laudio/media/js/jquery-ui.js" type="text/javascript" charset="utf-8"></script>
+        <script src="/laudio/media/js/script.js" type="text/javascript" charset="utf-8"></script>
+    </head>
+
+    <body>
+    <div id="site">
+        <div id="nav">
+            <ul>
+                <li><a href="/laudio/">Collection</a></li>
+                <li><a href="/laudio/playlist">Playlist</a></li>
+                <!--
+                <li><a href="/laudio/search">Search</a></li>
+                <li><a href="/laudio/friends">Friends</a></li>
+                -->
+                <li><a href="/laudio/settings">Settings</a></li>
+                <li><a href="/laudio/about">About</a></li>
+                {% block controls %}{% endblock %}              
+            </ul>
+        </div>
+        <div id="header"></div>
+        <div id="content">
+            {% block content %}{% endblock %}
+        </div>
+        
+        <div id="footer"></div>
+    </div>
+    </body>
+    {% block jquery %}{% endblock %}
+</html>

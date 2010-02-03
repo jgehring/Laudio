@@ -1,0 +1,6 @@
+#jai{width:320px;margin:0 auto;font-family:consolas;}
+#jai ul{padding:0;margin:0;}
+#jai li{list-style-type:none;}
+#jai a{background:url(gfx/jai-playlist-hover-states.png) no-repeat 0px -19px;display:block;width:300px;height:18px;margin:1px 0 0 0;color:#555;padding:1px 0 0 20px;text-decoration:none;}
+#jai li.selected a{background-position:0px 0px;color:#fff;font-weight:bold;}
+#jai li.selected a:hover,#jai li.selected a:focus,#jai a:hover,#jai a:focus{background-position:0px -38px;color:#fff;font-weight:bold;}

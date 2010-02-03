@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}LAudio{% endblock %}
+
+
+{% block content %}
+<div id="text">
+    <p>Not implemented yet!</p>
+</div>
+{% endblock %}

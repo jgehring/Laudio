@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}LAudio - Reset Collection{% endblock %}
+
+
+{% block content %}
+<div id="text">
+    <p>All Data from db removed</p>
+</div>
+{% endblock %}

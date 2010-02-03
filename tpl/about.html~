@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}LAudio - About{% endblock %}
+
+
+{% block content %}
+<div id="text">
+    <h1>About Laudio</h1>
+    <p>Laudio, whose name orignites from LAN Audio, is a webclient for your Musiccollection. It
+    aims to replace the currently mostly broken DAAP players, which can stream DAAP shares over
+    the local network. Thanks to Apple, who break/encrypt their services after external programs
+    start using it, DAAP is partly broken ever since including iTunes 7.</p>
+    
+    <h3>Recommended webbrowser are: </h3>
+    <ul>
+        <li>Google Chrome/Chromium v. 4+ - If you dont like Google, just use it locally, defenitely the fastest and best choice though</li>
+        <li>Firefox 3.5+ - A bit slow due to some bugs with large table which we are using heavily</li>
+    </ul>
+    <h3>Less recommended webbrowser are: </h3>
+    <ul>
+        <li>Konqueror 4.4+ - Well, I didnt test it but it should run quite well. You'll need the codecs from your gstreamer/xine backend though</li>
+        <li>Epiphany 2.30+ - Supporting audio/video but "support is not perfect"</li>
+    </ul>
+    <h3>Not recommended are the following ones due to these issues:</h3>
+    <ul>
+        <li>Microsoft Internet Explorer any version - Slow and no HTML 5, you really dont want this one</li>
+        <li>Apple Safari - Were replacing an Apple product, so yes, Safari is of course the only browser who doesnt support ogg in its HTML5 audio/video tags</li>
+    </ul>    
+    <h3>Known Issues</h3>
+    <ul>
+        <li>Slow when having huge (10k+ songs) collections</li>
+        <li>Slow in Firefox when displaying a lot of songs: this is a Firefox bug occuring with large tables</li>
+        <li>Lacking mp3 support (think of it as feature, not a bug)</li>
+    </ul>
+</div>
+{% endblock %}

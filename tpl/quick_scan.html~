@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}LAudio{% endblock %}
+
+{% block content %}
+<div id="text">
+    <p>Scanned {{scanned}} files, added {{added}} files!</p>
+</div>
+
+
+{% endblock %}
