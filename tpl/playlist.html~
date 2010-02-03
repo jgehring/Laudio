@@ -16,10 +16,12 @@
                 <li><a href="#" id="togglePlaylist">Playlist: </a></li>
                 <li><a href="#" onclick="playPlaylist()">Play</a></li>
                 <li><a href="#" onclick="clearPlaylist()">Clear</a></li>
+                <!--
                 <li><a href="#" onclick="openPlaylist()">Open</a></li>
                 <li><a href="#" onclick="savePlaylist()">Save</a></li>
                 <li><a href="#" onclick="renamePlaylist()">Rename</a></li>
                 <li><a href="#" onclick="deletePlaylist()">Delete</a></li>
+                -->
             </ul>
         </div>
         <table id="playlist" cellspacing="0">

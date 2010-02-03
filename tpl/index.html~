@@ -13,11 +13,6 @@
        <div class="collectionHeader">
             <ul>           
                 <li><a href="#" id="toggleCollection">Collection: </a></li>
-                <li><a href="#" onclick="confirmAction('Depending on your collection this may take some time.\n\n' +
-                'Please dont close your browser, it will notify you when it\'s finished or an error occured. Get some coffee!\n\n' +
-                 'Do you reall want to scan your library?', '/laudio/quick_scan')">Scan</a></li>
-                <li><a href="#" onclick="confirmAction('Do you really want to completely delete your database?', 
-                                                       '/laudio/reset_collection')">Reset Collection</a></li>
                 <li><a id="showArtists" href="#">Artists</a></li>
                 <li><a id="showSearch" href="#">Advanced Search</a></li>
             </ul>

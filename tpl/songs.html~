@@ -15,7 +15,7 @@
             <td>{{song.artist|escape}}</td>
             <td>{{song.album|escape}}</td>
             <td>{{song.genre|escape}}</td>
-            <td><a href="/laudio/media/audio{{song.path|escape}}">Download</a></td>
+            <td><a href="/laudio/media/audio/{{song.path|escape}}">Download</a></td>
             <td class="addToPlaylist" onclick="addToPlaylist('collrow{{forloop.counter}}')"></td>
         </tr>
     {% endfor %} 
@@ -35,7 +35,7 @@
             <td>{{song.artist|escape}}</td>
             <td>{{song.album|escape}}</td>
             <td>{{song.genre|escape}}</td>
-            <td><a href="/laudio/media/audio{{song.path|escape}}">Download</a></td>
+            <td><a href="/laudio/media/audio/{{song.path|escape}}">Download</a></td>
         </tr>
     {% endfor %} 
 {% endif %}

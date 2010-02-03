@@ -7,7 +7,7 @@
 <div id="text">
     <h1>Setttings</h1>
     
-    <p class="settingsmsg">{{msg|noescape}}</p>
+    <p class="settingsmsg">{{msg|safe}}</p>
     
     <form class="settingsform" method="get" action=".">
         <table>

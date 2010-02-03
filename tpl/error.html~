@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
 
-{% block title %}LAudio - Error{% endblock %}
+{% block title %}LAudio - ERROR{% endblock %}
+
 
 {% block content %}
-<p>{{msg}}</p>
+<div id="text">
+    <h1>An Error occured</h1>
+    <p>{{msg}}</p>
+</div>
 {% endblock %}

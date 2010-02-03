@@ -10,6 +10,9 @@
     aims to replace the currently mostly broken DAAP players, which can stream DAAP shares over
     the local network. Thanks to Apple, who break/encrypt their services after external programs
     start using it, DAAP is partly broken ever since including iTunes 7.</p>
+    <p>Future Releases also plan some filesharing service for you and your friends 
+    (only legal tracks should be shared -> jamendo.com) and an access control to your collection.
+    Maybe we'll support ampache xml interfaces too if it isnt too hard ;)</p>
     
     <h3>Recommended webbrowser are: </h3>
     <ul>
