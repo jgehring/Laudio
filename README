@@ -15,7 +15,7 @@ TODO:
 * Add a friends search where you can search music from your friends shares
 * Design improvements (logo)
 * Get Chromium to work
-
+* Add warning to chmod music directory if permission denied errors
 
 Dependencies:
 
@@ -30,6 +30,9 @@ sudo chmod -R a+rwx /opt/laudio
 
 Now put laudio.conf into
 /etc/apache2/vhosts.d/
+
+For ubuntu users its
+/etc/apache2/conf.d/
 
 and finally restart the server: 
 sudo /etc/init.d/apache2 restart
