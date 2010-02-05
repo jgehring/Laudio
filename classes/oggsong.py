@@ -39,31 +39,10 @@ class OGGSong (Song):
         """
         self.path = path
         self.song = OggVorbis(self.path)
-        try:
-            self.title = self.song['title'][0]
-        except KeyError:
-            self.title = ""
-        
-        try:    
-            self.artist = self.song['artist'][0]
-        except KeyError:
-            self.artist = ""
-            
-        try:
-            self.album = self.song['album'][0]
-        except KeyError:
-            self.album = ""
-            
-        try:
-            self.genre = self.song['genre'][0]
-        except KeyError:
-            self.genre = ""
-            
+        for key in ('title', 'artist', 'album', 'genre'):
+            setattr(self, key, self.song.get(key, ('',))[0]
         # check for empty track number
         try:
             self.tracknumber = int(self.song['tracknumber'][0])
-        except ValueError:
+        except (ValueError, KeyError):
             self.tracknumber = 0
-        except KeyError:
-            self.tracknumber = 0
-

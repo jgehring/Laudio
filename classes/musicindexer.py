@@ -65,11 +65,8 @@ class MusicIndexer (object):
             if song.lastmodified != lastModified:
                 try:
                     ogg = OGGSong(songpath)
-                    song.title = ogg.title
-                    song.artist = ogg.artist
-                    song.album = ogg.album
-                    song.genre = ogg.genre
-                    song.tracknumber = ogg.tracknumber
+                    for attr in ('title', 'artist', 'album', 'genre', 'tracknumber'):
+                        setattr(song, attr, getattr(ogg, attr))
                     song.lastmodified = lastModified
                     song.path = relSongPath
                     song.save()
