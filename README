@@ -15,7 +15,7 @@ TODO:
 * Add a friends search where you can search music from your friends shares
 * Design improvements (logo)
 * Get Chromium to work
-* Add warning to chmod music directory if permission denied errors
+* Add ampache api
 
 Dependencies:
 
@@ -23,22 +23,37 @@ Dependencies:
 sudo apt-get install python-lxml python-django python-mutagen apache2 sqlite3 libapache2-mod-wsgi python-pysqlite
 [GENTOO]
 emerge -av dev-python/django dev-python/lxml media-libs/mutagen dev-python/pysqlite dev-db/sqlite www-apache/mod_wsgi www-servers/apache
-
+[ARCH LINUX]
+sudo pacman -S extra/django extra/python-lxml extra/mutagen extra/apache
+extra/python-pysqlite core/sqlite3 extra/mod_wsgi
 
 To get it running install laudio into /opt/laudio then run the following command:
 sudo chmod -R a+rwx /opt/laudio
 
 Now put laudio.conf into
+[GENTOO]
 /etc/apache2/vhosts.d/
-
-For ubuntu users its
+[UBUNTU]
 /etc/apache2/conf.d/
+[ARCH LINUX]
+/etc/httpd/conf/extra/
 
-and finally restart the server: 
+Arch Linux users have to explicitely include the file in their httpd.conf
+sudo echo "Include conf/extra/laudio.conf" >> /etc/httpd/conf/httpd.conf
+
+
+and finally restart the server:
+[GENTOO] [UBUNTU]
 sudo /etc/init.d/apache2 restart
+[ARCH LINUX]
+sudo /etc/rc.d/httpd restart
 
-if you run a gentoo machine you want apache to start at startup:
+
+For Arch Linux and Gentoo you have to add apache to the system startup
+[GENTOO]
 rc-update add apache2 default
+[ARCH LINUX]
+add httpd to your DAEMONS=() in /etc/rc.conf
 
 Laudio should be accessible in your Browser under http://localhost/laudio
 
