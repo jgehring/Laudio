@@ -24,23 +24,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 import os
 from time import time
 from mutagen.oggvorbis import OggVorbis
-from song import Song
+from laudio.song.song import Song
 
 class OGGSong (Song):
 
     def __init__(self, path):
         """ Read metainformation from an ogg file
-        
         The multiple KeyErrors check if tags are not Null
-        
         Keyword arguments:
         path -- the full path to the song
-        
         """
+        self.codec = "ogg"
         self.path = path
         self.song = OggVorbis(self.path)
         for key in ('title', 'artist', 'album', 'genre'):
-            setattr(self, key, self.song.get(key, '')[0])
+            setattr(self, key, self.song.get(key, ('',))[0])
         # check for empty track number
         try:
             self.tracknumber = int(self.song['tracknumber'][0])

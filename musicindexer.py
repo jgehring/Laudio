@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 import os
-from oggsong import OGGSong
+from laudio.song.formats.ogg import OGGSong
 from laudio.models import Song
 import mutagen
 import time
@@ -65,32 +65,34 @@ class MusicIndexer (object):
             # if last modified date changed, update the songdata
             if song.lastmodified != lastModified:
                 try:
-                    ogg = OGGSong(songpath)
-                    for attr in ('title', 'artist', 'album', 'genre', 'tracknumber'):
-                        setattr(song, attr, getattr(ogg, attr))
+                    musicFile = OGGSong(songpath)
+                    for attr in ('title', 'artist', 'album', 'genre',
+                                 'tracknumber', 'codec'):
+                        setattr(song, attr, getattr(musicFile, attr))
                     song.lastmodified = lastModified
                     song.path = relSongPath
                     song.save()
                     self.modified += 1
-                # ignore broken ogg files
+                # broken ogg file
                 except mutagen.oggvorbis.OggVorbisHeaderError:
-                    pass
+                    self.broken.append(songpath)
         except Song.DoesNotExist:
             # if song does not exist, add a new line to the db
             try: 
-                ogg = OGGSong(songpath)
-                song = Song(title=ogg.title,
-                            artist=ogg.artist,
-                            album=ogg.album,
-                            genre=ogg.genre,
-                            tracknumber=ogg.tracknumber,
+                musicFile = OGGSong(songpath)
+                song = Song(title=musicFile.title,
+                            artist=musicFile.artist,
+                            album=musicFile.album,
+                            genre=musicFile.genre,
+                            tracknumber=musicFile.tracknumber,
+                            codec=musicFile.codec,
                             lastmodified=lastModified,
                             path=relSongPath,
                             added=int( time.time() ),
                             )
                 song.save()
                 self.added += 1
-            # ignore broken ogg files
+            # broken ogg file
             except mutagen.oggvorbis.OggVorbisHeaderError:
                 self.broken.append(songpath)
 

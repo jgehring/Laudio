@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 from django.shortcuts import render_to_response
-from laudio.classes.musicindexer import MusicIndexer
+from laudio.musicindexer import MusicIndexer
 from laudio.models import Song, Playlist
 from django.db.models import Q
 from django.conf import settings
