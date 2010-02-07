@@ -16,10 +16,11 @@
     {% endif %}
     
     {% if broken %}
-        <p class="settingsmsg"> The following files are broken: </p>
+        <p class="settingsmsg"> The following files are broken:
         {% for song in broken %}
-            <p>{{song}}</p>
+            {{song}}<br />
         {% endfor %}
+        </p>
     {% endif %}
     
     <form class="settingsform" method="get" action=".">
@@ -42,8 +43,5 @@
             </tr>
         </table>
     </form>
-    
-    
-    
 </div>
 {% endblock %}
