@@ -30,7 +30,7 @@ extra/python-pysqlite core/sqlite3 extra/mod_wsgi
 To get it running extract the tarball to /opt/ and ensure that the folder is
 named "laudio", then run the following commands:
 sudo chmod -R 0755 /opt/laudio
-sudo chmod 0777 /opt/laudio/static
+sudo chmod -R 0777 /opt/laudio/static
 
 Now put laudio.conf into
 [GENTOO]
