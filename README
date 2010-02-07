@@ -27,8 +27,10 @@ emerge -av dev-python/django dev-python/lxml media-libs/mutagen dev-python/pysql
 sudo pacman -S extra/django extra/python-lxml extra/mutagen extra/apache
 extra/python-pysqlite core/sqlite3 extra/mod_wsgi
 
-To get it running install laudio into /opt/laudio then run the following command:
-sudo chmod -R a+rwx /opt/laudio
+To get it running extract the tarball to /opt/ and ensure that the folder is
+named "laudio", then run the following commands:
+sudo chmod -R 0755 /opt/laudio
+sudo chmod 0777 /opt/laudio/static
 
 Now put laudio.conf into
 [GENTOO]
@@ -43,7 +45,7 @@ sudo echo "Include conf/extra/laudio.conf" >> /etc/httpd/conf/httpd.conf
 
 
 and finally restart the server:
-[GENTOO] [UBUNTU]
+[GENTOO][UBUNTU]
 sudo /etc/init.d/apache2 restart
 [ARCH LINUX]
 sudo /etc/rc.d/httpd restart
