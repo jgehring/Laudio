@@ -151,7 +151,7 @@ def laudio_settings(request):
     ip = request.META.get('REMOTE_ADDR')
     # TODO: return a proper Forbidden Template
     if ip != "127.0.0.1":
-        return HttpResponseForbidden()
+        return render_to_response('403.html', {})
     
     # get the symlink of the music collection if it exists
     collSymlink = os.path.join( os.path.dirname(__file__),
