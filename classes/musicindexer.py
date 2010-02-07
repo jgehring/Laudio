@@ -35,6 +35,7 @@ class MusicIndexer (object):
         self.scanned = 0
         self.added = 0
         self.modified = 0
+        self.broken = []
          
          
     def scan(self):
@@ -91,5 +92,5 @@ class MusicIndexer (object):
                 self.added += 1
             # ignore broken ogg files
             except mutagen.oggvorbis.OggVorbisHeaderError:
-                pass
+                self.broken.append(songpath)
 

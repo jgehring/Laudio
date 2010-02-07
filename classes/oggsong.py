@@ -40,7 +40,7 @@ class OGGSong (Song):
         self.path = path
         self.song = OggVorbis(self.path)
         for key in ('title', 'artist', 'album', 'genre'):
-            setattr(self, key, self.song.get(key[0], ''))
+            setattr(self, key, self.song.get(key, '')[0])
         # check for empty track number
         try:
             self.tracknumber = int(self.song['tracknumber'][0])

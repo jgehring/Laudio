@@ -145,31 +145,41 @@ def search(request):
 
 
 def laudio_settings(request):
-    msg = ""
+    msg = []
     # get ip and check if it is localhost
     # only localhost can access settings (for now)
     ip = request.META.get('REMOTE_ADDR')
+    # TODO: return a proper Forbidden Template
     if ip != "127.0.0.1":
         return HttpResponseForbidden()
     
     # get the symlink of the music collection if it exists
-    collSymlink = os.path.join(os.path.dirname(__file__), 'static/audio').replace('\\', '/')
+    collSymlink = os.path.join( os.path.dirname(__file__),
+                                            'static/audio').replace('\\', '/' )
     if os.path.exists(collSymlink):
         collection = os.readlink(collSymlink)
     else:
         collection = ""
+
     # if collection is being passed via get set the symlink
     try:
         # get the collection get variable
         collPath = request.GET["collection"]
-        # if the given path exists add a symlink
-        if os.path.exists(collPath):
-            # if there is already a symlink remove it first
-            if os.path.exists(collSymlink):
-                os.unlink(collSymlink)
-            os.symlink( collPath, os.path.join(os.path.dirname(__file__), 'static/audio').replace('\\', '/') )
-            collection = collPath
-            msg += " Musiclibrarypath set to <b>%s</b>!<br/>" % (collPath)
+        # check for read rights
+        if os.access(collPath, os.R_OK):
+            # if the given path exists add a symlink
+            if os.path.exists(collPath):
+                try:
+                    os.unlink(collSymlink)
+                except OSError:
+                    pass
+                os.symlink( collPath, collSymlink )
+                collection = collPath
+                msg.append( "Musiclibrarypath set to <b>%s</b>!" % (collPath) )
+            else:
+                msg.append( "Path %s does not exist!" % (collPath) )
+        else:
+            msg.append( "Path %s is not readable!" % (collPath) )
     except MultiValueDictKeyError:
         pass
 
@@ -179,22 +189,23 @@ def laudio_settings(request):
         if drop:
             Song.objects.all().delete()
             Playlist.objects.all().delete()
-            msg += "Delete all files and playlists!<br/>"
+            msg.append( "Delete all files and playlists!" )
     except MultiValueDictKeyError:
         pass
-    
+
     # if scan should be made
+    indexer = MusicIndexer( os.path.join(os.path.dirname(__file__),
+                                        'static/audio/').replace('\\', '/') )
     try:
         scan = request.GET["scan"]
         if scan:
-            indexer = MusicIndexer( os.path.join(os.path.dirname(__file__), 'static/audio/').replace('\\', '/') )
+
             indexer.scan()
-            msg += "Scanned <b>%i</b> files, updated <b>%i</b> files and added <b>%i</b> songs \
-                    to the library!<br/>" % ( indexer.scanned, indexer.modified, indexer.added )
+            msg.append( "Scanned <b>%i</b> files, updated <b>%i</b> files and \
+                         added <b>%i</b> songs to the library!"
+                         % (indexer.scanned, indexer.modified, indexer.added) )
     except MultiValueDictKeyError:
         pass
-        
-    return render_to_response( 'settings.html', {"collection": collection, "msg": msg} )
 
-    
-
+    return render_to_response( 'settings.html', {"collection": collection,
+                               'msg': msg, 'broken': indexer.broken} )

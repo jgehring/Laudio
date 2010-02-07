@@ -6,8 +6,21 @@
 {% block content %}
 <div id="text">
     <h1>Setttings</h1>
+
+    {% if msg %}
+        <p class="settingsmsg">
+            {% for line in msg %}
+                {{line|safe}}<br />
+            {% endfor %}
+        </p>
+    {% endif %}
     
-    <p class="settingsmsg">{{msg|safe}}</p>
+    {% if broken %}
+        <p class="settingsmsg"> The following files are broken: </p>
+        {% for song in broken %}
+            <p>{{song}}</p>
+        {% endfor %}
+    {% endif %}
     
     <form class="settingsform" method="get" action=".">
         <table>
