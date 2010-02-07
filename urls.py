@@ -55,4 +55,5 @@ urlpatterns = patterns('',
     (r'^playlist/artist/(?P<artist>.*)/$', slim_collection, {'playlist': True}),
     (r'^playlist/searchall/(?P<search>.*)/$', search_collection, {'playlist': True}),
     (r'^playlist/advsearch/$', adv_search, {'playlist': True}),
+    (r'^server/xml.server.php$', ampache_api),
 )

@@ -209,3 +209,43 @@ def laudio_settings(request):
 
     return render_to_response( 'settings.html', {"collection": collection,
                                'msg': msg, 'broken': indexer.broken} )
+
+
+# interface for ampache xml
+def ampache_api(request):
+    method = request.GET["action"]
+
+    # action for handshake, required for connecting
+    if method == "handshake":
+        # TODO: build in authentication
+        """ README: all these values are filled with dummy code because
+            auth will be built in later"""
+        user = request.GET["user"]
+        passwd = request.GET["auth"]
+        timestamp = request.GET["timestamp"]
+        auth_token = "foobar"
+        version = "3.6"
+        last_update = "2010-02-06T21:00Z"
+        last_add = "2010-02-06T21:00Z"
+        last_clean = "2010-02-06T21:00Z"
+        nr_songs = 500
+        nr_artists = 500
+        nr_albums = 500
+        nr_tags = 0
+        nr_videos = 0
+        
+        handshake = { "auth_token" : auth_token,
+                      "api_version" : version,
+                      "last_update" : last_update,
+                      "last_add" : last_add,
+                      "last_clean" : last_clean,
+                      "nr_songs" : nr_songs,
+                      "nr_artists" : nr_artists,
+                      "nr_tags" : nr_tags,
+                      "nr_albums" : nr_albums,
+                      "nr_videos" : nr_videos}
+
+        return render_to_response('ampache/handshake.xml', handshake)
+
+
+    

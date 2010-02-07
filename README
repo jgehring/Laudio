@@ -42,5 +42,6 @@ rc-update add apache2 default
 
 Laudio should be accessible in your Browser under http://localhost/laudio
 
-before you scan your music directory make sure its available for read:
-chmod -R a+r /home/user/yourmusicdirectory
+you'll need the following filerights for your musiccollection:
+* every folder above your collection has to be chmodded 0711
+* the actualy musicfolder has to be chmodded 0755
