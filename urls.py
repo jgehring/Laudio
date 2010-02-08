@@ -55,5 +55,10 @@ urlpatterns = patterns('',
     (r'^playlist/artist/(?P<artist>.*)/$', slim_collection, {'playlist': True}),
     (r'^playlist/searchall/(?P<search>.*)/$', search_collection, {'playlist': True}),
     (r'^playlist/advsearch/$', adv_search, {'playlist': True}),
+    # playlist requests
+    (r'^playlist/save/$', save_playlist),
+    (r'^playlist/open/(?P<playlistName>.*)/$', open_playlist),
+    (r'^playlist/list/$', list_playlists),
+    # ampache api
     (r'^server/xml.server.php$', ampache_api),
 )

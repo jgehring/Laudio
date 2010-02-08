@@ -356,6 +356,11 @@ h1 {
     padding-left: 5px;
 }
 
+#playlists {
+    border-top: 1px solid #929292;
+    display: none;
+}
+
 .playlistHeader {
     background-color: #25292B !important;
     width: 100%;

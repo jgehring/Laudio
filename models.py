@@ -39,5 +39,4 @@ class Song(models.Model):
 class Playlist(models.Model):
     name = models.CharField(max_length=250)
     songs = models.ManyToManyField(Song)
-    songorder = models.ManyToManyField(Song, related_name="songorder")
     added = models.IntegerField()

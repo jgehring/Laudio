@@ -60,5 +60,10 @@ add httpd to your DAEMONS=() in /etc/rc.conf
 Laudio should be accessible in your Browser under http://localhost/laudio
 
 you'll need the following filerights for your musiccollection:
-* every folder above your collection has to be chmodded 0711
+* every folder above your collection has to be chmodded at least 0711
 * the actualy musicfolder has to be chmodded 0755
+
+For instance your musiccollection is in /home/bernhard/Musik, then you do the
+following:
+sudo chmod +x /home/bernhard
+sudo chmod -R 0755 /home/bernhard/Musik

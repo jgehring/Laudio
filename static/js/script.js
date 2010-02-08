@@ -272,34 +272,6 @@ function songPosPlaylist(id, direction){
 }
 
 /**
- * Opens the playlist
- */
-function openPlaylist(){
-    alert("Not implemented yet!");
-}
-
-/**
- * Saves the playlist
- */
-function savePlaylist(){
-    alert("Not implemented yet!");
-}
-
-/**
- * Renames the playlist
- */
-function renamePlaylist(){
-    alert("Not implemented yet!");
-}
-
-/**
- * Deletes the playlist
- */
-function deletePlaylist(){
-    alert("Not implemented yet!");
-}
-
-/**
  * Ask for a confirmation and then proceed to the url
  *
  * @param String url:   The url where it should go if ok

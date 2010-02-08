@@ -16,14 +16,11 @@
                 <li><a href="#" id="togglePlaylist">Playlist: </a></li>
                 <li><a href="#" onclick="playPlaylist()">Play</a></li>
                 <li><a href="#" onclick="clearPlaylist()">Clear</a></li>
-                <!--
-                <li><a href="#" onclick="openPlaylist()">Open</a></li>
-                <li><a href="#" onclick="savePlaylist()">Save</a></li>
-                <li><a href="#" onclick="renamePlaylist()">Rename</a></li>
-                <li><a href="#" onclick="deletePlaylist()">Delete</a></li>
-                -->
+                <li><a id="savePlaylist" href="#">Save</a></li>
+                <li><a id="openPlaylists" href="#">Open</a></li>
             </ul>
         </div>
+        <div class="playlistHeader" id="playlists"></div>
         <table id="playlist" cellspacing="0">
             <tr id="row0">
                 <th class="collNr">Nr</th>
@@ -39,7 +36,7 @@
 
         </table>
        <div class="collectionHeader">
-            <ul>            
+            <ul>
                 <li><a href="#" id="toggleCollection">Collection: </a></li>
                 <li><a id="showArtists" href="#">Artists</a></li>
                 <li><a id="showSearch" href="#">Advanced Search</a></li>
@@ -105,6 +102,8 @@
         var $searchForm = $('#searchForm');
         var $simpleSearchField = $('#simplesearchfield');
         var $advSearch = $('#advSearchSubmit');
+        var $savePlaylist = $('#savePlaylist');
+        var $playlists = $('#playlists');
         
         $searchArtists.click(function(){
             $artistsList.slideToggle();
@@ -172,11 +171,43 @@
                         $col.fadeIn('slow');
                       });
         });
-        
 
+        $savePlaylist.click(function(){
+            var playlistName = window.prompt("Pick a name for the playlist",
+                                             "playlist1");
+            var linkList = new Array();
+            var rows = document.getElementById('playlist').children[0].children;
+            for (var i=1; i<rows.length; i++){
+                var songLink = rows[i].children[5].children[0].href;
+                linkList.push(songLink);
+            }
 
-        
+            var query = linkList.join("::");
+            var url = "/laudio/playlist/save/";
+            $.get(url, { playlistname: playlistName, urls: query} );
+        });
+
+        /**
+         * Loads a playlist into the playlist area
+         */
+        $('#openPlaylists').click(function(){
+            var url = "/laudio/playlist/list/";
+            $playlists.load(url, function(){
+                $playlists.slideToggle();
+                $('#playlists ul li a').click(function(){
+                    var playlistName = $(this).html();
+                    $inner = $('#playlist tbody');
+                    $inner.fadeOut('fast');
+                    url = "/laudio/playlist/open/" + escape(playlistName) + "/";
+                    $inner.load(url,function () {
+                        $inner.fadeIn('slow');
+                    });
+                });
+            });
+        });
+
     });
+            
 </script>
 
 {% endblock%}

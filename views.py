@@ -26,9 +26,10 @@ from laudio.musicindexer import MusicIndexer
 from laudio.models import Song, Playlist
 from django.db.models import Q
 from django.conf import settings
-from django.http import HttpResponseForbidden
 from django.utils.datastructures import MultiValueDictKeyError
+import time
 import os
+import urllib2
 
 # this is the site for the collection tab
 def index(request):
@@ -84,7 +85,9 @@ def slim_collection(request, artist, playlist=False):
     {'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 'ltrnr': 'tracknumber',}
     ).order_by('lartist', "lalbum", "ltrnr")
     # return html data for jquery
-    return render_to_response('songs.html', {'songs': songs, 'playlist': playlist})
+    return render_to_response('songs.html', {'songs': songs,
+                                             'playlistCollection': playlist,
+                                             'playlist':False})
 
 
 def whole_collection(request, playlist=False):
@@ -93,7 +96,8 @@ def whole_collection(request, playlist=False):
     {'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 'ltrnr': 'tracknumber',}
     ).order_by('lartist', "lalbum", "ltrnr")
     # return html data for jquery
-    return render_to_response('songs.html', {'songs': songs, 'playlist': playlist})
+    return render_to_response('songs.html', {'songs': songs,
+                              'playlistCollection': playlist, 'playlist':False})
 
 
 def search_collection(request, search, playlist=False):
@@ -111,7 +115,8 @@ def search_collection(request, search, playlist=False):
     ).extra(select=
             {'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 'ltrnr': 'tracknumber',}
             ).order_by('lartist', "lalbum", "ltrnr")
-    return render_to_response('songs.html', {'songs': songs, 'playlist': playlist})   
+    return render_to_response('songs.html', {'songs': songs,
+                              'playlistCollection': playlist, 'playlist':False})
 
 
 def adv_search(request, playlist=False):
@@ -127,11 +132,50 @@ def adv_search(request, playlist=False):
     ).extra(select=
         {'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 'ltrnr': 'tracknumber',}
         ).order_by('lartist', "lalbum", "ltrnr")
-    return render_to_response('songs.html', {'songs': songs, 'playlist': playlist})   
+    return render_to_response('songs.html', {'songs': songs,
+                              'playlistCollection': playlist, 'playlist':False})
 """
 END getting data via jquery
 """
 
+"""
+START playlist requests
+"""
+def save_playlist(request):
+    playlistName = urllib2.unquote(request.GET["playlistname"])
+    playlistItems = request.GET["urls"].split("::")
+    # look up if a playlist with the name exists already, if so delete it
+    try:
+        playlist = Playlist.objects.get(name=playlistName)
+        playlist.delete()
+    except Playlist.DoesNotExist:
+        pass
+    playlist = Playlist(name=playlistName,
+                        added= int( time.time() )
+                        )
+    playlist.save()
+    songs = []
+    for link in playlistItems:
+        link = urllib2.unquote(link.rsplit("/laudio/media/audio/")[1])
+        songs.append(link)
+        try:
+            song = Song.objects.get(path=link)
+            playlist.songs.add(song)
+        except Song.DoesNotExist:
+            pass
+    return render_to_response('save.html', {'songs': songs})
+
+
+def open_playlist(request, playlistName):
+    songs = Song.objects.filter(playlist__name=playlistName)
+    return render_to_response('songs.html', {'songs': songs, 'playlist': True})
+
+def list_playlists(request):
+    playlists = Playlist.objects.all()
+    return render_to_response('list_playlists.html', {'playlists': playlists})
+"""
+END playlist requests
+"""
 
 def about(request):
     return render_to_response('about.html', {})
@@ -189,7 +233,7 @@ def laudio_settings(request):
         if drop:
             Song.objects.all().delete()
             Playlist.objects.all().delete()
-            msg.append( "Delete all files and playlists!" )
+            msg.append( "Delete all files and playlists in the db!" )
     except MultiValueDictKeyError:
         pass
 
