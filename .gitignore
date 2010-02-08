@@ -6,4 +6,4 @@
 *~
 *.pyc
 audio
-#laudio.db
+laudio.db
