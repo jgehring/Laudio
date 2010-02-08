@@ -142,6 +142,7 @@ END getting data via jquery
 START playlist requests
 """
 def save_playlist(request):
+    # check if any elements were passed at all
     playlistName = urllib2.unquote(request.GET["playlistname"])
     playlistItems = request.GET["urls"].split("::")
     # look up if a playlist with the name exists already, if so delete it
@@ -156,6 +157,7 @@ def save_playlist(request):
     playlist.save()
     songs = []
     for link in playlistItems:
+        # remove stuff which doesnt belong to the relative path
         link = urllib2.unquote(link.rsplit("/laudio/media/audio/")[1])
         songs.append(link)
         try:

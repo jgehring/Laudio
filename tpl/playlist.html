@@ -1,16 +1,20 @@
 {% extends 'base.html' %}
 
 {% block title %}LAudio - Local Music Collection Playlist Management{% endblock %}
+
 {% block controls %}
-    <li onclick="playSong()" class="controls"><a id="playButton" href="#">Play</a></li>
-    <li onclick="nextSong()" class="controls"><a href="#">Next</a></li>
-    <li onclick="prevSong()" class="controls"><a href="#">Previous</a></li>
+<li onclick="playSong()" class="controls"><a id="playButton" href="#">Play</a>
+</li>
+<li onclick="nextSong()" class="controls"><a href="#">Next</a></li>
+<li onclick="prevSong()" class="controls"><a href="#">Previous</a></li>
 {% endblock %}
+
 {% block content %}
-        
         <span id="songId">row1</span>
-        <span id="playlistIdCounter">1</span>      
-        <audio id="player" src="/laudio/media/audio/{{firstsong}}" controls="controls"></audio>
+        <span id="playlistIdCounter">1</span>
+        <audio id="player" src="/laudio/media/audio/{{firstsong}}"
+               controls="controls"></audio>
+
         <div class="playlistHeader">
             <ul>
                 <li><a href="#" id="togglePlaylist">Playlist: </a></li>
@@ -20,7 +24,9 @@
                 <li><a id="openPlaylists" href="#">Open</a></li>
             </ul>
         </div>
+
         <div class="playlistHeader" id="playlists"></div>
+
         <table id="playlist" cellspacing="0">
             <tr id="row0">
                 <th class="collNr">Nr</th>
@@ -33,8 +39,8 @@
                 <th class="collDown">Down</th>
                 <th class="collRm">Del</th>
             </tr>
-
         </table>
+
        <div class="collectionHeader">
             <ul>
                 <li><a href="#" id="toggleCollection">Collection: </a></li>
@@ -47,14 +53,16 @@
                 onblur="if(this.value == '') this.value='type keyword and hit enter';" />
             </span>
         </div>
+
         <div class="collectionHeader" id="artistList">
             <ul>
                 <li><a id="wholeColl" href="#">All</a></li>
                 {% for i in letters %}
-                        <li><a class="letters" title="{{i}}" href="#">{{i}}</a></li>
+                        <li><a class="letters" href="#">{{i}}</a></li>
                 {% endfor %}
             </ul>
         </div>
+
         <div id="searchForm">
             <form action="#" method="post">
                 <table>
@@ -75,56 +83,71 @@
                 </table>
             </form>
         </div>
-        <div class="loading">Loading...</div> 
-        <table id="collection" cellspacing="0">
-        </table>
-    
+
+        <div class="loading">Loading...</div>
+
+        <table id="collection" cellspacing="0"></table>
 {% endblock %}
 
 {% block jquery %}
 <script type="text/javascript">
     // register some handlers on the audio element
+    // TODO: maybe this can be included to in the jquery function with jquery
+    // code
     var audio = document.getElementById("player");
     var nextSongFunc = function() { nextSong(); }
     var updatePlayPauseFunc = function() { updatePlayPause(); }
     audio.addEventListener("ended", nextSongFunc, true);
     audio.addEventListener("playing", updatePlayPauseFunc, true);
     audio.addEventListener("pause", updatePlayPauseFunc, true);
-    
-    // jquery code
+
+    /**
+     * This code is executed on site ready
+     */
     $(function(){
+        // often used ids and classes
         var $col = $('#collection');
         var $playlist = $('#playlist');
         var $loading = $('.loading');
-        var $searchArtists = $('#showArtists');
-        var $artistsList = $('#artistList');
-        var $searchColl = $('#showSearch');
-        var $searchForm = $('#searchForm');
-        var $simpleSearchField = $('#simplesearchfield');
-        var $advSearch = $('#advSearchSubmit');
-        var $savePlaylist = $('#savePlaylist');
         var $playlists = $('#playlists');
-        
-        $searchArtists.click(function(){
-            $artistsList.slideToggle();
+        var $audio = $('audio');
+
+        /**
+         * shows the artist list
+         */
+        $('#showArtists').click(function(){
+            $('#artistList').slideToggle();
         });
-        
-        $searchColl.click(function(){
-            $searchForm.slideToggle();
+
+        /**
+         * shows the advanced search
+         */
+        $('#showSearch').click(function(){
+            $('#searchForm').slideToggle();
         });
-        
+
+        /**
+         * toggles collection
+         */
         $('#toggleCollection').click(function() {
             $col.slideToggle();
         });
-        
+
+        /**
+         * toggles playlist
+         */
         $('#togglePlaylist').click(function() {
             $playlist.slideToggle();
         });
-        
+
+        /**
+         * loads the artist according to the letter which was clicked
+         */
         $('.letters').click(function() {
             $col.fadeOut('fast');
-            $loading.fadeIn("slow"); 
-            var content_show = $(this).attr("title");
+            $loading.fadeIn("slow");
+            $('#songId').html("row0");
+            var content_show = $(this).html();
             $col.load("/laudio/playlist/artist/" + content_show + "/",
                       function () { 
                         $loading.fadeOut('fast'); 
@@ -132,6 +155,9 @@
                       });
         });
 
+        /**
+         * loads the wohle collection into the player
+         */
         $('#wholeColl').click(function() {
             $col.fadeOut('fast');
             $loading.fadeIn("slow"); 
@@ -142,28 +168,39 @@
                       });
         });
 
-        $simpleSearchField.keyup(function(e) {
-            //alert(e.keyCode);
-            if(e.keyCode == 13) {
+        /**
+         * searches if input in the search field is confirmed with enter
+         */
+        $('#simplesearchfield').keyup(function(e) {
+            // keyCode 13 = ENTER
+            if(e.which == 13) {
                 $col.fadeOut('fast');
-                $loading.fadeIn("slow"); 
-                var content_show = $(this).attr("title");
-                $col.load("/laudio/playlist/searchall/" + encodeURIComponent($simpleSearchField.attr("value")) + "/",
-                          function () { 
-                            $loading.fadeOut('fast'); 
+                $loading.fadeIn("slow");
+                $('#songId').html("row0");
+                var searchValue =
+                    encodeURIComponent($('#simplesearchfield').attr("value"));
+                $col.load("/laudio/playlist/searchall/" + searchValue + "/",
+                          function () {
+                            $loading.fadeOut('fast');
                             $col.fadeIn('slow');
                           });
             }
         });
-        
-        $advSearch.click(function() {
+
+        /**
+         * loads the elements of the advanced
+         */
+        $('#advSearchSubmit').click(function() {
             $col.fadeOut('fast');
-            $loading.fadeIn("slow"); 
+            $loading.fadeIn("slow");
+            $('#songId').html("row0");
             var title = $('#advSearchTitle').attr("value");
             var artist = $('#advSearchArtist').attr("value");
             var album = $('#advSearchAlbum').attr("value");
             var genre = $('#advSearchGenre').attr("value");
             var url = "/laudio/playlist/advsearch/";
+            // FIXME: maybe set this as data instead of url, wouldnt be much
+            // shorter though
             var query = "?artist=" + artist + "&amp;title=" + title + "&amp;genre=" + genre + "&amp;album=" + album;
             $col.load(url + query,
                       function () { 
@@ -172,19 +209,30 @@
                       });
         });
 
-        $savePlaylist.click(function(){
+        /**
+         * saves the current playlist
+         * TODO: improve responses, e.g. that playlist are overwritten etc.
+         */
+        $('#savePlaylist').click(function(){
             var playlistName = window.prompt("Pick a name for the playlist",
                                              "playlist1");
-            var linkList = new Array();
-            var rows = document.getElementById('playlist').children[0].children;
-            for (var i=1; i<rows.length; i++){
-                var songLink = rows[i].children[5].children[0].href;
-                linkList.push(songLink);
-            }
+            if(playlistName && playlistName !== null){
+                var linkList = new Array();
+                // TODO: maybe this can be done better with jquery dom than raw
+                // dom lookups with children
+                var rows =
+                    document.getElementById('playlist').children[0].children;
+                if(rows.length != 1){
+                    for (var i=1; i<rows.length; i++){
+                        var songLink = rows[i].children[5].children[0].href;
+                        linkList.push(songLink);
+                    }$playlists
 
-            var query = linkList.join("::");
-            var url = "/laudio/playlist/save/";
-            $.get(url, { playlistname: playlistName, urls: query} );
+                    var query = linkList.join("::");
+                    var url = "/laudio/playlist/save/";
+                    $.get(url, { playlistname: playlistName, urls: query} );
+                }
+            }
         });
 
         /**
@@ -207,7 +255,7 @@
         });
 
     });
-            
+
 </script>
 
 {% endblock%}

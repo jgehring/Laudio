@@ -1,35 +1,42 @@
 {% extends 'base.html' %}
 
 {% block title %}LAudio - Local Music Collection{% endblock %}
+
 {% block controls %}
-    <li onclick="playSong()" class="controls"><a id="playButton" href="#">Play</a></li>
-    <li onclick="nextSong()" class="controls"><a href="#">Next</a></li>
-    <li onclick="prevSong()" class="controls"><a href="#">Previous</a></li>
+<li onclick="playSong()" class="controls"><a id="playButton" href="#">Play</a>
+</li>
+<li onclick="nextSong()" class="controls"><a href="#">Next</a></li>
+<li onclick="prevSong()" class="controls"><a href="#">Previous</a></li>
 {% endblock %}
+
 {% block content %}
-        
-       <span id="songId">row1</span>      
-       <audio id="player" src="/laudio/media/audio/{{firstsong|escape}}" controls="controls"></audio>
+       <span id="songId">row1</span>
+       <audio id="player" src="/laudio/media/audio/{{firstsong|escape}}"
+              controls="controls"></audio>
+
        <div class="collectionHeader">
-            <ul>           
+            <ul>
                 <li><a href="#" id="toggleCollection">Collection: </a></li>
                 <li><a id="showArtists" href="#">Artists</a></li>
                 <li><a id="showSearch" href="#">Advanced Search</a></li>
             </ul>
             <span id="simplesearch">
-                <input type="text" id="simplesearchfield" name="simplesearch" value="type keyword and hit enter" 
+                <input type="text" id="simplesearchfield" name="simplesearch"
+                value="type keyword and hit enter"
                 onclick="if(this.value == 'type keyword and hit enter')this.value='';" 
                 onblur="if(this.value=='') this.value='type keyword and hit enter';" />
             </span>
         </div>
+
         <div class="collectionHeader" id="artistList">
             <ul>
                 <li><a id="wholeColl" href="#">All</a></li>
                 {% for i in letters %}
-                        <li><a class="letters" title="{{i}}" href="#">{{i}}</a></li>
+                        <li><a class="letters" href="#">{{i}}</a></li>
                 {% endfor %}
             </ul>
         </div>
+
         <div id="searchForm">
             <form action="#" method="post">
                 <table>
@@ -50,45 +57,61 @@
                 </table>
             </form>
         </div>
-        <div class="loading">Loading...</div>        
-        <table id="collection" cellspacing="0">
-        </table>
-    
+
+        <div class="loading">Loading...</div>
+
+        <table id="collection" cellspacing="0"></table>
 {% endblock %}
 
 {% block jquery %}
 <script type="text/javascript">
     // register some handlers on the audio element
+    // TODO: maybe this can be included to in the jquery function with jquery
+    // code
     var audio = document.getElementById("player");
     var nextSongFunc = function() { nextSong(); }
     var updatePlayPauseFunc = function() { updatePlayPause(); }
     audio.addEventListener("ended", nextSongFunc, true);
     audio.addEventListener("playing", updatePlayPauseFunc, true);
     audio.addEventListener("pause", updatePlayPauseFunc, true);
-    
-    // jquery code
+
+    /**
+     * This code is executed on site ready
+     */
     $(function(){
+        // often used ids and classes
         var $col = $('#collection');
         var $loading = $('.loading');
-        var $searchArtists = $('#showArtists');
-        var $artistsList = $('#artistList');
-        var $searchColl = $('#showSearch');
-        var $searchForm = $('#searchForm');
-        var $simpleSearchField = $('#simplesearchfield');
-        var $advSearch = $('#advSearchSubmit');
-        
-        $searchArtists.click(function(){
-            $artistsList.slideToggle();
+
+        /**
+         * shows the artist list
+         */
+        $('#showArtists').click(function(){
+            $('#artistList').slideToggle();
         });
-        
-        $searchColl.click(function(){
-            $searchForm.slideToggle();
+
+        /**
+         * shows the advanced search
+         */
+        $('#showSearch').click(function(){
+            $('#searchForm').slideToggle();
         });
-                
+
+        /**
+         * toggles collection
+         */
+        $('#toggleCollection').click(function() {
+            $col.slideToggle();
+        });
+
+        /**
+         * loads the artist according to the letter which was clicked
+         */
         $('.letters').click(function() {
             $col.fadeOut('fast');
             $loading.fadeIn("slow"); 
-            var content_show = $(this).attr("title");
+            var content_show = $(this).html();
+            $('#songId').html("row0");
             $col.load("/laudio/artist/" + content_show + "/",
                       function () { 
                         $loading.fadeOut('fast'); 
@@ -96,48 +119,62 @@
                       });
         });
 
+        /**
+         * loads the wohle collection into the player
+         */
         $('#wholeColl').click(function() {
-            $loading.fadeIn("slow"); 
+            $col.fadeOut('fast');
+            $loading.fadeIn("slow");
             $col.load("/laudio/collection/",
-                      function () { 
-                        $loading.fadeOut('fast'); 
+                      function () {
+                        $loading.fadeOut('fast');
                         $col.fadeIn('slow');
                       });
         });
-        
-        $simpleSearchField.keyup(function(e) {
-            if(e.keyCode == 13) {
+
+        /**
+         * searches if input in the search field is confirmed with enter
+         */
+        $('#simplesearchfield').keyup(function(e) {
+            // keyCode 13 = ENTER
+            if(e.which == 13) {
+                $('#songId').html("row0");
                 $col.fadeOut('fast');
-                $loading.fadeIn("slow"); 
-                var content_show = $(this).attr("title");
-                $col.load("/laudio/searchall/" + encodeURIComponent($simpleSearchField.attr("value")) + "/",
-                          function () { 
-                            $loading.fadeOut('fast'); 
+                $loading.fadeIn("slow");
+                var searchValue =
+                    encodeURIComponent($('#simplesearchfield').attr("value"));
+                $col.load("/laudio/searchall/" + searchValue + "/",
+                          function () {
+                            $loading.fadeOut('fast');
                             $col.fadeIn('slow');
                           });
             }
         });
 
-        $('#toggleCollection').click(function() {
-            $col.slideToggle();
-        });
 
-        $advSearch.click(function() {
+        /**
+         * loads the elements of the advanced
+         */
+        $('#advSearchSubmit').click(function() {
             $col.fadeOut('fast');
-            $loading.fadeIn("slow"); 
+            $loading.fadeIn("slow");
+            $('#songId').html("row0");
             var title = $('#advSearchTitle').attr("value");
             var artist = $('#advSearchArtist').attr("value");
             var album = $('#advSearchAlbum').attr("value");
             var genre = $('#advSearchGenre').attr("value");
             var url = "/laudio/advsearch/";
-            var query = "?artist=" + artist + "&amp;title=" + title + "&amp;genre=" + genre + "&amp;album=" + album;
+            // FIXME: maybe set this as data instead of url, wouldnt be much
+            // shorter though
+            var query = "?artist=" + artist + "&amp;title=" + title +
+                        "&amp;genre=" + genre + "&amp;album=" + album;
             $col.load(url + query,
-                      function () { 
-                        $loading.fadeOut('fast'); 
+                      function () {
+                        $loading.fadeOut('fast');
                         $col.fadeIn('slow');
                       });
         });
-        
+
     });
 </script>
 
