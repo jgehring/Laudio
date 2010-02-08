@@ -21,7 +21,9 @@
                 <li><a href="#" onclick="playPlaylist()">Play</a></li>
                 <li><a href="#" onclick="clearPlaylist()">Clear</a></li>
                 <li><a id="savePlaylist" href="#">Save</a></li>
-                <li><a id="openPlaylists" href="#">Open</a></li>
+                <li><a id="openPlaylist" href="#">Open</a></li>
+                <li><a id="deletePlaylist" href="#">Delete</a></li>
+                <li><a id="renamePlaylist" href="#">Rename</a></li>
             </ul>
         </div>
 
@@ -231,6 +233,9 @@
                     var query = linkList.join("::");
                     var url = "/laudio/playlist/save/";
                     $.get(url, { playlistname: playlistName, urls: query} );
+                    $playlists.load("/laudio/playlist/list/", function(){
+                            $playlists.fadeOut('fast');
+                        });
                 }
             }
         });
@@ -238,7 +243,7 @@
         /**
          * Loads a playlist into the playlist area
          */
-        $('#openPlaylists').click(function(){
+        $('#openPlaylist').click(function(){
             var url = "/laudio/playlist/list/";
             $playlists.load(url, function(){
                 $playlists.slideToggle();
@@ -250,6 +255,48 @@
                     $inner.load(url,function () {
                         $inner.fadeIn('slow');
                     });
+                    $playlists.slideToggle();
+                });
+            });
+        });
+
+        /**
+         * Deletes a playlist
+         */
+        $('#deletePlaylist').click(function(){
+            var url = "/laudio/playlist/list/";
+            $playlists.load(url, function(){
+                $playlists.slideToggle();
+                $('#playlists ul li a').click(function(){
+                    var playlistName = $(this).html();
+                    var url = "/laudio/playlist/delete/" +
+                                                    escape(playlistName) + "/";
+                    $.get(url);
+                    $playlists.load("/laudio/playlist/list/", function(){
+                            $playlists.slideToggle();
+                        });
+                });
+            });
+        });
+
+        /**
+         * Renames a playlist
+         */
+        $('#renamePlaylist').click(function(){
+            var url = "/laudio/playlist/list/";
+            $playlists.load(url, function(){
+                $playlists.slideToggle();
+                $('#playlists ul li a').click(function(){
+                    var playlistName = $(this).html();
+                    var newPlaylistName = window.prompt("Enter the new Name for"
+                                               + " the playlist", playlistName);
+                    var url = "/laudio/playlist/rename/" +
+                              escape(playlistName) + "/" +
+                              escape(newPlaylistName) + "/";
+                    $.get(url);
+                    $playlists.load("/laudio/playlist/list/", function(){
+                            $playlists.slideToggle();
+                        });
                 });
             });
         });

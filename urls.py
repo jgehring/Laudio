@@ -58,6 +58,8 @@ urlpatterns = patterns('',
     # playlist requests
     (r'^playlist/save/$', save_playlist),
     (r'^playlist/open/(?P<playlistName>.*)/$', open_playlist),
+    (r'^playlist/delete/(?P<playlistName>.*)/$', delete_playlist),
+    (r'^playlist/rename/(?P<oldName>.*)/(?P<newName>.*)/$', rename_playlist),
     (r'^playlist/list/$', list_playlists),
     # ampache api
     (r'^server/xml.server.php$', ampache_api),

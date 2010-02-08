@@ -2,18 +2,20 @@ LAUDIO is a webbased audio player written in python and javascript.
 Dont expect it to be perfect, im not so sure about the file rights and the chmod commands,
 help would be appreciated.
 
+IT ONLY WORKS WITH OGG VORBIS FILES!
+recommended tool to convert your music is soundconverter
+
 I basically wrote it as a replacement for DAAP which is currently really broken.
 
 I tested this things on my Gentoo stable machine with Django 1.1.1 and Firefox 3.5
 CHROMIUM IS CURRENTLY BROKEN CONCERNING THE <audio> TAG!
 
 TODO:
-* Add Playlist features: save, open, rename, delete
 * Support drag and drop for the playlist
 * Develop a webserver for IP Registration and friends management where you can
-  set who can access your music
+  set who can access your music, the server will handle auth too
 * Add a friends search where you can search music from your friends shares
-* Design improvements (logo)
+* Design improvements, especially logo
 * Get Chromium to work
 * Add ampache api
 

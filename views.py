@@ -141,6 +141,7 @@ END getting data via jquery
 """
 START playlist requests
 """
+# TODO: create a template for all requests
 def save_playlist(request):
     # check if any elements were passed at all
     playlistName = urllib2.unquote(request.GET["playlistname"])
@@ -165,12 +166,23 @@ def save_playlist(request):
             playlist.songs.add(song)
         except Song.DoesNotExist:
             pass
-    return render_to_response('save.html', {'songs': songs})
-
+    return render_to_response('save_playlist.html', {'songs': songs})
 
 def open_playlist(request, playlistName):
     songs = Song.objects.filter(playlist__name=playlistName)
     return render_to_response('songs.html', {'songs': songs, 'playlist': True})
+
+def delete_playlist(request, playlistName):
+    playlist = Playlist.objects.get(name=playlistName).delete()
+    return render_to_response('delete_playlist.html',
+                            {'playlist': playlistName})
+
+def rename_playlist(request, oldName, newName):
+    playlist = Playlist.objects.get(name=oldName)
+    playlist.name = newName
+    playlist.save()
+    return render_to_response('rename_playlist.html',
+                            {'playlist': newName})
 
 def list_playlists(request):
     playlists = Playlist.objects.all()
@@ -195,7 +207,6 @@ def laudio_settings(request):
     # get ip and check if it is localhost
     # only localhost can access settings (for now)
     ip = request.META.get('REMOTE_ADDR')
-    # TODO: return a proper Forbidden Template
     if ip != "127.0.0.1":
         return render_to_response('403.html', {})
     
