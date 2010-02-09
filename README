@@ -15,7 +15,7 @@ TODO:
 * Develop a webserver for IP Registration and friends management where you can
   set who can access your music, the server will handle auth too
 * Add a friends search where you can search music from your friends shares
-* Design improvements, especially logo
+* Implement jquery-ui for nice tooltips and dialogues 
 * Get Chromium to work
 * Add ampache api
 

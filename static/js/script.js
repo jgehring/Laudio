@@ -25,12 +25,9 @@
  * @param String id:    The id of the tablerow e.g. row1
  */
 function changeSong(id){
-    // get play button
-    var playButton = document.getElementById("playButton");
     // get previous song and set its colors to normal
     var lastSongId = document.getElementById("songId").innerHTML;
     if(document.getElementById(lastSongId) !== null){
-        document.getElementById(lastSongId).style.color = "";
         document.getElementById(lastSongId).style.backgroundColor = "";
     }
     // set id of current song
@@ -47,20 +44,17 @@ function changeSong(id){
     // update Now Playing site title
     document.title = "Laudio Now Playing: " + artist + " - " + title;
     // set nice color for tr when playing but first save the existing one
-    currentTr.style.backgroundColor = "#59798c";
-    currentTr.style.color = "#fafafa";    
+    currentTr.style.backgroundColor = "#ABC8E2";
 
     // check if file is paused or playing, if playing first stop the song
     if (audio.paused){
         audio.src = path;
         audio.load();
         audio.play();
-        playButton.innerHTML = "Pause";
     } else {
         audio.pause();
         audio.src = path;
         audio.load();
-        playButton.innerHTML = "Pause";
         audio.play();
     }
 
@@ -71,13 +65,10 @@ function changeSong(id){
  */
 function playSong(){
     var audio = document.getElementById("player");
-    var playButton = document.getElementById("playButton");
     if (audio.paused){
-        playButton.innerHTML = "Pause";
         audio.play();
     } else {
         audio.pause();
-        playButton.innerHTML = "Play";
     }
 }
 
@@ -88,9 +79,9 @@ function updatePlayPause(){
     var audio = document.getElementById("player");
     var playButton = document.getElementById("playButton");
     if (audio.paused){
-        playButton.innerHTML = "Play";
+        playButton.children[0].src = "/laudio/media/style/img/play.png";
     } else {
-        playButton.innerHTML = "Pause";
+       playButton.children[0].src = "/laudio/media/style/img/pause.png";
     }
 }
 

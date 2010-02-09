@@ -1,76 +1,53 @@
-html, body {
+/**********************
+ * Site Layout
+ */
+html {
     height: 100%;
     width: 100%
     margin: 0;
     padding: 0;
 }
 
-ul {
-    margin: 0;
-    padding: 0;
-}
-
-a {
-    color: #800000;
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
 body {
     margin: 0;
     padding: 0;
     font-family: sans-serif;
-    background-color: #dadada;
-    font-size: 10pt;
-}
-
-audio {
-    width: 100%;
-    background-color: #25292B;
-    margin: 0;
-    padding: 0;
-    display: block;
-    width: 100%;
-    height: 150px;
-    background-color: #25292B;
-    background-image: url('img/small_logo.png');
-    background-position: center 0px;
-    background-repeat: no-repeat;
-
-}
-
-
-input {
-    border: 1px solid #afafaf;
     background-color: #fafafa;
-}
-
-h1 {
-    text-align: center;
+    font-size: 10pt;
 }
 
 #site {
     margin: auto;
-    width: 85%;
-    border: 1px solid #afafaf;
-    -moz-box-shadow: black 0 0 2em;
-    -webkit-box-shadow: black 0 0 2em;
+    width: 1100px;
+    background-color: #fafafa;
 }
 
 #nav {
-    background-image: url("img/colorbar.png");
-    background-repeat: no-repeat;
-    background-size: 100%;
-    background-color: #800000;
     height: 30px;
     width: 100%;
     margin: auto;
-    border-bottom: 1px solid #afafaf;
+    margin-top: 15px;
+    background-color: #375D81;
+    border: 0px solid #afafaf;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-box-shadow: #cacaca 0 0 10px;
+    -webkit-box-shadow: #cacaca 0 0 10px;
 }
 
+#content {
+    margin: auto;
+    background-color: #fafafa;
+    width: 1100px;
+    margin-bottom: 15px;
+    -moz-box-shadow: #cacaca 0 0 10px;
+    -webkit-box-shadow: #cacaca 0 0 10px;
+}
+
+
+/**********************
+ * Navigation
+ */
 #nav ul {
     margin: 0;
     padding: 0;
@@ -80,11 +57,9 @@ h1 {
 
 #nav ul li {
     display: inline;
-    font-size: 10pt;
+    font-size: 11pt;
     float: left;
-    position: relative; 
-    border-right: 1px solid #afafaf;
-    background-color: #25292B;
+    position: relative;
 }
 
 
@@ -96,39 +71,226 @@ h1 {
     height: 30px;
     line-height: 30px;
     padding-left: 10px;
-    padding-right: 10px;    
+    padding-right: 10px;
+}
+
+#nav.mostleft a{
+    -moz-border-radius-topleft: 5px;
+    -webkit-border-radius-top-left: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    -webkit-border-radius-bottom-left: 5px;
+}
+
+#nav.mostright {
+    -moz-border-radius-topright: 5px;
+    -webkit-border-radius-top-right: 5px;
+    -moz-border-radius-bottomright: 5px;
+    -webkit-border-radius-bottom-right: 5px;
 }
 
 #nav ul li a:hover {
-    color: #fafafa;
-    background-color: #59798c;
+    color: #000;
+    background-color: #ABC8E2;
 }
 
+#nav li.mostleft a:hover {
+    -moz-border-radius-topleft: 5px;
+    -webkit-border-radius-top-left: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    -webkit-border-radius-bottom-left: 5px;
+}
+
+.mostright a:hover {
+    -moz-border-radius-topright: 5px;
+    -webkit-border-radius-top-right: 5px;
+    -moz-border-radius-bottomright: 5px;
+    -webkit-border-radius-bottom-right: 5px;
+}
 .controls {
     float: right !important;
-    border-right: 0 !important;
-    border-left: 1px solid #afafaf;
+    position: relative;
 }
 
-.controls a:hover{
-    background-color: #800000 !important;
+.controls a {
+    padding: 3px 5px 0 5px !important;
+    height: 27px !important;
+    line-height: 30px !important;
 }
 
+/**********************
+ * Presets for Elements
+ */
+ul {
+    margin: 0;
+    padding: 0;
+}
 
-#content {
+a {
+    color: #375D81;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+img {
+    border: 0;
+}
+
+input {
+    border: 1px solid #afafaf;
+    background-color: #fafafa;
+}
+
+h1 {
+    text-align: center;
+    font-size: 15pt;
+}
+/**********************
+ * Player
+ */
+audio {
+    width: 1100px;
+    background-color: #fafafa;
     margin: auto;
-    background-color: #dadada;
+    padding: 0;
+    display: block;
     width: 100%;
+    height: 165px;
+    background-image: url('img/logo.png');
+    background-position: center 15px;
+    background-repeat: no-repeat;
+    -moz-border-radius-topleft: 10px;
+    -moz-border-radius-topright: 10px;
+    -webkit-border-radius-top-left: 10px;
+    -webkit-border-radius-top-right: 10px;
 }
 
-#footer {
+/**********************
+ * Search elements
+ */
+.collectionHeader {
+    background-color: #fafafa;
+    width: 100%;
+    float: left;
+}
+
+.collectionHeader ul {
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+    list-style: none;
+}
+
+
+.collectionHeader ul li {
+    display: inline;
+    font-size: 10pt;
+    float: left;
+}
+
+
+.collectionHeader ul li a {
+    color: #000;
+    text-decoration: none;
+    padding: 0 6px;
+    float: left;
+    height: 30px;
+    line-height: 30px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.collectionHeader ul li a:hover {
+    color: #000;
+    background-color: #E1E6FA;
+}
+
+/**********************
+ * Collection specific formatting
+ */
+.loading {
+    clear: both;
+    background-image: url('img/loading.gif');
+    background-repeat: no-repeat;
+    background-position: center center;
+    width: 100%;
+    height: 130px;
     margin: auto;
-    background-color: #25292B;
-    height: 50px;
-    width: 100%;
-    border-top: 1px solid #25292B;
+    background-color: #fff;
+    text-align: center;
+    font-size: 20pt;
+    padding-top: 105px;
+    display: none;
 }
 
+#collection {
+    width: 100%;
+    padding: 0;
+    margin: auto;
+    min-height: 0;
+    overflow: auto;
+    clear: both;
+}
+
+#collection th {
+    color: #000;
+    text-align: left;
+    font-family: sans-serif;
+    background-color: #ABC8E2;
+}
+
+#collection td {
+    padding-left: 5px;
+}
+
+.line1 {
+    background-color: #efefef;
+}
+
+.line2 {
+    background-color: #fafafa;
+}
+
+.line1:hover {
+    background-color: #dfdfdf;
+    cursor: pointer;
+}
+
+.line2:hover {
+    background-color: #dfdfdf;
+    cursor: pointer;
+}
+
+.collTitle {
+    width: 27%;
+}
+
+.collArtist {
+    width: 17%;
+}
+
+.collAlbum {
+    width: 30%;
+}
+
+.collGenre {
+    width: 15%;
+}
+
+.collNr {
+    width: 3%;
+}
+
+.collDownload {
+    width: 8%;
+}
+
+
+/**********************
+ * Normal Text formatting
+ */
 #text {
     width: 95%;
     margin: auto;
@@ -143,13 +305,17 @@ h1 {
     margin-left: 10px;
 }
 
+/**********************
+ * Searching
+ */
 #simplesearch {
     float: right !important;
     padding: 2px;
 }
 
 #simplesearchfield {
-    height: 20px;
+    height: 18px;
+    border: 1px solid #dfdfdf !important;
     width: 250px;
     font-size: 11pt;
     padding: 3px;
@@ -163,107 +329,22 @@ h1 {
 
 #searchForm {
     display: none;
-    background-color: #25292B;
-    color: #fafafa;
+    background-color: #fafafa;
     clear: both;
     width: 100%;
     margin: 0;
     padding: 0;
-    border-bottom: 1px solid #fafafa;
 }
 
 #searchForm table {
     margin: auto;
 }
 
-/**
- * Collection stuff
+/**********************
+ * Stuff which needs to be hidden
  */
-
-.loading {
-    clear: both;
-    background-image: url('img/loading.gif');
-    background-repeat: no-repeat;
-    background-position: center center;
-    width: 100%;
-    height: 130px;
-    margin-auto;
-    background-color: #fff;
-    text-align: center;
-    font-size: 20pt;
-    padding-top: 105px;
-    display: none;
-}
- 
-#collection {
-    width: 100%;
-    padding: 0;
-    margin: auto;
-    min-height: 0;
-    overflow: auto;
-}
-
-#collection th {
-    border-top: 1px solid #929292;
-    border-bottom: 1px solid #929292;
-    background-color: #9a9a9a;
-}
-
-#collection td {
-    padding-left: 5px;
-}
-
 #artistList {
     display: none;
-}
-
-.collectionHeader {
-    background-color: #25292B !important;
-    width: 100%;
-    float: left;
-    border-bottom: 1px solid #afafaf;
-}
-
-.collectionHeader ul{
-    margin: 0;
-    padding: 0;
-    vertical-align: middle;
-    list-style: none;
-}
-
-
-.collectionHeader ul li {
-    display: inline;
-    font-size: 10pt;
-    float: left;
-    border-right: 1px solid #afafaf;
-    background-color: #25292B;
-}
-
-
-.collectionHeader ul li a {
-    color: #fafafa;
-    text-decoration: none;
-    padding: 0 6px;
-    float: left;
-    height: 30px;
-    line-height: 30px;
-    padding-left: 10px;
-    padding-right: 10px;    
-}
-
-.collectionHeader ul li a:hover {
-    color: #fafafa;
-    background-color: #59798c;
-}
-
-#nowPlaying{
-    margin: 0;
-    padding: 0;
-    text-align: center;
-    background-color: #c3c3c3;
-    border-bottom 1px solid #909090;
-    size: 14pt;
 }
 
 #songId {
@@ -276,68 +357,8 @@ h1 {
     height: 0;
 }
 
-.line1 {
-    background-color: #c3c3c3;
-}
-
-.line2 {
-    background-color: #dadada;
-}
-
-.line1:hover {
-    background-color: #909090;
-    cursor: pointer;
-}
-
-.line2:hover {
-    background-color: #909090;
-    cursor: pointer;
-}
-
-.collTitle {
-    width: 27%;
-    border-right: 1px solid #808080;
-}
-
-.collArtist {
-    width: 17%;
-    border-right: 1px solid #808080;
-}
-
-.collAlbum {
-    width: 30%;
-    border-right: 1px solid #808080;
-}
-
-.collGenre {
-    width: 15%; 
-    border-right: 1px solid #808080;
-}
-
-.collNr {
-    width: 3%;
-    border-right: 1px solid #808080;
-}
-
-.collRm {
-    border-left: 1px solid #808080;
-}
-
-.collUp {
-    border-left: 1px solid #808080;
-}
-
-.collDown {
-    border-left: 1px solid #808080;
-}
-
-.collDownload {
-    width: 8%;
-    
-}
-
-/**
- * Playlist Stuff
+/**********************
+ * Playlist related stuff
  */
 #playlist {
     clear: both;
@@ -347,9 +368,10 @@ h1 {
 }
 
 #playlist th {
-    border-top: 1px solid #929292;
-    border-bottom: 1px solid #929292;
-    background-color: #9a9a9a;
+    color: #000;
+    text-align: left;
+    font-family: sans-serif;
+    background-color: #ABC8E2;
 }
 
 #playlist td {
@@ -357,47 +379,7 @@ h1 {
 }
 
 #playlists {
-    border-top: 1px solid #929292;
     display: none;
-}
-
-.playlistHeader {
-    background-color: #25292B !important;
-    width: 100%;
-    float: left;
-}
-
-.playlistHeader ul{
-    margin: 0;
-    padding: 0;
-    vertical-align: middle;
-    list-style: none;
-}
-
-
-.playlistHeader ul li {
-    display: inline;
-    font-size: 10pt;
-    float: left;
-    border-right: 1px solid #afafaf;
-    background-color: #25292B;
-}
-
-
-.playlistHeader ul li a {
-    color: #fafafa;
-    text-decoration: none;
-    padding: 0 6px;
-    float: left;
-    height: 30px;
-    line-height: 30px;
-    padding-left: 10px;
-    padding-right: 10px;    
-}
-
-.playlistHeader ul li a:hover {
-    color: #fafafa;
-    background-color: #59798c;
 }
 
 .rmFromPlaylist {
@@ -427,26 +409,31 @@ h1 {
     background-repeat: no-repeat;
     background-position: center center;
 }
-
+/**********************
+ * Settings
+ */
 .settingsform {
-    width: 900px;
+    width: 1000px;
     margin: auto;
     padding: 0;
 }
 
 .settingsform table  {
     background-color: #fafafa;
-    border: 1px solid #25292B;
+    border: 1px solid #afafaf;
+    width: 1000px;
 }
 
 .settingsform th {
-    text-align: right;
-    width: 300px;
+    text-align: left;
+    width: 200px;
+    padding: 0;
+    margin: 0;
 }
 
 .settingsform td {
     padding-left: 10px;
-    width: 600px;
+    width: 800px;
 }
 
 .settingsinput {
@@ -455,10 +442,9 @@ h1 {
 
 .settingsmsg {
     background-color: #fafafa;
-    border: 1px solid #25292B;
+    border: 1px solid #afafaf;
     padding: 10px;
-    width: 880px;
+    width: 980px;
     margin: auto;
     margin-bottom: 20px;
-    
 }

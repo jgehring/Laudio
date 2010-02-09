@@ -14,22 +14,17 @@
     <div id="site">
         <div id="nav">
             <ul>
-                <li><a href="/laudio/">Collection</a></li>
+                <li class="mostleft"><a href="/laudio/">Collection</a></li>
                 <li><a href="/laudio/playlist">Playlist</a></li>
-                <!--
-                <li><a href="/laudio/search">Search</a></li>
-                <li><a href="/laudio/friends">Friends</a></li>
-                -->
                 <li><a href="/laudio/settings">Settings</a></li>
                 <li><a href="/laudio/about">About</a></li>
-                {% block controls %}{% endblock %}              
+                {% block controls %}{% endblock %}
             </ul>
         </div>
+        <div id="audio">{% block audio %}{% endblock %}</div>
         <div id="content">
             {% block content %}{% endblock %}
         </div>
-        
-        <div id="footer"></div>
     </div>
     </body>
     {% block jquery %}{% endblock %}

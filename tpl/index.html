@@ -3,17 +3,25 @@
 {% block title %}LAudio - Local Music Collection{% endblock %}
 
 {% block controls %}
-<li onclick="playSong()" class="controls"><a id="playButton" href="#">Play</a>
+<li onclick="nextSong()" class="controls mostright"><a href="#"><img
+src="/laudio/media/style/img/next.png " width="24" height="24"
+title="next" alt="next"/></a></li>
+<li onclick="playSong()" class="controls"><a id="playButton"
+href="#"><img src="/laudio/media/style/img/play.png " width="24" height="24"
+title="play" alt="play"/></a>
 </li>
-<li onclick="nextSong()" class="controls"><a href="#">Next</a></li>
-<li onclick="prevSong()" class="controls"><a href="#">Previous</a></li>
+<li onclick="prevSong()" class="controls"><a
+href="#"><img src="/laudio/media/style/img/previous.png " width="24" height="24"
+title="previous" alt="previous"/></a></li>
+{% endblock %}
+
+{% block audio %}
+<audio id="player" src="/laudio/media/audio/{{firstsong|escape}}"
+              controls="controls"></audio>
+<span id="songId">row1</span>
 {% endblock %}
 
 {% block content %}
-       <span id="songId">row1</span>
-       <audio id="player" src="/laudio/media/audio/{{firstsong|escape}}"
-              controls="controls"></audio>
-
        <div class="collectionHeader">
             <ul>
                 <li><a href="#" id="toggleCollection">Collection: </a></li>
@@ -109,13 +117,14 @@
          */
         $('.letters').click(function() {
             $col.fadeOut('fast');
-            $loading.fadeIn("slow"); 
+            $loading.fadeIn("fast");
             var content_show = $(this).html();
             $('#songId').html("row0");
             $col.load("/laudio/artist/" + content_show + "/",
                       function () { 
-                        $loading.fadeOut('fast'); 
-                        $col.fadeIn('slow');
+                        $loading.fadeOut('fast', function(){
+                            $col.fadeIn('fast');
+                        });
                       });
         });
 
@@ -124,11 +133,12 @@
          */
         $('#wholeColl').click(function() {
             $col.fadeOut('fast');
-            $loading.fadeIn("slow");
+            $loading.fadeIn("fast");
             $col.load("/laudio/collection/",
                       function () {
-                        $loading.fadeOut('fast');
-                        $col.fadeIn('slow');
+                        $loading.fadeOut('fast', function(){
+                            $col.fadeIn('fast');
+                        });
                       });
         });
 
@@ -170,8 +180,9 @@
                         "&amp;genre=" + genre + "&amp;album=" + album;
             $col.load(url + query,
                       function () {
-                        $loading.fadeOut('fast');
-                        $col.fadeIn('slow');
+                        $loading.fadeOut('fast', function(){
+                            $col.fadeIn('slow');
+                        });
                       });
         });
 

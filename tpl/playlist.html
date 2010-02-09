@@ -3,19 +3,27 @@
 {% block title %}LAudio - Local Music Collection Playlist Management{% endblock %}
 
 {% block controls %}
-<li onclick="playSong()" class="controls"><a id="playButton" href="#">Play</a>
+<li onclick="nextSong()" class="controls mostright"><a href="#"><img
+src="/laudio/media/style/img/next.png " width="24" height="24"
+title="next" alt="next"/></a></li>
+<li onclick="playSong()" class="controls"><a id="playButton"
+href="#"><img src="/laudio/media/style/img/play.png " width="24" height="24"
+title="play" alt="play"/></a>
 </li>
-<li onclick="nextSong()" class="controls"><a href="#">Next</a></li>
-<li onclick="prevSong()" class="controls"><a href="#">Previous</a></li>
+<li onclick="prevSong()" class="controls"><a
+href="#"><img src="/laudio/media/style/img/previous.png " width="24" height="24"
+title="previous" alt="previous"/></a></li>
+{% endblock %}
+
+{% block audio %}
+<audio id="player" src="/laudio/media/audio/{{firstsong|escape}}"
+              controls="controls"></audio>
+<span id="songId">row1</span>
+<span id="playlistIdCounter">1</span>
 {% endblock %}
 
 {% block content %}
-        <span id="songId">row1</span>
-        <span id="playlistIdCounter">1</span>
-        <audio id="player" src="/laudio/media/audio/{{firstsong}}"
-               controls="controls"></audio>
-
-        <div class="playlistHeader">
+        <div class="collectionHeader">
             <ul>
                 <li><a href="#" id="togglePlaylist">Playlist: </a></li>
                 <li><a href="#" onclick="playPlaylist()">Play</a></li>
@@ -27,7 +35,7 @@
             </ul>
         </div>
 
-        <div class="playlistHeader" id="playlists"></div>
+        <div class="collectionHeader" id="playlists"></div>
 
         <table id="playlist" cellspacing="0">
             <tr id="row0">
@@ -43,7 +51,7 @@
             </tr>
         </table>
 
-       <div class="collectionHeader">
+       <div class="collectionHeader" style="border-top: 1px solid #afafaf;">
             <ul>
                 <li><a href="#" id="toggleCollection">Collection: </a></li>
                 <li><a id="showArtists" href="#">Artists</a></li>
