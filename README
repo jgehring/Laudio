@@ -2,6 +2,7 @@ LAUDIO is a webbased audio player written in python and javascript.
 Dont expect it to be perfect, im not so sure about the file rights and the chmod commands,
 help would be appreciated.
 
+
 IT ONLY WORKS WITH OGG VORBIS FILES!
 recommended tool to convert your music is soundconverter
 

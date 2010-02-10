@@ -3,21 +3,22 @@
 Asynchronous result types.
 
 """
-from celery.backends import default_backend
-from celery.datastructures import PositionQueue
-from celery.exceptions import TimeoutError
-from itertools import imap
 import time
+from itertools import imap
+
+from celery import states
+from celery.utils import any, all
+from celery.backends import default_backend
+from celery.messaging import with_connection
+from celery.exceptions import TimeoutError
+from celery.datastructures import PositionQueue
 
 
 class BaseAsyncResult(object):
-    """Base class for pending result, supports custom
-    task meta :attr:`backend`
+    """Base class for pending result, supports custom task result backend.
 
     :param task_id: see :attr:`task_id`.
-
     :param backend: see :attr:`backend`.
-
 
     .. attribute:: task_id
 
@@ -35,22 +36,24 @@ class BaseAsyncResult(object):
         self.task_id = task_id
         self.backend = backend
 
-    def is_done(self):
-        """Returns ``True`` if the task executed successfully.
+    @with_connection
+    def revoke(self, connection=None, connect_timeout=None):
+        """Send revoke signal to all workers.
 
-        :rtype: bool
+        The workers will ignore the task if received.
 
         """
-        return self.backend.is_done(self.task_id)
+        from celery.task import control
+        control.revoke(self.task_id)
 
-    def get(self):
+    def get(self, timeout=None):
         """Alias to :meth:`wait`."""
-        return self.wait()
+        return self.wait(timeout=timeout)
 
     def wait(self, timeout=None):
         """Wait for task, and return the result when it arrives.
 
-        :keyword timeout: How long to wait in seconds, before the
+        :keyword timeout: How long to wait, in seconds, before the
             operation times out.
 
         :raises celery.exceptions.TimeoutError: if ``timeout`` is not ``None``
@@ -71,18 +74,30 @@ class BaseAsyncResult(object):
 
         """
         status = self.backend.get_status(self.task_id)
-        return status not in ["PENDING", "RETRY"]
+        return status not in self.backend.UNREADY_STATES
 
     def successful(self):
-        """Alias to :meth:`is_done`."""
-        return self.is_done()
+        """Returns ``True`` if the task executed successfully.
+
+        :rtype: bool
+
+        """
+        return self.backend.is_successful(self.task_id)
 
     def __str__(self):
         """``str(self)`` -> ``self.task_id``"""
         return self.task_id
 
+    def __hash__(self):
+        return hash(self.task_id)
+
     def __repr__(self):
         return "<AsyncResult: %s>" % self.task_id
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.task_id == other.task_id
+        return self == other
 
     @property
     def result(self):
@@ -91,9 +106,7 @@ class BaseAsyncResult(object):
         If the task raised an exception, this will be the exception instance.
 
         """
-        if self.status == "DONE" or self.status == "FAILURE":
-            return self.backend.get_result(self.task_id)
-        return None
+        return self.backend.get_result(self.task_id)
 
     @property
     def traceback(self):
@@ -120,7 +133,7 @@ class BaseAsyncResult(object):
                 than its limit. The :attr:`result` attribute contains the
                 exception raised.
 
-            *DONE*
+            *SUCCESS*
 
                 The task executed successfully. The :attr:`result` attribute
                 contains the resulting value.
@@ -232,6 +245,11 @@ class TaskSetResult(object):
         return sum(imap(int, (subtask.successful()
                                 for subtask in self.itersubtasks())))
 
+    @with_connection
+    def revoke(self, connection=None, connect_timeout=None):
+        for subtask in self.subtasks:
+            subtask.revoke(connection=connection)
+
     def __iter__(self):
         """``iter(res)`` -> ``res.iterate()``."""
         return self.iterate()
@@ -243,14 +261,14 @@ class TaskSetResult(object):
         :raises: The exception if any of the tasks raised an exception.
 
         """
-        results = dict((subtask.task_id, AsyncResult(subtask.task_id))
+        results = dict((subtask.task_id, subtask.__class__(subtask.task_id))
                             for subtask in self.subtasks)
         while results:
             for task_id, pending_result in results.items():
-                if pending_result.status == "DONE":
-                    del(results[task_id])
+                if pending_result.status == states.SUCCESS:
+                    results.pop(task_id, None)
                     yield pending_result.result
-                elif pending_result.status == "FAILURE":
+                elif pending_result.status == states.FAILURE:
                     raise pending_result.result
 
     def join(self, timeout=None):
@@ -280,9 +298,9 @@ class TaskSetResult(object):
 
         while True:
             for position, pending_result in enumerate(self.subtasks):
-                if pending_result.status == "DONE":
+                if pending_result.status == states.SUCCESS:
                     results[position] = pending_result.result
-                elif pending_result.status == "FAILURE":
+                elif pending_result.status == states.FAILURE:
                     raise pending_result.result
             if results.full():
                 # Make list copy, so the returned type is not a position
@@ -292,6 +310,22 @@ class TaskSetResult(object):
                 if timeout is not None and \
                         time.time() >= time_start + timeout:
                     on_timeout()
+
+    def save(self, backend=default_backend):
+        """Save taskset result for later retrieval using :meth:`restore`.
+
+        Example:
+
+            >>> result.save()
+            >>> result = TaskSetResult.restore(task_id)
+
+        """
+        backend.save_taskset(self.taskset_id, self)
+
+    @classmethod
+    def restore(self, taskset_id, backend=default_backend):
+        """Restore previously saved taskset result."""
+        return backend.restore_taskset(taskset_id)
 
     @property
     def total(self):
@@ -309,20 +343,23 @@ class EagerResult(BaseAsyncResult):
         self._status = status
         self._traceback = traceback
 
-    def is_done(self):
+    def successful(self):
         """Returns ``True`` if the task executed without failure."""
-        return self.status == "DONE"
+        return self.status == states.SUCCESS
 
-    def is_ready(self):
+    def ready(self):
         """Returns ``True`` if the task has been executed."""
         return True
 
     def wait(self, timeout=None):
         """Wait until the task has been executed and return its result."""
-        if self.status == "DONE":
+        if self.status == states.SUCCESS:
             return self.result
-        elif self.status == "FAILURE":
-            raise self.result
+        elif self.status == states.FAILURE:
+            raise self.result.exception
+
+    def revoke(self):
+        pass
 
     @property
     def result(self):

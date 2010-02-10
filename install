@@ -1,0 +1,106 @@
+#!/bin/bash
+#######################################################
+# Laudio - A webbased musicplayer installscript
+#
+# Copyright (C) 2010 Bernhard Posselt, bernhard.posselt@gmx.at
+#
+# Laudio is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# Laudio is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#######################################################
+INSTALL_DIR=/opt/laudio
+UBUNTU_DEPS="python-lxml python-django python-mutagen apache2 sqlite3 libapache2-mod-wsgi python-pysqlite2 rabbitmq-server"
+ARCH_DEPS="extra/django extra/python-lxml extra/mutagen extra/apache extra/python-pysqlite core/sqlite3 extra/mod_wsgi"
+GENTOO_DEPS="dev-python/django dev-python/lxml media-libs/mutagen dev-python/pysqlite dev-db/sqlite www-apache/mod_wsgi www-servers/apache net-misc/rabbitmq-server"
+WORK_PATH=`pwd`
+
+# check if we're in the extracted folder
+if [[ -e laudio_apache.conf ]]; then
+
+echo -e "\n###################### IMPORTANT NOTICE ########################"
+    echo "This script will install LAudio in /opt/laudio"
+    echo "Because of Django we need to install a webserver (Apache) which will listen at Port 80"
+    echo "Any previous installations will be erased!"
+    echo "Would you like to continue? [y/n]:"
+    read confirm
+
+    if [[ "$confirm" == "y" ]]; then
+        # get system and dependencies
+        echo "Enter the number of your System"
+        echo "1) Ubuntu Linux"
+        echo "2) Arch Linux"
+        echo "3) Gentoo Linux"
+        echo "4) None of them (abort)"
+        read distro
+
+        case $distro in
+            1)
+                sudo apt-get install $UBUNTU_DEPS
+                sudo mv $WORK_PATH"/laudio_apache.conf" /etc/apache2/conf.d/
+                sudo chown root:root /etc/apache2/conf.d/laudio_apache.conf
+                sudo chmod 0755 /etc/apache2/conf.d/laudio_apache.conf;;
+            2)
+                sudo pacman -S $ARCH_DEPS
+                sudo mv $WORK_PATH"/laudio_apache.conf" /etc/httpd/conf/extra/
+                sudo chown root:root /etc/httpd/conf/extra/laudio_apache.conf
+                sudo chmod 0755 /etc/httpd/conf/extra/laudio_apache.conf
+                # check if file is already included in httpd.conf
+                conf=`grep -e "Include conf/extra/laudio_apache.conf" /etc/httpd/conf/httpd.conf`
+                if [[ $e ]]; then
+                    sudo echo "Include conf/extra/laudio_apache.conf" >> /etc/httpd/conf/httpd.conf
+                fi
+                echo -e "\n###################### IMPORTANT NOTICE ########################"
+                echo "You have to manually install aur/rabbitmq from AUR!"
+                echo "If you want to run LAudio at startup you have to add httpd to DAEMONS in your /etc/rc.conf";;
+            3)
+                sudo emerge -av $GENTOO_DEPS
+                sudo mv $WORK_PATH"/laudio_apache.conf" /etc/apache2/vhosts.d/
+                sudo chown root:root /etc/apache2/vhosts.d/laudio_apache.conf
+                sudo chmod 0755 /etc/apache2/vhosts.d/laudio_apache.conf
+                sudo rc-update add apache2 default;;
+            *)
+                exit 0;;
+        esac
+        # test if install dir already exists and remove it
+        if [[ -e $INSTALL_DIR ]]; then
+            sudo rm -R $INSTALL_DIR
+        fi
+        sudo mkdir $INSTALL_DIR
+        sudo mv $WORK_PATH"/*" $INSTALL_DIR"/"
+        # check for apache user
+        if [[ `grep -e "www-data" /etc/passwd` ]]; then
+            sudo chown -R www-data:www-data $INSTALL_DIR
+        else
+            sudo chown -R http:http $INSTALL_DIR
+        fi
+        sudo chmod -R 0755 $INSTALL_DIR
+
+        # restart apache
+        if [[ -e /etc/init.apache2 ]]; then
+            sudo /etc/init.d/apache2 restart
+        else
+            sudo /etc/rc.d/httpd restart
+        fi
+        # remove setup script
+        sudo rm $INSTALL_DIR"/install"
+        echo "LAudio was successfully installed!"
+        echo "You can reach it at http://localhost/laudio"
+    else
+        echo "Setup aborted!"
+    fi
+else
+    echo "Install file is in the wrong folder!"
+    echo "The install file must be placed inside the extracted folder!"
+fi
+
+exit 0

@@ -4,44 +4,72 @@ import sys
 import time
 import logging
 import traceback
-from celery.conf import LOG_FORMAT, DAEMON_LOG_LEVEL
-from celery.patch import monkeypatch
+
+from celery import conf
+from celery.utils import noop
+from celery.utils.patch import ensure_process_aware_logger
+
+_hijacked = False
+_monkeypatched = False
+
+
+def _hijack_multiprocessing_logger():
+    from multiprocessing import util as mputil
+    global _hijacked
+
+    if _hijacked:
+        return mputil.get_logger()
+
+    ensure_process_aware_logger()
+
+    logging.Logger.manager.loggerDict.clear()
+
+    try:
+        if mputil._logger is not None:
+            mputil.logger = None
+    except AttributeError:
+        pass
+
+    _hijacked = True
+    return mputil.get_logger()
+
+
+def _detect_handler(logfile=None):
+    """Create log handler with either a filename, an open stream
+    or ``None`` (stderr)."""
+    if not logfile or hasattr(logfile, "write"):
+        return logging.StreamHandler(logfile)
+    return logging.FileHandler(logfile)
 
 
 def get_default_logger(loglevel=None):
-    import multiprocessing
-    logger = multiprocessing.get_logger()
-    loglevel is not None and logger.setLevel(loglevel)
+    """Get default logger instance.
+
+    :keyword loglevel: Initial log level.
+
+    """
+    logger = _hijack_multiprocessing_logger()
+    if loglevel is not None:
+        logger.setLevel(loglevel)
     return logger
 
 
-_monkeypatched = [False]
-def setup_logger(loglevel=DAEMON_LOG_LEVEL, logfile=None, format=LOG_FORMAT,
-        **kwargs):
+def setup_logger(loglevel=conf.CELERYD_LOG_LEVEL, logfile=None,
+        format=conf.CELERYD_LOG_FORMAT, **kwargs):
     """Setup the ``multiprocessing`` logger. If ``logfile`` is not specified,
     ``stderr`` is used.
 
     Returns logger object.
-    """
-    if not _monkeypatched[0]:
-        monkeypatch()
-        _monkeypatched[0] = True
 
+    """
     logger = get_default_logger(loglevel=loglevel)
-    if logger.handlers:
-        # Logger already configured
+    if logger.handlers: # Logger already configured
         return logger
-    if logfile:
-        if hasattr(logfile, "write"):
-            log_file_handler = logging.StreamHandler(logfile)
-        else:
-            log_file_handler = logging.FileHandler(logfile)
-        formatter = logging.Formatter(format)
-        log_file_handler.setFormatter(formatter)
-        logger.addHandler(log_file_handler)
-    else:
-        import multiprocessing
-        multiprocessing.log_to_stderr()
+
+    handler = _detect_handler(logfile)
+    formatter = logging.Formatter(format)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
     return logger
 
 
@@ -49,20 +77,20 @@ def emergency_error(logfile, message):
     """Emergency error logging, for when there's no standard file
     descriptors open because the process has been daemonized or for
     some other reason."""
-    logfh_needs_to_close = False
-    if not logfile:
-        logfile = sys.__stderr__
+    closefh = noop
+    logfile = logfile or sys.__stderr__
     if hasattr(logfile, "write"):
         logfh = logfile
     else:
         logfh = open(logfile, "a")
-        logfh_needs_to_close = True
-    logfh.write("[%(asctime)s: FATAL/%(pid)d]: %(message)s\n" % {
-                    "asctime": time.asctime(),
-                    "pid": os.getpid(),
-                    "message": message})
-    if logfh_needs_to_close:
-        logfh.close()
+        closefh = logfh.close
+    try:
+        logfh.write("[%(asctime)s: CRITICAL/%(pid)d]: %(message)s\n" % {
+                        "asctime": time.asctime(),
+                        "pid": os.getpid(),
+                        "message": message})
+    finally:
+        closefh()
 
 
 def redirect_stdouts_to_logger(logger, loglevel=None):
@@ -74,8 +102,7 @@ def redirect_stdouts_to_logger(logger, loglevel=None):
 
     """
     proxy = LoggingProxy(logger, loglevel)
-    sys.stdout = proxy
-    sys.stderr = proxy
+    sys.stdout = sys.stderr = proxy
     return proxy
 
 
@@ -89,7 +116,7 @@ class LoggingProxy(object):
     mode = "w"
     name = None
     closed = False
-    loglevel = logging.INFO
+    loglevel = logging.ERROR
 
     def __init__(self, logger, loglevel=None):
         self.logger = logger
@@ -101,7 +128,7 @@ class LoggingProxy(object):
         ``sys.__stderr__`` instead of ``sys.stderr`` to circumvent
         infinite loops."""
 
-        def wrap_handler(handler):
+        def wrap_handler(handler): # pragma: no cover
 
             class WithSafeHandleError(logging.Handler):
 
@@ -152,3 +179,19 @@ class LoggingProxy(object):
 
     def fileno(self):
         return None
+
+
+class SilenceRepeated(object):
+    """Only log action every n iterations."""
+
+    def __init__(self, action, max_iterations=10):
+        self.action = action
+        self.max_iterations = max_iterations
+        self._iterations = 0
+
+    def __call__(self, *msgs):
+        if self._iterations >= self.max_iterations:
+            map(self.action, msgs)
+            self._iterations = 0
+        else:
+            self._iterations += 1

@@ -24,8 +24,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 import os
 import sys
 
-sys.path.append('/opt')
-sys.path.append('/usr/local/django')
+# append laudio's parent directory to the sys path
+sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir, os.pardir))
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'laudio.settings'
 

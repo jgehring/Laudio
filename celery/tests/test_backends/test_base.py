@@ -1,10 +1,13 @@
 import unittest
 import types
-from celery.backends.base import BaseBackend, KeyValueStoreBackend
-from celery.serialization import find_nearest_pickleable_exception as fnpe
-from celery.serialization import UnpickleableExceptionWrapper
-from celery.serialization import get_pickleable_exception as gpe
+
 from django.db.models.base import subclass_exception
+from billiard.serialization import find_nearest_pickleable_exception as fnpe
+from billiard.serialization import UnpickleableExceptionWrapper
+from billiard.serialization import get_pickleable_exception as gpe
+
+from celery import states
+from celery.backends.base import BaseBackend, KeyValueStoreBackend
 
 
 class wrapobject(object):
@@ -24,15 +27,27 @@ class TestBaseBackendInterface(unittest.TestCase):
 
     def test_get_status(self):
         self.assertRaises(NotImplementedError,
-                b.is_done, "SOMExx-N0Nex1stant-IDxx-")
+                b.is_successful, "SOMExx-N0Nex1stant-IDxx-")
 
     def test_store_result(self):
         self.assertRaises(NotImplementedError,
-                b.store_result, "SOMExx-N0nex1stant-IDxx-", 42, "DONE")
+                b.store_result, "SOMExx-N0nex1stant-IDxx-", 42, states.SUCCESS)
 
     def test_get_result(self):
         self.assertRaises(NotImplementedError,
                 b.get_result, "SOMExx-N0nex1stant-IDxx-")
+
+    def test_restore_taskset(self):
+        self.assertRaises(NotImplementedError,
+                b.restore_taskset, "SOMExx-N0nex1stant-IDxx-")
+
+    def test_save_taskset(self):
+        self.assertRaises(NotImplementedError,
+                b.save_taskset, "SOMExx-N0nex1stant-IDxx-", "blergh")
+
+    def test_get_traceback(self):
+        self.assertRaises(NotImplementedError,
+                b.get_traceback, "SOMExx-N0nex1stant-IDxx-")
 
 
 class TestPickleException(unittest.TestCase):

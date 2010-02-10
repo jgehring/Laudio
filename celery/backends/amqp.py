@@ -1,12 +1,13 @@
 """celery.backends.amqp"""
-from carrot.connection import DjangoBrokerConnection
 from carrot.messaging import Consumer, Publisher
+
+from celery import conf
+from celery import states
+from celery.messaging import establish_connection
 from celery.backends.base import BaseBackend
 
-RESULTSTORE_EXCHANGE = "celeryresults"
 
-
-class Backend(BaseBackend):
+class AMQPBackend(BaseBackend):
     """AMQP backend. Publish results by sending messages to the broker
     using the task id as routing key.
 
@@ -16,30 +17,37 @@ class Backend(BaseBackend):
 
     """
 
+    exchange = conf.RESULT_EXCHANGE
     capabilities = ["ResultStore"]
+    _connection = None
 
     def __init__(self, *args, **kwargs):
-        super(Backend, self).__init__(*args, **kwargs)
-        self.connection = DjangoBrokerConnection()
+        super(AMQPBackend, self).__init__(*args, **kwargs)
         self._cache = {}
+
+    @property
+    def connection(self):
+        if not self._connection:
+            self._connection = establish_connection()
+        return self._connection
 
     def _declare_queue(self, task_id, connection):
         routing_key = task_id.replace("-", "")
         backend = connection.create_backend()
         backend.queue_declare(queue=routing_key, durable=True,
                                 exclusive=False, auto_delete=True)
-        backend.exchange_declare(exchange=RESULTSTORE_EXCHANGE,
+        backend.exchange_declare(exchange=self.exchange,
                                  type="direct",
                                  durable=True,
                                  auto_delete=False)
-        backend.queue_bind(queue=routing_key, exchange=RESULTSTORE_EXCHANGE,
+        backend.queue_bind(queue=routing_key, exchange=self.exchange,
                            routing_key=routing_key)
         backend.close()
 
     def _publisher_for_task_id(self, task_id, connection):
         routing_key = task_id.replace("-", "")
         self._declare_queue(task_id, connection)
-        p = Publisher(connection, exchange=RESULTSTORE_EXCHANGE,
+        p = Publisher(connection, exchange=self.exchange,
                       exchange_type="direct",
                       routing_key=routing_key)
         return p
@@ -48,7 +56,7 @@ class Backend(BaseBackend):
         routing_key = task_id.replace("-", "")
         self._declare_queue(task_id, connection)
         return Consumer(connection, queue=routing_key,
-                        exchange=RESULTSTORE_EXCHANGE,
+                        exchange=self.exchange,
                         exchange_type="direct",
                         no_ack=False, auto_ack=False,
                         auto_delete=True,
@@ -70,9 +78,9 @@ class Backend(BaseBackend):
 
         return result
 
-    def is_done(self, task_id):
+    def is_successful(self, task_id):
         """Returns ``True`` if task with ``task_id`` has been executed."""
-        return self.get_status(task_id) == "DONE"
+        return self.get_status(task_id) == states.SUCCESS
 
     def get_status(self, task_id):
         """Get the status of a task."""
@@ -111,7 +119,7 @@ class Backend(BaseBackend):
     def get_result(self, task_id):
         """Get the result for a task."""
         result = self._get_task_meta_for(task_id)
-        if result["status"] == "FAILURE":
+        if result["status"] in states.EXCEPTION_STATES:
             return self.exception_to_python(result["result"])
         else:
             return result["result"]

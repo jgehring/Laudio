@@ -1,9 +1,10 @@
 import unittest
-from celery.backends.database import Backend
-from celery.utils import gen_unique_id
-from celery.task import PeriodicTask
-from celery import registry
 from datetime import timedelta
+
+from celery import states
+from celery.task import PeriodicTask
+from celery.utils import gen_unique_id
+from celery.backends.database import DatabaseBackend
 
 
 class SomeClass(object):
@@ -18,26 +19,21 @@ class MyPeriodicTask(PeriodicTask):
 
     def run(self, **kwargs):
         return 42
-registry.tasks.register(MyPeriodicTask)
 
 
 class TestDatabaseBackend(unittest.TestCase):
 
-    def test_run_periodic_tasks(self):
-        b = Backend()
-        b.run_periodic_tasks()
-
     def test_backend(self):
-        b = Backend()
+        b = DatabaseBackend()
         tid = gen_unique_id()
 
-        self.assertFalse(b.is_done(tid))
-        self.assertEquals(b.get_status(tid), "PENDING")
+        self.assertFalse(b.is_successful(tid))
+        self.assertEquals(b.get_status(tid), states.PENDING)
         self.assertTrue(b.get_result(tid) is None)
 
         b.mark_as_done(tid, 42)
-        self.assertTrue(b.is_done(tid))
-        self.assertEquals(b.get_status(tid), "DONE")
+        self.assertTrue(b.is_successful(tid))
+        self.assertEquals(b.get_status(tid), states.SUCCESS)
         self.assertEquals(b.get_result(tid), 42)
         self.assertTrue(b._cache.get(tid))
         self.assertTrue(b.get_result(tid), 42)
@@ -56,6 +52,20 @@ class TestDatabaseBackend(unittest.TestCase):
         except KeyError, exception:
             pass
         b.mark_as_failure(tid3, exception)
-        self.assertFalse(b.is_done(tid3))
-        self.assertEquals(b.get_status(tid3), "FAILURE")
+        self.assertFalse(b.is_successful(tid3))
+        self.assertEquals(b.get_status(tid3), states.FAILURE)
         self.assertTrue(isinstance(b.get_result(tid3), KeyError))
+
+    def test_taskset_store(self):
+        b = DatabaseBackend()
+        tid = gen_unique_id()
+
+        self.assertTrue(b.restore_taskset(tid) is None)
+
+        result = {"foo": "baz", "bar": SomeClass(12345)}
+        b.save_taskset(tid, result)
+        rindb = b.restore_taskset(tid)
+        self.assertTrue(rindb is not None)
+        self.assertEquals(rindb.get("foo"), "baz")
+        self.assertEquals(rindb.get("bar").data, 12345)
+        self.assertTrue(b._cache.get(tid))
