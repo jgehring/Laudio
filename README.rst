@@ -115,7 +115,7 @@ boot process::
 
 
 Arch Linux
-======
+==========
 
 Type the following commands in the terminal residing in the downloaded Folder.
 
