@@ -51,7 +51,7 @@ This is different from Distribution to Distribution so i will outline it for the
 main Distributions ``Ubuntu``, ``Gentoo`` and ``Arch Linux``:
 
 Ubuntu
-======
+------
 
 Type the following commands in the terminal residing in the downloaded Folder.
 
@@ -80,7 +80,7 @@ Now the only thing left is to restart the Apache webserver::
 Laudio should now be accessible under http://localhost/laudio
 
 Gentoo
-======
+------
 
 Type the following commands in the terminal residing in the downloaded Folder.
 
@@ -115,7 +115,7 @@ boot process::
 
 
 Arch Linux
-==========
+----------
 
 Type the following commands in the terminal residing in the downloaded Folder.
 
