@@ -29,24 +29,22 @@ Obtaining Source: Unstable
 ==========================
 
 To get the unstable trunk fire up your console and change to the path where you
-want the source to be downloaded. Then type in::
+want the source to be downloaded. Then type in:
+
 $ git clone git://github.com/Raydiation/Laudio.git
 $ cd Laudio*
 
-to get into the directory.
-
-Proceed with ``Installation``
+to get into the directory. Proceed with ``Installation``
 
 Obtaining Source: Stable
 ========================
 
 Download the source as tar.gz from the `Download Page`_ and extract it to your
-personal directory. Fire up a terminal and type in::
+personal directory. Fire up a terminal and type in:
+
 $ cd Laudio*
 
-to get into the directory.
-
-Proceed with ``Installation``
+to get into the directory. Proceed with ``Installation``
 
 Installation
 ============
