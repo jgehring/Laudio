@@ -25,7 +25,8 @@ import os
 import sys
 
 # append laudio's parent directory to the sys path
-sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir, os.pardir))
+relPath = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir, os.pardir)
+sys.path.append(os.path.abspath(relPath))
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'laudio.settings'
 
