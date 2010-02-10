@@ -30,8 +30,8 @@ Obtaining Source: Unstable
 
 To get the unstable trunk fire up your console and change to the path where you
 want the source to be downloaded. Then type in::
-    $ git clone git://github.com/Raydiation/Laudio.git
-    $ cd Laudio*
+$ git clone git://github.com/Raydiation/Laudio.git
+$ cd Laudio*
 
 to get into the directory.
 
@@ -42,7 +42,8 @@ Obtaining Source: Stable
 
 Download the source as tar.gz from the `Download Page`_ and extract it to your
 personal directory. Fire up a terminal and type in::
-    $ cd Laudio*
+$ cd Laudio*
+
 to get into the directory.
 
 Proceed with ``Installation``
@@ -58,9 +59,9 @@ Ubuntu
 
 Type the following commands in the terminal residing in the downloaded Folder::
 
-    $ sudo apt-get install python-lxml python-django python-mutagen apache2 sqlite3 libapache2-mod-wsgi python-pysqlite2 rabbitmq-server
-    $ sudo move laudio_apache.conf /etc/apache2/conf.d/
-    $ sudo chown root:root /etc/apache2/conf.d/laudio_apache.conf
+$ sudo apt-get install python-lxml python-django python-mutagen apache2 sqlite3 libapache2-mod-wsgi python-pysqlite2 rabbitmq-server
+$ sudo move laudio_apache.conf /etc/apache2/conf.d/
+$ sudo chown root:root /etc/apache2/conf.d/laudio_apache.conf
 
 
 
