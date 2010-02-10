@@ -209,7 +209,7 @@ def laudio_settings(request):
     ip = request.META.get('REMOTE_ADDR')
     if ip != "127.0.0.1":
         return render_to_response('403.html', {})
-    
+
     # get the symlink of the music collection if it exists
     collSymlink = os.path.join( os.path.dirname(__file__),
                                             'static/audio').replace('\\', '/' )
@@ -220,25 +220,44 @@ def laudio_settings(request):
 
     # if collection is being passed via get set the symlink
     try:
-        # get the collection get variable
         collPath = request.GET["collection"]
-        # check for read rights
-        if os.access(collPath, os.R_OK):
-            # if the given path exists add a symlink
-            if os.path.exists(collPath):
-                try:
-                    os.unlink(collSymlink)
-                except OSError:
-                    pass
-                os.symlink( collPath, collSymlink )
-                collection = collPath
-                msg.append( "Musiclibrarypath set to <b>%s</b>!" % (collPath) )
-            else:
-                msg.append( "Path %s does not exist!" % (collPath) )
-        else:
-            msg.append( "Path %s is not readable!" % (collPath) )
+        # split the path and check the rights for each folder
+        checkPath = collPath.split("/")
+        chPath = ""
+        for path in checkPath:
+            # if path is empty; concerns the first and last slash
+            if not path:
+                continue
+            path = "/" + path
+            chPath += path
+            # check for path existence and access rights
+            if not os.access(chPath, os.F_OK):
+                raise OSError("Path %s does not exist!" % chPath)
+            if not os.access(chPath, os.X_OK):
+                raise OSError("No access rights for %s!<br /> Use: <b>sudo chmod +x %s</b>" % (chPath, chPath))
+        # now check if we got read rights on the music folder, we could do this
+        # recursive to check every folder but that would waste too mucht time
+        if not os.access(collPath, os.R_OK):
+            raise OSError("Music collection is not readable!<br /> Use: <b>sudo chmod \
+                           -R 0755 %s</b>" % (collPath))
+        # check if we can set a symlink and access the db
+        staticPath = os.path.join( os.path.dirname(__file__),
+                                            'static').replace('\\', '/' )
+        if not os.access(staticPath, os.W_OK):
+            raise OSError("No write Access in static directory!<br /> \
+                            Use: <b>sudo chmod -R 0777 %s</b>" % (staticPath))
+        # if the given path exists and add a symlink
+        try:
+            os.unlink(collSymlink)
+        except OSError:
+            pass
+        os.symlink( collPath, collSymlink )
+        collection = collPath
+        msg.append( "Musiclibrarypath set to <b>%s</b>!" % (collPath) )
     except MultiValueDictKeyError:
         pass
+    except OSError as e:
+        msg.append(e)
 
     # if all data should be dropped
     try:
@@ -255,14 +274,20 @@ def laudio_settings(request):
                                         'static/audio/').replace('\\', '/') )
     try:
         scan = request.GET["scan"]
+        dbPath = os.path.join( os.path.dirname(__file__),
+                                        'static/laudio.db').replace('\\', '/' )
+        if not os.access(dbPath, os.W_OK):
+            raise OSError("No write access to database!<br /> \
+                            Use: <b>sudo chmod +w %s</b>" % (dbPath))
         if scan:
-
             indexer.scan()
             msg.append( "Scanned <b>%i</b> files, updated <b>%i</b> files and \
                          added <b>%i</b> songs to the library!"
                          % (indexer.scanned, indexer.modified, indexer.added) )
     except MultiValueDictKeyError:
         pass
+    except OSError as e:
+        msg.append(e)
 
     return render_to_response( 'settings.html', {"collection": collection,
                                'msg': msg, 'broken': indexer.broken} )

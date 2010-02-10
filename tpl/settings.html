@@ -8,19 +8,39 @@
     <h1>Setttings</h1>
 
     {% if msg %}
-        <p class="settingsmsg">
-            {% for line in msg %}
-                {{line|safe}}<br />
-            {% endfor %}
-        </p>
-    {% endif %}
-    
-    {% if broken %}
-        <p class="settingsmsg"> The following files are broken:
-        {% for song in broken %}
-            {{song}}<br />
-        {% endfor %}
-        </p>
+        <div id="settingsmsg" title="Information">
+            <p>
+                {% for line in msg %}
+                    {{line|safe}}<br />
+                {% endfor %}
+            </p>
+            {% if broken %}
+                <p> The following files are broken:
+                    {% for song in broken %}
+                        {{song}}<br />
+                    {% endfor %}
+                </p>
+            {% endif %}
+        </div>
+        
+        {% block jqery %}
+            <script type="text/javascript">
+                $(function() {
+                    $("#settingsmsg").dialog({
+                        bgiframe: true,
+                        modal: true,
+                        width: 500,
+                        height: 300,
+                        buttons: {
+                            Ok: function() {
+                                $(this).dialog('close');
+                            }
+                        }
+                    });
+                });
+            </script>
+        {% endblock %}
+
     {% endif %}
     
     <form class="settingsform" method="get" action=".">
