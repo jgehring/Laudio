@@ -1,6 +1,6 @@
-=================================
+==============================================
  LAudio - A webbased audioplayer for your LAN
-=================================
+==============================================
 
 :Version: 0.2.0
 :Keywords: python, jquery, django, web, html5, audio, player, javascript
@@ -23,10 +23,10 @@ director and will implement an authorization framework for listeners.
 To get it working without browser the `Ampache`_ API will be implemented
 
 Installation
-========
+============
 
 Obtaining Source: Unstable
-=======
+==========================
 
 To get the unstable trunk fire up your console and change to the path where you
 want the source to be downloaded. Then type in::
@@ -37,7 +37,7 @@ to get into the directory.
 Proceed with ``Installation``
 
 Obtaining Source: Stable
-=======
+========================
 
 Download the source as tar.gz from the `Download Page`_ and extract it to your
 personal directory. Fire up a terminal and type in::
@@ -47,13 +47,13 @@ to get into the directory.
 Proceed with ``Installation``
 
 Installation
-=======
+============
 
 This is different from Distribution to Distribution so i will outline it for the
 main Distributions ``Ubuntu``, ``Gentoo`` and ``Arch Linux``:
 
 Ubuntu
-=======
+======
 
 ::
     sudo apt-get install python-lxml python-django python-mutagen apache2 sqlite3 libapache2-mod-wsgi python-pysqlite2 rabbitmq-server
