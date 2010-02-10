@@ -5,8 +5,6 @@
 :Version: 0.2.0
 :Keywords: python, jquery, django, web, html5, audio, player, javascript
 
---
-
 Laudio is a webbased player which takes advantage of the HTML5 audio
 element to play its music.
 Its aim is to replace DAAP which is currently broken in the all major GNOME
@@ -55,12 +53,31 @@ main Distributions ``Ubuntu``, ``Gentoo`` and ``Arch Linux``:
 Ubuntu
 ======
 
-Type the following commands in the terminal residing in the downloaded Folder::
+Type the following commands in the terminal residing in the downloaded Folder.
+
+First get the dependencies::
 
     $ sudo apt-get install python-lxml python-django python-mutagen apache2 sqlite3 libapache2-mod-wsgi python-pysqlite2 rabbitmq-server
+
+To get django running on apache we need to put our config file in its config
+directory::
+
     $ sudo move laudio_apache.conf /etc/apache2/conf.d/
     $ sudo chown root:root /etc/apache2/conf.d/laudio_apache.conf
+    $ sudo chmod 0755 /etc/apache2/conf.d/laudio_apache.conf
 
+Now to finish the installation we install the program to /opt/laudio::
+
+    $ sudo mkdir /opt/laudio
+    $ sudo mv .* /opt/laudio
+    $ sudo chown -R www-data:www-data /opt/laudio # if you update remove the symlink first!!
+    $ sudo chmod -R 0755 /opt/laudio
+
+Now the only thing left is to restart the Apache webserver::
+
+    $ sudo /etc/init.d/apache2 restart
+
+Laudio should now be accessible under http://localhost/laudio
 
 
 
