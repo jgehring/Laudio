@@ -34,19 +34,10 @@ from django.conf import settings
 
 # this is the site for the collection tab
 def index(request):
-    # check for needed libraries
-    try:
-        import lxml, mutagen, sqlite3
-    except ImportError:
-        msg = ("Cannot run program correctly, one of the required libraries: \
-                lxml, mutagen or sqlite is missing!")
-        return render_to_response('error.html', {'msg': msg,})
-        
     # get first song from db so we can set src of the audio element
     songs = Song.objects.all().extra(select=
     {'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 'ltrnr': 'tracknumber',}
     ).order_by('lartist', "lalbum", "ltrnr")[:1]
-    
     # generate the letters and numbers for the artists selection
     letters = map(chr, range(97, 123))
     for i in xrange(0,10):
@@ -55,7 +46,6 @@ def index(request):
         firstsong = songs[0].path
     else:
         firstsong = ""
-        
     return render_to_response('index.html', {'firstsong': firstsong, 'letters': letters})
 
 
@@ -65,7 +55,6 @@ def playlist(request):
     songs = Song.objects.all().extra(select=
     {'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 'ltrnr': 'tracknumber',}
     ).order_by('lartist', "lalbum", "ltrnr")[:1]
-    
     # generate the letters and numbers for the artists selection
     letters = map(chr, range(97, 123))
     for i in xrange(0,10):
@@ -106,7 +95,7 @@ def search_collection(request, search, playlist=False):
     #           current setup only retrieves a result when one row matches the search
     #           the search should also match if the parts of the search var appear
     #           in different rows
-    
+
     # get song where any field matches the search
     songs = Song.objects.filter(
         Q(title__contains=search)|
