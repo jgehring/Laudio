@@ -23,13 +23,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 from django.shortcuts import render_to_response
 from laudio.musicindexer import MusicIndexer
-from laudio.models import Song, Playlist
+from laudio.models import Song, Playlist, PlaylistEntry
 from django.db.models import Q
 from django.conf import settings
 from django.utils.datastructures import MultiValueDictKeyError
 import time
 import os
 import urllib2
+from django.conf import settings
 
 # this is the site for the collection tab
 def index(request):
@@ -141,48 +142,44 @@ END getting data via jquery
 """
 START playlist requests
 """
-# TODO: create a template for all requests
 def save_playlist(request):
     # check if any elements were passed at all
     playlistName = urllib2.unquote(request.GET["playlistname"])
-    playlistItems = request.GET["urls"].split("::")
+    playlistItems = request.GET["urls"].split(".")
     # look up if a playlist with the name exists already, if so delete it
     try:
-        playlist = Playlist.objects.get(name=playlistName)
-        playlist.delete()
+        pl = Playlist.objects.get(name=playlistName)
+        pl.delete()
     except Playlist.DoesNotExist:
         pass
-    playlist = Playlist(name=playlistName,
-                        added= int( time.time() )
-                        )
-    playlist.save()
+    pl = Playlist(name=playlistName, added= int( time.time() ))
+    pl.save()
     songs = []
-    for link in playlistItems:
-        # remove stuff which doesnt belong to the relative path
-        link = urllib2.unquote(link.rsplit("/laudio/media/audio/")[1])
-        songs.append(link)
+    for number in playlistItems:
         try:
-            song = Song.objects.get(path=link)
-            playlist.songs.add(song)
+            sg = Song.objects.get(id=number)
+            pe = PlaylistEntry(song=sg, playlist=pl)
+            pe.save()
         except Song.DoesNotExist:
             pass
-    return render_to_response('save_playlist.html', {'songs': songs})
+    return render_to_response('empty.html', {})
 
 def open_playlist(request, playlistName):
-    songs = Song.objects.filter(playlist__name=playlistName)
+    playlistName = urllib2.unquote(playlistName)
+    playlist = Playlist.objects.get(name=playlistName)
+    songs = playlist.songs.all()
     return render_to_response('songs.html', {'songs': songs, 'playlist': True})
 
 def delete_playlist(request, playlistName):
+    playlistName = urllib2.unquote(playlistName)
     playlist = Playlist.objects.get(name=playlistName).delete()
-    return render_to_response('delete_playlist.html',
-                            {'playlist': playlistName})
+    return render_to_response('empty.html', {})
 
 def rename_playlist(request, oldName, newName):
-    playlist = Playlist.objects.get(name=oldName)
-    playlist.name = newName
+    playlist = Playlist.objects.get(name=urllib2.unquote(oldName))
+    playlist.name = urllib2.unquote(newName)
     playlist.save()
-    return render_to_response('rename_playlist.html',
-                            {'playlist': newName})
+    return render_to_response('empty.html', {})
 
 def list_playlists(request):
     playlists = Playlist.objects.all()
@@ -234,7 +231,7 @@ def laudio_settings(request):
             if not os.access(chPath, os.F_OK):
                 raise OSError("Path %s does not exist!" % chPath)
             if not os.access(chPath, os.X_OK):
-                raise OSError("No access rights for %s!<br /> Use: <b>sudo chmod +x %s</b>" % (chPath, chPath))
+                raise OSError("No access rights for %s!<br /> Use: <b>sudo chmod a+x %s</b>" % (chPath, chPath))
         # now check if we got read rights on the music folder, we could do this
         # recursive to check every folder but that would waste too mucht time
         if not os.access(collPath, os.R_OK):
@@ -253,7 +250,7 @@ def laudio_settings(request):
             pass
         os.symlink( collPath, collSymlink )
         collection = collPath
-        msg.append( "Musiclibrarypath set to <b>%s</b>!" % (collPath) )
+        msg.append( "MusiclibrarSingerypath set to <b>%s</b>!" % (collPath) )
     except MultiValueDictKeyError:
         pass
     except OSError as e:
@@ -274,11 +271,10 @@ def laudio_settings(request):
                                         'static/audio/').replace('\\', '/') )
     try:
         scan = request.GET["scan"]
-        dbPath = os.path.join( os.path.dirname(__file__),
-                                        'static/laudio.db').replace('\\', '/' )
+        dbPath = settings.DATABASE_NAME
         if not os.access(dbPath, os.W_OK):
             raise OSError("No write access to database!<br /> \
-                            Use: <b>sudo chmod +w %s</b>" % (dbPath))
+                            Use: <b>sudo chmod 0775 %s</b>" % (dbPath))
         if scan:
             indexer.scan()
             msg.append( "Scanned <b>%i</b> files, updated <b>%i</b> files and \

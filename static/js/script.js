@@ -122,6 +122,7 @@ function prevSong(){
 function addToPlaylist(id){
     // get the added songs info
     var currentTr = document.getElementById(id);
+    var songId = currentTr.title;
     var tds = currentTr.children;
     var tracknumber = tds[0].innerHTML;
     var title = tds[1].innerHTML;
@@ -136,6 +137,7 @@ function addToPlaylist(id){
     var playlist = document.getElementById("playlist").children[0];
     var tr = document.createElement("tr");
     tr.id = "row" + playlistCounterId;
+    tr.title = songId;
     // add the playevent on doubleclick
     tr.setAttribute('ondblclick', 'changeSong(\'' + tr.id + '\')'); 
     playlist.appendChild(tr);

@@ -38,5 +38,10 @@ class Song(models.Model):
 
 class Playlist(models.Model):
     name = models.CharField(max_length=250)
-    songs = models.ManyToManyField(Song)
     added = models.IntegerField()
+    songs = models.ManyToManyField(Song, through="PlaylistEntry")
+
+
+class PlaylistEntry(models.Model):
+    playlist = models.ForeignKey(Playlist)
+    song = models.ForeignKey(Song)

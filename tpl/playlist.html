@@ -188,7 +188,7 @@ title="previous" alt="previous"/></a></li>
                 $loading.fadeIn("slow");
                 $('#songId').html("row0");
                 var searchValue =
-                    encodeURIComponent($('#simplesearchfield').attr("value"));
+                    escape($('#simplesearchfield').attr("value"));
                 $col.load("/laudio/playlist/searchall/" + searchValue + "/",
                           function () {
                             $loading.fadeOut('fast');
@@ -234,13 +234,12 @@ title="previous" alt="previous"/></a></li>
                     document.getElementById('playlist').children[0].children;
                 if(rows.length != 1){
                     for (var i=1; i<rows.length; i++){
-                        var songLink = rows[i].children[5].children[0].href;
+                        var songLink = rows[i].title;
                         linkList.push(songLink);
-                    }$playlists
-
-                    var query = linkList.join("::");
+                    }
+                    var query = linkList.join(".");
                     var url = "/laudio/playlist/save/";
-                    $.get(url, { playlistname: playlistName, urls: query} );
+                    $.get(url, { playlistname: escape(playlistName), urls: query} );
                     $playlists.load("/laudio/playlist/list/", function(){
                             $playlists.fadeOut('fast');
                         });

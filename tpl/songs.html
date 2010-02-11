@@ -11,7 +11,7 @@
         <th class="collRm">Del</th>
     </tr>
     {% for song in songs %}
-        <tr id="row{{forloop.counter}}" class="{% cycle 'line1' 'line2' %}"
+        <tr id="row{{forloop.counter}}" title="{{song.id|escape}}" class="{% cycle 'line1' 'line2' %}"
             ondblclick="changeSong('row{{forloop.counter}}')">
             <td>{{song.tracknumber|escape}}</td>
             <td>{{song.title|escape}}</td>
@@ -45,7 +45,7 @@
         </tr>
         {% for song in songs %}
             <tr id="collrow{{forloop.counter}}"
-            class="{% cycle 'line1' 'line2' %}"
+            class="{% cycle 'line1' 'line2' %}" title="{{song.id|escape}}"
             ondblclick="addToPlaylist('collrow{{forloop.counter}}')">
                 <td>{{song.tracknumber|escape}}</td>
                 <td>{{song.title|escape}}</td>
