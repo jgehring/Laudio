@@ -2,7 +2,7 @@
  LAudio - A webbased audioplayer for your LAN
 ==============================================
 
-:Version: 0.2.0
+:Version: 0.2.1-r1
 :Keywords: python, jquery, django, web, html5, audio, player, javascript
 
 Laudio is a webbased player which takes advantage of the HTML5 audio
