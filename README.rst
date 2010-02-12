@@ -165,7 +165,9 @@ Messenger & Email
 -----------------
 
 If you dont reach me in IRC, i dont mind if you ask me via Messenger or Email:
+
 email: bernhard.posselt@gmx.at
+
 jabber: xray99@jabber.ccc.de
 
 Bug tracker
