@@ -239,7 +239,7 @@ def laudio_settings(request):
             pass
         os.symlink( collPath, collSymlink )
         collection = collPath
-        msg.append( "MusiclibrarSingerypath set to <b>%s</b>!" % (collPath) )
+        msg.append( "Musiclibrarypath set to <b>%s</b>!" % (collPath) )
     except MultiValueDictKeyError:
         pass
     except OSError as e:

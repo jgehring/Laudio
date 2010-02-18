@@ -25,6 +25,7 @@
  * @param String id:    The id of the tablerow e.g. row1
  */
 function changeSong(id){
+    var audio = document.getElementById("player");
     // get previous song and set its colors to normal
     var lastSongId = document.getElementById("songId").innerHTML;
     if(document.getElementById(lastSongId) !== null){
@@ -92,19 +93,28 @@ function updatePlayPause(){
  */
 function nextSong(){
     var songId = document.getElementById("songId").innerHTML;
+    var shuffle = document.getElementById("shuffle").title;
     // if the current tr doesnt exist in the current show library set the first 
     // row (row0) as the last played
     var currentTr = document.getElementById(songId);
-    if (currentTr == null){
+    if (currentTr === null){
         currentTr = document.getElementById("row0");
     }
-    if(currentTr.nextElementSibling !== null){
+    // note that if shuffle is activated, its title is shuffleoff -> !== shuffle
+    if (shuffle !== "shuffle" && currentTr.nextElementSibling !== null){
+        // reduce by 1 to exclude row0 in count
+        var entriesLen = currentTr.parentNode.children.length - 1;
+        var randNumber = Math.floor(Math.random() * entriesLen);
+        // we dont want 0 to be a result so add 1
+        randNumber++;
+        changeSong("row" + randNumber);
+    } else if(currentTr.nextElementSibling !== null){
         var nextTrId = currentTr.nextElementSibling.id;
         changeSong(nextTrId);
     }
 }
 
-/**
+/**    // if its repeat we wont check for shuffle
  * Function to play the previous song in line
  */
 function prevSong(){
@@ -278,4 +288,53 @@ function confirmAction(msg, url){
     }
 }
 
+/**
+ * Check if repeat is enabled and set the next song according to this
+ *
+ */
+function checkShuffleRepeat(){
+    var repeat = document.getElementById("repeat").title;
+    // note that if repeat is activated, its title is repeatoff -> !== repeat
+    if (repeat !== "repeat"){
+        var audio = document.getElementById("player");
+        audio.play();
+    } else {
+        nextSong();
+    }
+}
 
+/**
+ * Set shuffle on or off
+ *
+ */
+function setShuffle(){
+    var shuffle = document.getElementById("shuffle");
+    // note that if shuffle is activated, its title is shuffleoff
+    if (shuffle.title === "shuffle"){
+        shuffle.title = "shuffleoff";
+        shuffle.alt = "shuffleoff";
+        shuffle.src = "/laudio/media/style/img/shuffle.png";
+    } else {
+        shuffle.title = "shuffle";
+        shuffle.alt = "shuffle";
+        shuffle.src = "/laudio/media/style/img/shuffleoff.png";
+    }
+}
+
+/**
+ * Set repeat on or off
+ *
+ */
+function setRepeat(){
+    var repeat = document.getElementById("repeat");
+    // note that if repeat is activated, its title is repeatoff
+    if (repeat.title === "repeat"){
+        repeat.title = "repeatoff";
+        repeat.alt = "repeatoff";
+        repeat.src = "/laudio/media/style/img/repeat.png";
+    } else {
+        repeat.title = "repeat";
+        repeat.alt = "repeat";
+        repeat.src = "/laudio/media/style/img/repeatoff.png";
+    }
+}
