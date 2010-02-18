@@ -294,12 +294,22 @@ function confirmAction(msg, url){
  */
 function checkShuffleRepeat(){
     var repeat = document.getElementById("repeat").title;
-    // note that if repeat is activated, its title is repeatoff -> !== repeat
-    if (repeat !== "repeat"){
+    // note that if repeat is activated, its title is repeatall -> === repeatall
+    if (repeat === "repeat"){
+        nextSong();
+    } else if (repeat === "repeatall") {
         var audio = document.getElementById("player");
         audio.play();
-    } else {
-        nextSong();
+    } else if (repeat === "repeatoff"){
+        var songId = document.getElementById("songId").innerHTML;
+        // if the current tr is the last one and repeat all is activated, play
+        // row1 as the next song
+        var currentTr = document.getElementById(songId);
+        if (currentTr.nextElementSibling === null){
+            changeSong("row1");
+        } else {
+            nextSong();
+        }
     }
 }
 
@@ -327,11 +337,15 @@ function setShuffle(){
  */
 function setRepeat(){
     var repeat = document.getElementById("repeat");
-    // note that if repeat is activated, its title is repeatoff
+    // note that if repeat is activated, its title is repeatall
     if (repeat.title === "repeat"){
+        repeat.title = "repeatall";
+        repeat.alt = "repeatall";
+        repeat.src = "/laudio/media/style/img/repeat.png";
+    } else if (repeat.title === "repeatall"){
         repeat.title = "repeatoff";
         repeat.alt = "repeatoff";
-        repeat.src = "/laudio/media/style/img/repeat.png";
+        repeat.src = "/laudio/media/style/img/repeatall.png";
     } else {
         repeat.title = "repeat";
         repeat.alt = "repeat";
