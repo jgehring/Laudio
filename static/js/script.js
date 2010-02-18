@@ -101,7 +101,7 @@ function nextSong(){
         currentTr = document.getElementById("row0");
     }
     // note that if shuffle is activated, its title is shuffleoff -> !== shuffle
-    if (shuffle !== "shuffle" && currentTr.nextElementSibling !== null){
+    if (shuffle !== "shuffle"){
         // reduce by 1 to exclude row0 in count
         var entriesLen = currentTr.parentNode.children.length - 1;
         var randNumber = Math.floor(Math.random() * entriesLen);
