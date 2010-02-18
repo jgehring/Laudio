@@ -14,10 +14,10 @@ title="play" alt="play"/></a>
 href="#"><img src="/laudio/media/style/img/previous.png " width="24" height="24"
 title="previous" alt="previous"/></a></li>
 <li style="margin-right: 20px;" onclick="setShuffle()" class="controls"><a
-href="#"><img id="shuffle" src="/laudio/media/style/img/shuffleoff.png " width="24" height="24"
+href="#"><img id="shuffle" src="/laudio/media/style/img/shuffleoff.png" width="24" height="24"
 title="shuffle" alt="shuffle" /></a></li>
 <li onclick="setRepeat()" class="controls"><a
-href="#"><img id="repeat" src="/laudio/media/style/img/repeatoff.png " width="24" height="24"
+href="#"><img id="repeat" src="/laudio/media/style/img/repeatoff.png" width="24" height="24"
 title="repeat" alt="repeat"/></a></li>
 {% endblock %}
 
@@ -83,7 +83,6 @@ title="repeat" alt="repeat"/></a></li>
     // TODO: maybe this can be included to in the jquery function with jquery
     // code
     var audio = document.getElementById("player");
-
     audio.addEventListener("ended", checkShuffleRepeat, true);
     audio.addEventListener("playing", updatePlayPause, true);
     audio.addEventListener("pause", updatePlayPause, true);
