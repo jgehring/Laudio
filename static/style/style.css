@@ -18,44 +18,37 @@ body {
 
 #site {
     margin: auto;
-    width: 1100px;
+    width: 1122px;
     background-color: #fafafa;
+    overflow: hidden;
 }
 
 #audio {
     width: 1100px;
     margin: auto;
-    margin-top: 15px;
-    padding-top: 5px;
     text-align: center;
-    -moz-box-shadow: #cacaca 0 0 10px;
-    -moz-border-radius-topleft: 5px;
-    -moz-border-radius-topright: 5px;
-    box-shadow: #cacaca 0 0 10px;
-    border-radius-top-left: 5px;
-    border-radius-top-right: 5px;
+    padding-top: 5px;
 }
 
 #nav {
-    height: 30px;
-    width: 100%;
+    width: 1100px;
     margin: auto;
-    margin-top: 15px;
-    background-color: #375D81;
-    border: 0px solid #afafaf;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    -moz-box-shadow: #cacaca 0 0 10px;
-    box-shadow: #cacaca 0 0 10px;
+    position: fixed;
+    margin-left: 11px;
 }
 
 #content {
     margin: auto;
+    margin-top: 45px;
+    padding-bottom: 5px;
     background-color: #fafafa;
     width: 1100px;
     margin-bottom: 15px;
     -moz-box-shadow: #cacaca 0 0 10px;
     box-shadow: #cacaca 0 0 10px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    
 }
 
 
@@ -67,6 +60,16 @@ body {
     padding: 0;
     vertical-align: middle;
     list-style: none;
+    height: 30px;
+    width: 1100px;
+    margin: auto;
+    background-color: #375D81;
+    -moz-border-radius-bottomleft: 5px;
+    -moz-border-radius-bottomright: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    -moz-box-shadow: #cacaca 0 0 10px;
+    box-shadow: #cacaca 0 0 10px;
 }
 
 #nav ul li {
@@ -89,16 +92,12 @@ body {
 }
 
 #nav.mostleft a {
-    border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
-    -moz-border-radius-topleft: 5px;
     -moz-border-radius-bottomleft: 5px;
 }
 
 #nav.mostright {
-    border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
-    -moz-border-radius-topright: 5px;
     -moz-border-radius-bottomright: 5px;
 }
 
@@ -108,16 +107,12 @@ body {
 }
 
 #nav li.mostleft a:hover {
-    border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
-    -moz-border-radius-topleft: 5px;
     -moz-border-radius-bottomleft: 5px;
 }
 
-.mostright a:hover {
-    border-top-right-radius: 5px;
+.mostright span:hover {
     border-bottom-right-radius: 5px;
-    -moz-border-radius-topright: 5px;
     -moz-border-radius-bottomright: 5px;
 }
 .controls {
@@ -125,10 +120,33 @@ body {
     position: relative;
 }
 
-.controls a {
+.controls span {
+    cursor: pointer;
     padding: 3px 5px 0 5px !important;
     height: 27px !important;
     line-height: 30px !important;
+    color: #fafafa;
+    display: inline-block;
+}
+
+.controls span:hover {
+    color: #000;
+    background-color: #ABC8E2;
+}
+
+#nowPlaying {
+    cursor: pointer;
+    margin-left: 100px;
+    padding: 0 5px 0 5px !important;
+    height: 30px !important;
+    line-height: 30px !important;
+    color: #fafafa;
+    display: inline-block;
+}
+
+#nowPlaying:hover {
+    color: #000;
+    background-color: #ABC8E2;
 }
 
 /**********************

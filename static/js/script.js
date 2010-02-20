@@ -42,8 +42,10 @@ function changeSong(id){
     var artist = tds[2].innerHTML;
     var path = tds[5].children[0].href;
     
-    // update Now Playing site title
-    document.title = "Laudio Now Playing: " + artist + " - " + title;
+    // update Now Playing site title and navigation
+    document.title = artist + " - " + title;
+    var nowPlaying = document.getElementById("nowPlaying");
+    nowPlaying.innerHTML = "Playing: " + artist + " - " + title;
     // set nice color for tr when playing but first save the existing one
     currentTr.style.backgroundColor = "#ABC8E2";
 
@@ -351,4 +353,14 @@ function setRepeat(){
         repeat.alt = "repeat";
         repeat.src = "/laudio/media/style/img/repeatoff.png";
     }
+}
+
+/**
+ * Jumps to a certain song according to id
+ *
+ */
+function jumpToSong(){
+    id = document.getElementById("songId").innerHTML;
+    window.location.hash = id;
+    window.scrollBy(0,-30);
 }
