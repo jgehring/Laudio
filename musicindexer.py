@@ -36,18 +36,20 @@ class MusicIndexer (object):
         self.added = 0
         self.modified = 0
         self.broken = []
-         
-         
+
+
     def scan(self):
         """ Scans a directory recursively for ogg files """
         for root, directories, files in os.walk(self.musicDir):
             for name in files:
                 songpath = os.path.join(root, name)
+                # TODO: check for ogg audio in the file rather then extension
+                #       possible ogv files could be falsy indexed by this
                 if name.endswith(".ogg") or name.endswith(".oga"):
                     self.addSong(songpath)
                     self.scanned += 1
-              
-              
+
+
     def addSong(self, songpath):
         """ Add a song to the database.
 

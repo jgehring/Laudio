@@ -20,7 +20,7 @@
  */
 
 $(function(){
-	$audio = $("#player")[0];
+    $audio = $("#player")[0];
     $audio.addEventListener("ended", checkShuffleRepeat, true);
     $audio.addEventListener("playing", updatePlayPause, true);
     $audio.addEventListener("pause", updatePlayPause, true);

@@ -134,7 +134,7 @@ function prevSong(){
 function addToPlaylist(id){
     // get the added songs info
     var currentTr = document.getElementById(id);
-    var songId = currentTr.title;
+    var songId = id.replace("collrow", "");
     var tds = currentTr.children;
     var tracknumber = tds[0].innerHTML;
     var title = tds[1].innerHTML;
@@ -187,7 +187,6 @@ function addToPlaylist(id){
     delTd.setAttribute('onclick', 'rmFromPlaylist(\'' + tr.id + '\')');
     delTd.className = "rmFromPlaylist"; 
     tr.appendChild(delTd);
-    
     // increment the id and set the classes for the trs
     playlistCounter.innerHTML = parseInt(playlistCounter.innerHTML) + 1;
     updatePlaylistClasses();
@@ -240,6 +239,7 @@ function clearPlaylist(){
     // reset playlist counter
     var counter = document.getElementById("playlistIdCounter");
     counter.innerHTML = 1;
+    $("#songId").html("row0");
     while(tr.nextSibling !== null){
         rmTr = tr.nextElementSibling;
         rmTr.parentNode.removeChild(rmTr);

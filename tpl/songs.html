@@ -49,7 +49,7 @@
         </tr>
         {% for song in songs %}
             <tr id="collrow{{song.id|escape}}"
-            class="{% cycle 'line1' 'line2' %}" title="{{song.id|escape}}"
+            class="{% cycle 'line1' 'line2' %}"
             ondblclick="addToPlaylist('collrow{{song.id|escape}}')">
                 <td>{{song.tracknumber|escape}}</td>
                 <td>{{song.title|escape}}</td>

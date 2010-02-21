@@ -2,24 +2,28 @@
 
 {% block title %}LAudio - Local Music Collection Playlist Management{% endblock %}
 
+{% block scripts %}
+<script src="/laudio/media/js/playlist.js" type="text/javascript" charset="utf-8"></script>
+{% endblock %}
+
 {% block controls %}
-<li onclick="nextSong()" class="controls mostright"><a href="#"><img
+<li onclick="nextSong()" class="controls mostright"><span><img
 src="/laudio/media/style/img/next.png " width="24" height="24"
-title="next" alt="next"/></a></li>
-<li onclick="playSong()" class="controls"><a id="playButton"
-href="#"><img src="/laudio/media/style/img/play.png " width="24" height="24"
-title="play" alt="play"/></a>
-</li>
-<li onclick="prevSong()" class="controls"><a
-href="#"><img src="/laudio/media/style/img/previous.png " width="24" height="24"
-title="previous" alt="previous"/></a></li>
-<li style="margin-right: 20px;" onclick="setShuffle()" class="controls"><a
-href="#"><img id="shuffle" src="/laudio/media/style/img/shuffleoff.png" width="24" height="24"
-title="shuffle" alt="shuffle" /></a></li>
-<li onclick="setRepeat()" class="controls"><a
-href="#"><img id="repeat" src="/laudio/media/style/img/repeatoff.png" width="24" height="24"
-title="repeat" alt="repeat"/></a></li>
-<li><a style="margin-left: 100px;" id="nowPlaying" href="#">Playing: - </a></li>
+title="next" alt="next"/></span></li>
+<li onclick="playSong()" class="controls"><span id="playButton">
+<img src="/laudio/media/style/img/play.png " width="24" height="24"
+title="play" alt="play"/></span></li>
+<li onclick="prevSong()" class="controls"><span><img src="/laudio/media/style/img/previous.png " width="24" height="24"
+title="previous" alt="previous"/></span></li>
+<li style="margin-right: 20px;" onclick="setShuffle()" class="controls"><span>
+<img id="shuffle" src="/laudio/media/style/img/shuffleoff.png" width="24" height="24"
+title="shuffle" alt="shuffle" /></span></li>
+<li onclick="setRepeat()" class="controls"><span><img id="repeat" src="/laudio/media/style/img/repeatoff.png" width="24" height="24"
+title="repeat" alt="repeat"/></span></li>
+<li onclick="window.scroll(0,0);" class="controls" style="margin-right: 20px;">
+<span><img id="repeat" src="/laudio/media/style/img/top.png" width="24" height="24"
+title="top" alt="top"/></span></li>
+<li><span id="nowPlaying" href="#">Playing: - </span></li>
 {% endblock %}
 
 {% block audio %}
@@ -105,216 +109,3 @@ title="repeat" alt="repeat"/></a></li>
 
         <table id="collection" cellspacing="0"></table>
 {% endblock %}
-
-{% block jquery %}
-<script type="text/javascript">
-    // register some handlers on the audio element
-    // TODO: maybe this can be included to in the jquery function with jquery
-    // code
-    var audio = document.getElementById("player");
-    audio.addEventListener("ended", checkShuffleRepeat, true);
-    audio.addEventListener("playing", updatePlayPause, true);
-    audio.addEventListener("pause", updatePlayPause, true);
-
-    /**
-     * This code is executed on site ready
-     */
-    $(function(){
-        // often used ids and classes
-        var $col = $('#collection');
-        var $playlist = $('#playlist');
-        var $loading = $('.loading');
-        var $playlists = $('#playlists');
-        var $audio = $('audio');
-
-        /**
-         * shows the artist list
-         */
-        $('#showArtists').click(function(){
-            $('#artistList').slideToggle();
-        });
-
-        /**
-         * shows the advanced search
-         */
-        $('#showSearch').click(function(){
-            $('#searchForm').slideToggle();
-        });
-
-        /**
-         * toggles collection
-         */
-        $('#toggleCollection').click(function() {
-            $col.slideToggle();
-        });
-
-        /**
-         * toggles playlist
-         */
-        $('#togglePlaylist').click(function() {
-            $playlist.slideToggle();
-        });
-
-        /**
-         * loads the artist according to the letter which was clicked
-         */
-        $('.letters').click(function() {
-            $col.fadeOut('fast');
-            $loading.fadeIn("slow");
-            $('#songId').html("row0");
-            var content_show = $(this).html();
-            $col.load("/laudio/playlist/artist/" + content_show + "/",
-                      function () { 
-                        $loading.fadeOut('fast'); 
-                        $col.fadeIn('slow');
-                      });
-        });
-
-        /**
-         * loads the wohle collection into the player
-         */
-        $('#wholeColl').click(function() {
-            $col.fadeOut('fast');
-            $loading.fadeIn("slow"); 
-            $col.load("/laudio/playlist/collection/",
-                      function () { 
-                        $loading.fadeOut('fast'); 
-                        $col.fadeIn('slow');
-                      });
-        });
-
-        /**
-         * searches if input in the search field is confirmed with enter
-         */
-        $('#simplesearchfield').keyup(function(e) {
-            // keyCode 13 = ENTER
-            if(e.which == 13) {
-                $col.fadeOut('fast');
-                $loading.fadeIn("slow");
-                $('#songId').html("row0");
-                var searchValue =
-                    escape($('#simplesearchfield').attr("value"));
-                $col.load("/laudio/playlist/searchall/" + searchValue + "/",
-                          function () {
-                            $loading.fadeOut('fast');
-                            $col.fadeIn('slow');
-                          });
-            }
-        });
-
-        /**
-         * loads the elements of the advanced
-         */
-        $('#advSearchSubmit').click(function() {
-            $col.fadeOut('fast');
-            $loading.fadeIn("slow");
-            $('#songId').html("row0");
-            var title = $('#advSearchTitle').attr("value");
-            var artist = $('#advSearchArtist').attr("value");
-            var album = $('#advSearchAlbum').attr("value");
-            var genre = $('#advSearchGenre').attr("value");
-            var url = "/laudio/playlist/advsearch/";
-            // FIXME: maybe set this as data instead of url, wouldnt be much
-            // shorter though
-            var query = "?artist=" + artist + "&amp;title=" + title + "&amp;genre=" + genre + "&amp;album=" + album;
-            $col.load(url + query,
-                      function () { 
-                        $loading.fadeOut('fast'); 
-                        $col.fadeIn('slow');
-                      });
-        });
-
-        /**
-         * saves the current playlist
-         * TODO: improve responses, e.g. that playlist are overwritten etc.
-         */
-        $('#savePlaylist').click(function(){
-            var playlistName = window.prompt("Pick a name for the playlist",
-                                             "playlist1");
-            if(playlistName && playlistName !== null){
-                var linkList = new Array();
-                // TODO: maybe this can be done better with jquery dom than raw
-                // dom lookups with children
-                var rows =
-                    document.getElementById('playlist').children[0].children;
-                if(rows.length != 1){
-                    for (var i=1; i<rows.length; i++){
-                        var songLink = rows[i].title;
-                        linkList.push(songLink);
-                    }
-                    var query = linkList.join(".");
-                    var url = "/laudio/playlist/save/";
-                    $.get(url, { playlistname: escape(playlistName), urls: query} );
-                    $playlists.load("/laudio/playlist/list/", function(){
-                            $playlists.fadeOut('fast');
-                        });
-                }
-            }
-        });
-
-        /**
-         * Loads a playlist into the playlist area
-         */
-        $('#openPlaylist').click(function(){
-            var url = "/laudio/playlist/list/";
-            $playlists.load(url, function(){
-                $playlists.slideToggle();
-                $('#playlists ul li a').click(function(){
-                    var playlistName = $(this).html();
-                    $inner = $('#playlist tbody');
-                    $inner.fadeOut('fast');
-                    url = "/laudio/playlist/open/" + escape(playlistName) + "/";
-                    $inner.load(url,function () {
-                        $inner.fadeIn('slow');
-                    });
-                    $playlists.slideToggle();
-                });
-            });
-        });
-
-        /**
-         * Deletes a playlist
-         */
-        $('#deletePlaylist').click(function(){
-            var url = "/laudio/playlist/list/";
-            $playlists.load(url, function(){
-                $playlists.slideToggle();
-                $('#playlists ul li a').click(function(){
-                    var playlistName = $(this).html();
-                    var url = "/laudio/playlist/delete/" +
-                                                    escape(playlistName) + "/";
-                    $.get(url);
-                    $playlists.load("/laudio/playlist/list/", function(){
-                            $playlists.slideToggle();
-                        });
-                });
-            });
-        });
-
-        /**
-         * Renames a playlist
-         */
-        $('#renamePlaylist').click(function(){
-            var url = "/laudio/playlist/list/";
-            $playlists.load(url, function(){
-                $playlists.slideToggle();
-                $('#playlists ul li a').click(function(){
-                    var playlistName = $(this).html();
-                    var newPlaylistName = window.prompt("Enter the new Name for"
-                                               + " the playlist", playlistName);
-                    var url = "/laudio/playlist/rename/" +
-                              escape(playlistName) + "/" +
-                              escape(newPlaylistName) + "/";
-                    $.get(url);
-                    $playlists.load("/laudio/playlist/list/", function(){
-                            $playlists.slideToggle();
-                        });
-                });
-            });
-        });
-
-    });
-
-</script>
-
-{% endblock%}
