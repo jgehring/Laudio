@@ -142,6 +142,8 @@ body {
     line-height: 30px !important;
     color: #fafafa;
     display: inline-block;
+    width: 400px;
+    overflow: auto;
 }
 
 #nowPlaying:hover {
