@@ -33,7 +33,6 @@ function changeSong(id){
     }
     // set id of current song
     document.getElementById("songId").innerHTML = id;
-    
     // get current song
     var currentTr = document.getElementById(id);
     // get the data of the current song
@@ -41,14 +40,12 @@ function changeSong(id){
     var title = tds[1].innerHTML;
     var artist = tds[2].innerHTML;
     var path = tds[5].children[0].href;
-    
     // update Now Playing site title and navigation
     document.title = artist + " - " + title;
     var nowPlaying = document.getElementById("nowPlaying");
     nowPlaying.innerHTML = "Playing: " + artist + " - " + title;
     // set nice color for tr when playing but first save the existing one
     currentTr.style.backgroundColor = "#ABC8E2";
-
     // check if file is paused or playing, if playing first stop the song
     if (audio.paused){
         audio.src = path;
@@ -305,10 +302,11 @@ function checkShuffleRepeat(){
     } else if (repeat === "repeatoff"){
         var songId = document.getElementById("songId").innerHTML;
         // if the current tr is the last one and repeat all is activated, play
-        // row1 as the next song
+        // the first song as the next song
         var currentTr = document.getElementById(songId);
         if (currentTr.nextElementSibling === null){
-            changeSong("row1");
+            var firstId = currentTr.parentNode.children[1].id;
+            changeSong(firstId);
         } else {
             nextSong();
         }
