@@ -4,7 +4,7 @@
 
 .. image::  http://188.40.255.20/media/style/img/tiny_screenshot1.png
 
-:Version: 0.2.3
+:Version: 0.2.3-r1
 :Keywords: python, jquery, django, web, html5, audio, player, javascript
 
 Laudio is a webbased player which takes advantage of the HTML5 audio
