@@ -71,7 +71,7 @@ directory::
 Now to finish the installation we install the program to /opt/laudio::
 
     $ sudo mkdir /opt/laudio
-    $ sudo mv .* /opt/laudio
+    $ sudo mv * /opt/laudio
     $ sudo chown -R www-data:www-data /opt/laudio # if you update remove the symlink first!!
     $ sudo chmod -R 0755 /opt/laudio
 
@@ -100,7 +100,7 @@ directory::
 Now to finish the installation we install the program to /opt/laudio::
 
     # mkdir /opt/laudio
-    # mv .* /opt/laudio
+    # mv * /opt/laudio
     # chown -R www-data:www-data /opt/laudio # if you update remove the symlink first!!
     # chmod -R 0755 /opt/laudio
 
@@ -138,7 +138,7 @@ directory::
 Now to finish the installation we install the program to /opt/laudio::
 
     # mkdir /opt/laudio
-    # mv .* /opt/laudio
+    # mv * /opt/laudio
     # chown -R http:http /opt/laudio # if you update remove the symlink first!!
     # chmod -R 0755 /opt/laudio
 
