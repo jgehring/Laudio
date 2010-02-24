@@ -275,7 +275,8 @@ def laudio_settings(request):
         msg.append(e)
 
     return render_to_response( 'settings.html', {"collection": collection,
-                               'msg': msg, 'broken': indexer.broken} )
+                               'msg': msg, 'broken': indexer.broken, 
+                               'noRights': indexer.noRights} )
 
 
 # interface for ampache xml

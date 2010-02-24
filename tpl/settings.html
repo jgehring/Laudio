@@ -21,6 +21,14 @@
                     {% endfor %}
                 </p>
             {% endif %}
+            {% if noRights %}
+                <p> The following files are not accessable due to wrong filerights:
+                    {% for song in noRights %}
+                        {{song}}<br />
+                    {% endfor %}
+                </p>
+                <p>Try: sudo chmod 0755 /path/to/song to fix it</p>
+            {% endif %}
         </div>
         
         {% block jqery %}
@@ -29,8 +37,8 @@
                     $("#settingsmsg").dialog({
                         bgiframe: true,
                         modal: true,
-                        width: 500,
-                        height: 300,
+                        width: 600,
+                        height: 400,
                         buttons: {
                             Ok: function() {
                                 $(this).dialog('close');

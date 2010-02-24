@@ -36,6 +36,7 @@ class MusicIndexer (object):
         self.added = 0
         self.modified = 0
         self.broken = []
+        self.noRights = []
 
 
     def scan(self):
@@ -62,39 +63,41 @@ class MusicIndexer (object):
         relSongPath = songpath.replace(self.musicDir, '')
         lastModified = int( os.path.getmtime(songpath) )
         try:
-            # check if the unique path exists in the db
-            song = Song.objects.get(path=relSongPath)
-            # if last modified date changed, update the songdata
-            if song.lastmodified != lastModified:
-                try:
+            try:
+                # check if the unique path exists in the db
+                song = Song.objects.get(path=relSongPath)
+                # if last modified date changed, update the songdata
+                if song.lastmodified != lastModified:
+                    try:
+                        musicFile = OGGSong(songpath)
+                        for attr in ('title', 'artist', 'album', 'genre',
+                                     'tracknumber', 'codec'):
+                            setattr(song, attr, getattr(musicFile, attr))
+                        song.lastmodified = lastModified
+                        song.path = relSongPath
+                        song.save()
+                        self.modified += 1
+                    # broken ogg file
+                    except mutagen.oggvorbis.OggVorbisHeaderError:
+                        self.broken.append(songpath)
+            except Song.DoesNotExist:
+                # if song does not exist, add a new line to the db
+                try: 
                     musicFile = OGGSong(songpath)
-                    for attr in ('title', 'artist', 'album', 'genre',
-                                 'tracknumber', 'codec'):
-                        setattr(song, attr, getattr(musicFile, attr))
-                    song.lastmodified = lastModified
-                    song.path = relSongPath
+                    song = Song(title=musicFile.title,
+                                artist=musicFile.artist,
+                                album=musicFile.album,
+                                genre=musicFile.genre,
+                                tracknumber=musicFile.tracknumber,
+                                codec=musicFile.codec,
+                                lastmodified=lastModified,
+                                path=relSongPath,
+                                added=int( time.time() ),
+                                )
                     song.save()
-                    self.modified += 1
+                    self.added += 1
                 # broken ogg file
                 except mutagen.oggvorbis.OggVorbisHeaderError:
                     self.broken.append(songpath)
-        except Song.DoesNotExist:
-            # if song does not exist, add a new line to the db
-            try: 
-                musicFile = OGGSong(songpath)
-                song = Song(title=musicFile.title,
-                            artist=musicFile.artist,
-                            album=musicFile.album,
-                            genre=musicFile.genre,
-                            tracknumber=musicFile.tracknumber,
-                            codec=musicFile.codec,
-                            lastmodified=lastModified,
-                            path=relSongPath,
-                            added=int( time.time() ),
-                            )
-                song.save()
-                self.added += 1
-            # broken ogg file
-            except mutagen.oggvorbis.OggVorbisHeaderError:
-                self.broken.append(songpath)
-
+        except IOError:
+            self.noRights.append(songpath)
