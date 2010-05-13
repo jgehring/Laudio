@@ -38,15 +38,12 @@ def index(request):
     songs = Song.objects.all().extra(select=
     {'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 'ltrnr': 'tracknumber',}
     ).order_by('lartist', "lalbum", "ltrnr")[:1]
-    # generate the letters and numbers for the artists selection
-    letters = map(chr, range(97, 123))
-    for i in xrange(0,10):
-        letters.append(i)
     if songs:
         firstsong = songs[0].path
     else:
         firstsong = ""
-    return render_to_response('index.html', {'firstsong': firstsong, 'letters': letters})
+    return render_to_response('index.html', { 'firstsong': firstsong })
+
 
 
 # this is the site for the playlist tab    
@@ -55,27 +52,26 @@ def playlist(request):
     songs = Song.objects.all().extra(select=
     {'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 'ltrnr': 'tracknumber',}
     ).order_by('lartist', "lalbum", "ltrnr")[:1]
-    # generate the letters and numbers for the artists selection
-    letters = map(chr, range(97, 123))
-    for i in xrange(0,10):
-        letters.append(i)
     if songs:
         firstsong = songs[0].path
     else:
         firstsong = ""
-    return render_to_response('playlist.html', {'firstsong': firstsong, 'letters': letters})    
+    return render_to_response('playlist.html', { 'firstsong': firstsong })    
 
-"""
-START getting data via jquery
-This basically loads the data rows for the jquery requests
-"""
+
+
+# ajax requests
+def song_data(request, id):
+    song = Song.objects.get(id=id)
+    return render_to_response('requests/song_data.html', {"song": song})
+
 def slim_collection(request, artist, playlist=False):
     # get selected artist and songs from db
     songs = Song.objects.filter(artist__istartswith=artist).extra(select=
     {'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 'ltrnr': 'tracknumber',}
     ).order_by('lartist', "lalbum", "ltrnr")
     # return html data for jquery
-    return render_to_response('songs.html', {'songs': songs,
+    return render_to_response('requests/songs.html', {'songs': songs,
                                              'playlistCollection': playlist,
                                              'playlist':False})
 
@@ -86,7 +82,7 @@ def whole_collection(request, playlist=False):
     {'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 'ltrnr': 'tracknumber',}
     ).order_by('lartist', "lalbum", "ltrnr")
     # return html data for jquery
-    return render_to_response('songs.html', {'songs': songs,
+    return render_to_response('requests/songs.html', {'songs': songs,
                               'playlistCollection': playlist, 'playlist':False})
 
 
@@ -105,7 +101,7 @@ def search_collection(request, search, playlist=False):
     ).extra(select=
             {'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 'ltrnr': 'tracknumber',}
             ).order_by('lartist', "lalbum", "ltrnr")
-    return render_to_response('songs.html', {'songs': songs,
+    return render_to_response('requests/songs.html', {'songs': songs,
                               'playlistCollection': playlist, 'playlist':False})
 
 
@@ -122,11 +118,11 @@ def adv_search(request, playlist=False):
     ).extra(select=
         {'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 'ltrnr': 'tracknumber',}
         ).order_by('lartist', "lalbum", "ltrnr")
-    return render_to_response('songs.html', {'songs': songs,
+    return render_to_response('requests/songs.html', {'songs': songs,
                               'playlistCollection': playlist, 'playlist':False})
-"""
-END getting data via jquery
-"""
+
+
+
 
 """
 START playlist requests
@@ -157,18 +153,18 @@ def open_playlist(request, playlistName):
     playlistName = urllib2.unquote(playlistName)
     playlist = Playlist.objects.get(name=playlistName)
     songs = playlist.songs.all()
-    return render_to_response('songs.html', {'songs': songs, 'playlist': True})
+    return render_to_response('requests/songs.html', {'songs': songs, 'playlist': True})
 
 def delete_playlist(request, playlistName):
     playlistName = urllib2.unquote(playlistName)
     playlist = Playlist.objects.get(name=playlistName).delete()
-    return render_to_response('empty.html', {})
+    return render_to_response('requests/empty.html', {})
 
 def rename_playlist(request, oldName, newName):
     playlist = Playlist.objects.get(name=urllib2.unquote(oldName))
     playlist.name = urllib2.unquote(newName)
     playlist.save()
-    return render_to_response('empty.html', {})
+    return render_to_response('requests/empty.html', {})
 
 def list_playlists(request):
     playlists = Playlist.objects.all()

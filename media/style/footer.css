@@ -1,0 +1,57 @@
+/**********
+ * Controls & Footer
+ */
+#footer {
+    width: 100%;
+    background-color: #ccc;
+    border-top: 1px solid #aaa;
+    height: 35px;
+    bottom: 0;
+    left: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    position: fixed;
+    text-align: center;
+    z-index: 1;
+}
+
+#footer img {
+    width: 24px;
+    height: 24px;
+}
+
+#footer ul  {
+    height: 35px;
+}
+
+#footer ul li {
+    display: inline-block;
+    line-height: 35px;
+    padding-top: 6px;
+}
+
+#progressbar {
+    background-color: #fefefe;
+    height: 25px;
+    width: 300px;
+}
+
+#volume {
+    background-color: #fefefe;
+    height: 25px;
+    width: 35px;
+}
+
+#footer #controls {
+    width: 500px;
+    margin: auto;
+}
+
+#extraControls {
+    position: absolute;
+    z-index: 2;
+    bottom: 0;
+    right: 25px;
+}
+

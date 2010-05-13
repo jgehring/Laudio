@@ -2,83 +2,91 @@
 
 {% block title %}LAudio - Local Music Collection{% endblock %}
 
-{% block scripts %}
-<script src="/laudio/media/js/library.js" type="text/javascript" charset="utf-8"></script>
-{% endblock %}
-
-{% block controls %}
-<li onclick="nextSong()" class="controls mostright"><span><img
-src="/laudio/media/style/img/next.png " width="24" height="24"
-title="next" alt="next"/></span></li>
-<li onclick="playSong()" class="controls"><span id="playButton">
-<img src="/laudio/media/style/img/play.png " width="24" height="24"
-title="play" alt="play"/></span></li>
-<li onclick="prevSong()" class="controls"><span><img src="/laudio/media/style/img/previous.png " width="24" height="24"
-title="previous" alt="previous"/></span></li>
-<li style="margin-right: 20px;" onclick="setShuffle()" class="controls"><span>
-<img id="shuffle" src="/laudio/media/style/img/shuffleoff.png" width="24" height="24"
-title="shuffle" alt="shuffle" /></span></li>
-<li onclick="setRepeat()" class="controls"><span><img id="repeat" src="/laudio/media/style/img/repeatoff.png" width="24" height="24"
-title="repeat" alt="repeat"/></span></li>
-<li onclick="window.scroll(0,0);" class="controls" style="margin-right: 20px;">
-<span><img id="repeat" src="/laudio/media/style/img/top.png" width="24" height="24"
-title="top" alt="top"/></span></li>
-<li><span id="nowPlaying" onclick="jumpToSong()" href="#">Playing: - </span></li>
-{% endblock %}
-
-{% block audio %}
-<audio id="player" src="/laudio/media/audio/{{firstsong|escape}}"
-              controls="controls"></audio>
-<span id="songId">row1</span>
+{% block search %}
+    {% include "inc/search.html" %}
 {% endblock %}
 
 {% block content %}
-       <div class="collectionHeader">
-            <ul>
-                <li><a href="#" id="toggleCollection">Collection: </a></li>
-                <li><a id="showArtists" href="#">Artists</a></li>
-                <li><a id="showSearch" href="#">Advanced Search</a></li>
-            </ul>
-            <span id="simplesearch">
-                <input type="text" id="simplesearchfield" name="simplesearch"
-                value="type keyword and hit enter"
-                onclick="if(this.value == 'type keyword and hit enter')this.value='';" 
-                onblur="if(this.value=='') this.value='type keyword and hit enter';" />
-            </span>
-        </div>
+<div id="contentHeader">
+    <div class="spacer">Information</div>
+    <div class="header">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <th class="collNr"><a href="#">Nr</a></th>
+                <th class="collTitle"><a href="#">Title</a></th>
+                <th class="collArtist"><a href="#">Artist</a></th>
+                <th class="collAlbum"><a href="#">Album</a></th>
+                <th class="collGenre"><a href="#">Genre</a></th>
+            </tr>
+        </table>
+    </div>
+</div>
 
-        <div class="collectionHeader" id="artistList">
-            <ul>
-                <li><a id="wholeColl" href="#">All</a></li>
-                {% for i in letters %}
-                        <li><a class="letters" href="#">{{i}}</a></li>
-                {% endfor %}
-            </ul>
-        </div>
 
-        <div id="searchForm">
-            <form action="#" method="post">
-                <table>
-                    <tr>
-                        <th>Title</th>
-                        <th>Artist</th>
-                        <th>Album</th>
-                        <th>Genre</th>
-                        <th>Search</th>
-                    </tr>
-                    <tr>
-                        <td><input type="text" id="advSearchTitle" /></td>
-                        <td><input type="text" id="advSearchArtist" /></td>
-                        <td><input type="text" id="advSearchAlbum" /></td>
-                        <td><input type="text" id="advSearchGenre" /></td>
-                        <td><input type="button" value="search" id="advSearchSubmit" /></td>
-                    </tr>
-                </table>
-            </form>
-        </div>
 
-        <div class="loading">Loading...</div>
+<div id="sidebar">
+    <div id="currentSong">
+        <p id="cover"><img src="/laudio/media/style/img/aild.jpg" alt="cover" title="The Powerless Rise"/></p>
+        <h1>Now Playing</h1>
+        <table cellpadding="0" cellspacing="0">
+            <tr class="line1">
+                <th>Title</th>
+                <td>Anodyne Sea</td>
+            </tr>
+            <tr class="line2">
+                <th>Length</th>
+                <td>4:34</td>
+            </tr>
+            <tr class="line1">
+                <th>Tracknr.</th>
+                <td>02</td>
+            </tr>
+            <tr class="line2">
+                <th>Artist</th>
+                <td>As I Lay Dying</td>
+            </tr>
+            <tr class="line1">
+                <th>Album</th>
+                <td>The Powerless Rise</td>
+            </tr>
+            <tr class="line2">
+                <th>Genre</th>
+                <td>Metalcore</td>
+            </tr>
+            <tr class="line1">
+                <th>Type</th>
+                <td>OGG Vorbis</td>
+            </tr>
+            <tr class="line2">
+                <th>Bitrate</th>
+                <td>256kb/s</td>
+            </tr>                     
+        </table>
+    </div>
+</div>
 
-        <table id="collection" cellspacing="0"></table>
+<div id="library">
+    <div style="display: none;" class="loading"></div>
+    <audio id="player" src="/laudio/media/audio/{{ firstsong }}">
+        Your browser does not support the audio element.
+    </audio>
+    <table id="collection" cellpadding="0" cellspacing="0">   
+        <thead style="display: none;">
+            <tr>
+                <th>Nr</th>
+                <th>Title</th>
+                <th>Artist</th>
+                <th>Album</th>
+                <th>Genre</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</div>
 {% endblock %}
 
+{% block footer %}
+    {% include "inc/controls.html" %}
+{% endblock %}

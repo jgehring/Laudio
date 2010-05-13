@@ -44,12 +44,16 @@ urlpatterns = patterns('',
     (r'^settings/$', laudio_settings),
     (r'^about/$', about),
 
-    #collection and playlist part
+    #collection
     (r'^$', index),
     (r'^collection/$', whole_collection),
     (r'^artist/(?P<artist>.*)/$', slim_collection),
     (r'^searchall/(?P<search>.*)/$', search_collection),
     (r'^advsearch/$', adv_search),
+    (r'^song_data/(?P<id>.*)/$', song_data),
+    
+    
+    # playlist
     (r'^playlist/$', playlist),
     (r'^playlist/collection/$', whole_collection, {'playlist': True}),
     (r'^playlist/artist/(?P<artist>.*)/$', slim_collection, {'playlist': True}),

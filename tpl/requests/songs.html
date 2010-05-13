@@ -1,0 +1,81 @@
+{% if playlist %}
+    <tr id="row0">
+        <th class="collNr">Nr</th>
+        <th class="collTitle">Title</th>
+        <th class="collArtist">Artist</th>
+        <th class="collAlbum">Album</th>
+        <th class="collGenre">Genre</th>
+        <th class="collDownload">Download</th>
+        <th class="collUp">Up</th>
+        <th class="collDown">Down</th>
+        <th class="collRm">Del</th>
+    </tr>
+    {% for song in songs %}
+        <tr id="row{{forloop.counter}}" title="{{song.id|escape}}" 
+            class="{% cycle 'line1' 'line2' %}"
+            ondblclick="changeSong('row{{forloop.counter}}')">
+
+            <td>{{song.tracknumber|escape}}</td>
+            <td>{{song.title|escape}}</td>
+            <td>{{song.artist|escape}}</td>
+            <td>{{song.album|escape}}</td>
+            <td>{{song.genre|escape}}</td>
+            <td>
+                <a
+                id="song{{song.id|escape}}"
+                href="/laudio/media/audio/{{song.path}}">Download</a>
+            </td>
+            <td class="songUpPlaylist"
+                onclick="songPosPlaylist('row{{forloop.counter}}', 'up')">
+            </td>
+            <td class="songDownPlaylist"
+                onclick="songPosPlaylist('row{{forloop.counter}}', 'down')">
+            </td>
+            <td class="rmFromPlaylist"
+                onclick="rmFromPlaylist('row{{forloop.counter}}')">
+            </td>
+        </tr>
+    {% endfor %}
+{% else %}
+    {% if playlistCollection %}
+        <tr id="collrow0">
+            <th class="collNr">Nr</th>
+            <th class="collTitle">Title</th>
+            <th class="collArtist">Artist</th>
+            <th class="collAlbum">Album</th>
+            <th class="collGenre">Genre</th>
+            <th class="collDownload">Download</th>
+            <th class="collRm">Add</th>
+        </tr>
+        {% for song in songs %}
+            <tr id="collrow{{song.id|escape}}"
+            class="{% cycle 'line1' 'line2' %}"
+            ondblclick="addToPlaylist('collrow{{song.id|escape}}')">
+                <td>{{song.tracknumber|escape}}</td>
+                <td>{{song.title|escape}}</td>
+                <td>{{song.artist|escape}}</td>
+                <td>{{song.album|escape}}</td>
+                <td>{{song.genre|escape}}</td>
+                <td><a
+                    href="/laudio/media/audio/{{song.path|escape}}">Download</a>
+                </td>
+                <td class="addToPlaylist"
+                    onclick="addToPlaylist('collrow{{song.id|escape}}')"></td>
+            </tr>
+        {% endfor %}
+    {% else %}
+        {% for song in songs %}
+            <tr id="row{{ song.id|escape }}" 
+                class="{% cycle 'line1' 'line2' %}" 
+                onclick="selectLine({{ song.id|escape }})"
+                ondblclick="playSong({{ song.id|escape }})">
+                <td class="collNr">{{song.tracknumber|escape}}</td>
+                <td class="collTitle">{{song.title|escape}}</td>
+                <td class="collArtist">{{song.artist|escape}}</td>
+                <td class="collAlbum">{{song.album|escape}}</td>
+                <td class="collGenre">{{song.genre|escape}}</td>
+            </tr>
+        {% endfor %}
+    {% endif %}
+{% endif %}
+
