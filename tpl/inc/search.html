@@ -56,16 +56,16 @@
 
         <table id="advSearch">
             <tr>
-                <th>Title</th><td><input type="text"/></td>
+                <th>Title</th><td><input name="title" type="text"/></td>
             </tr>
             <tr>
-                <th>Artist</th><td><input type="text"/></td>
+                <th>Artist</th><td><input name="artist" type="text"/></td>
             </tr>
             <tr>
-                <th>Album</th><td><input type="text"/></td>
+                <th>Album</th><td><input name="album" type="text"/></td>
             </tr>
             <tr>
-                <th>Genre</th><td><input type="text"/></td>
+                <th>Genre</th><td><input name="genre" type="text"/></td>
             </tr>
         </table>
     </form>
@@ -74,7 +74,7 @@
 <div id="searchButtons">
     <form action="." method="get">
         <p>
-            <input class="button" id="searchButton" type="submit" value="search" />
+            <input class="button" id="searchButton" type="button" value="search" />
             <input class="button" id="moreButton" type="button" value="more" />
         </p>
     </form>

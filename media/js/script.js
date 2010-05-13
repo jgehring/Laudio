@@ -143,20 +143,18 @@ $(document).ready(function() {
     });
     
     // call search at one of these events
-    $("#search input").keyup(function(e) {
-        //alert(e.keyCode);
+    $(".search").keyup(function(e) {
         if(e.keyCode == 13) {
-            search();
+            search(true);
+        }
+    });
+    $("#advSearch input").keyup(function(e) {
+        if(e.keyCode == 13) {
+            search(false);
         }
     });
     $("#searchButton").click(function() {
-        search();
+        search(false);
     });
     
-} ); 
-
-    // search
-    function search() {
-        alert('Doing a search');
-    };
-    
+} );

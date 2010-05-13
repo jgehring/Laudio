@@ -60,40 +60,23 @@ $(function(){
         }
         
     });
+
+});
+
+// search
+function search(simple) {
+    var $col = $('#collection tbody');
+    var $loading = $('.loading');
+    var all = $("#search input").attr("value");
+    var title = $("#advSearch tr:eq(0) input").attr("value");
+    var artist = $("#advSearch tr:eq(1) input").attr("value");
+    var album = $("#advSearch tr:eq(2) input").attr("value");
+    var genre = $("#advSearch tr:eq(3) input").attr("value");
     
-    /**
-     * searches if input in the search field is confirmed with enter
-
-    $('#simplesearchfield').keyup(function(e) {
-        // keyCode 13 = ENTER
-        if(e.which == 13){
-            $col.fadeOut('fast');
-            $loading.fadeIn("slow");
-            var searchValue =
-              encodeURIComponent($('#simplesearchfield').attr("value"));
-            $col.load("/laudio/searchall/" + searchValue + "/", function() {
-				$loading.fadeOut('fast');
-                $col.fadeIn('slow');
-                // if the current song is played, set the bg
-                var currentSongId = $('#songId').html();
-                if($('#' + currentSongId).length){
-                    var currentSong = document.getElementById(currentSongId);
-                    currentSong.style.backgroundColor = "#ABC8E2";
-                }
-            });
-        }
-	});
-
-	/**
-     * loads the elements of the advanced
-
-    $('#advSearchSubmit').click(function() {
+    // check if advanced search contains input
+    if((title || artist || album || genre) && !simple){
         $col.fadeOut('fast');
         $loading.fadeIn("slow");
-        var title = $('#advSearchTitle').attr("value");
-        var artist = $('#advSearchArtist').attr("value");
-        var album = $('#advSearchAlbum').attr("value");
-        var genre = $('#advSearchGenre').attr("value");
         var url = "/laudio/advsearch/";
         // FIXME: maybe set this as data instead of url, wouldnt be much
         // shorter though
@@ -102,19 +85,32 @@ $(function(){
         $col.load(url + query, function (){
             $loading.fadeOut('fast', function(){
                 $col.fadeIn('slow');
-                // if the current song is played, set the bg
-                var currentSongId = $('#songId').html();
-                if($('#' + currentSongId).length){
-                    var currentSong = document.getElementById(currentSongId);
-                    currentSong.style.backgroundColor = "#ABC8E2";
+                // set color to just playing song
+                var lastSong = $("body").data("playing");
+                if (lastSong !== 0){
+                    $("#row" + lastSong).addClass("playing");
                 }
             });
         });
-    });
-    */
-
-});
-
+           
+           
+    } else if (all) {
+        $col.fadeOut('fast');
+        $loading.fadeIn("slow");
+        var searchValue = encodeURIComponent($('.search').attr("value"));
+        $col.load("/laudio/searchall/" + searchValue + "/", function() {
+            $loading.fadeOut('fast');
+            $col.fadeIn('slow');
+            // set color to just playing song
+            var lastSong = $("body").data("playing");
+            if (lastSong !== 0){
+                $("#row" + lastSong).addClass("playing");
+            }
+        });
+    } else {
+        return false
+    }
+};
 
 /**
  * Plays a Song which matches the id
@@ -258,6 +254,10 @@ function updatePlayPause(){
     if ($audio.attr("paused") === true){
         $playButton.attr("src", "/laudio/media/style/img/play.png");
     } else {
+        // update title information
+        var title = $("#currentSong tr:eq(0) td").html();
+        var artist = $("#currentSong tr:eq(3) td").html();
+        document.title = title + " - " + artist;
         $playButton.attr("src", "/laudio/media/style/img/pause.png");
     }
 }
