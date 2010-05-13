@@ -24,10 +24,8 @@ $(function(){
     var $col = $('#collection tbody');
     var $loading = $('.loading');
     $audio[0].addEventListener("ended", checkShuffleRepeat, true);
-     /*
-    $audio.addEventListener("playing", updatePlayPause, true);
-    $audio.addEventListener("pause", updatePlayPause, true);
-    */   
+    $audio[0].addEventListener("playing", updatePlayPause, true);
+    $audio[0].addEventListener("pause", updatePlayPause, true);
     
     /**
      * loads the artist according to the letter which was clicked
@@ -225,5 +223,53 @@ function nextSong(){
         }
         id = nextTrId.replace("row", "");
         playSong(id);
+    }
+}
+
+/**
+ * Function to play the previous song
+ */
+function prevSong(){
+    var songId = $("body").data("playing");
+    var $trId = $("#row" + songId);
+    // check if the song is in the current selection
+    // if not, play the first song
+    if($trId.length == 0){
+        nextSong();
+    } else {
+        // check if the played song is the first in the list
+        if ($trId.prev().length !== 0){
+            var id = $trId.prev().attr("id");
+            id = id.replace("row", "");
+            playSong(id);
+        } else {
+            return false;
+        }
+    }
+}
+
+
+/**
+ * Function to play or stop a song
+ */
+function updatePlayPause(){
+    var $audio = $("#player");
+    var $playButton = $("#playButton img");
+    if ($audio.attr("paused") === true){
+        $playButton.attr("src", "/laudio/media/style/img/play.png");
+    } else {
+        $playButton.attr("src", "/laudio/media/style/img/pause.png");
+    }
+}
+
+/**
+ * Function to play or stop a song
+ */
+function play(){
+    var $audio = $("#player");
+    if ($audio.attr("paused") == true){
+        $audio[0].play();
+    } else {
+        $audio[0].pause();
     }
 }

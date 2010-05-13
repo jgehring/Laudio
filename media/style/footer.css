@@ -28,7 +28,12 @@
 #footer ul li {
     display: inline-block;
     line-height: 35px;
-    padding-top: 6px;
+    padding: 6px;
+    padding-bottom: 0;
+}
+
+#footer ul li:hover {
+    background-color: #333;
 }
 
 #progressbar {
