@@ -27,7 +27,7 @@ $(document).ready(function() {
         if($("#collection tbody tr").length){
             $("#collection").tablesorter();
             if($(this).attr("class") == "sortup"){
-                var sorting = [[0,0]];
+                var sorting = [[0,0],[2,0], [3,0], [4,0]];
                 // FIXME: maybe we can reduce code by getting the next 4 lines
                 // into some kind of function
                 $("#contentHeader th a").removeClass("sortup");
@@ -35,13 +35,14 @@ $(document).ready(function() {
                 $(this).removeClass("sortup");
                 $(this).addClass("sortdown");
             } else {
-                var sorting = [[0,1]];
+                var sorting = [[0,1],[2,0], [3,0], [4,0]];
                 $("#contentHeader th a").removeClass("sortup");
                 $("#contentHeader th a").removeClass("sortdown"); 
                 $(this).removeClass("sortdown");
                 $(this).addClass("sortup");
             }
-            $("#collection").trigger("sorton",[sorting]); 
+            $("#collection").trigger("sorton",[sorting]);
+            updateLineColors(); 
         }
     return false; 
     });
@@ -49,19 +50,20 @@ $(document).ready(function() {
         if($("#collection tbody tr").length){
             $("#collection").tablesorter();
             if($(this).attr("class") == "sortup"){
-                var sorting = [[1,0]];
+                var sorting = [[1,0],[2,0], [3,0], [4,0]];
                 $("#contentHeader th a").removeClass("sortup");
                 $("#contentHeader th a").removeClass("sortdown");
                 $(this).removeClass("sortup");
                 $(this).addClass("sortdown");
             } else {
-                var sorting = [[1,1]];
+                var sorting = [[1,1],[2,0], [3,0], [4,0]];
                 $("#contentHeader th a").removeClass("sortup");
                 $("#contentHeader th a").removeClass("sortdown"); 
                 $(this).removeClass("sortdown");
                 $(this).addClass("sortup");
             } 
             $("#collection").trigger("sorton",[sorting]); 
+            updateLineColors();
         }
         return false; 
     });
@@ -69,19 +71,20 @@ $(document).ready(function() {
         if($("#collection tbody tr").length){
             $("#collection").tablesorter();
              if($(this).attr("class") == "sortup"){
-                var sorting = [[2,0]];
+                var sorting = [[2,0], [3,0], [0,0]];
                 $("#contentHeader th a").removeClass("sortup");
                 $("#contentHeader th a").removeClass("sortdown");
                 $(this).removeClass("sortup");
                 $(this).addClass("sortdown");
             } else {
-                var sorting = [[2,1]];
+                var sorting = [[2,1], [3,0], [0,0]];
                 $("#contentHeader th a").removeClass("sortup");
                 $("#contentHeader th a").removeClass("sortdown"); 
                 $(this).removeClass("sortdown");
                 $(this).addClass("sortup");
             } 
             $("#collection").trigger("sorton",[sorting]); 
+            updateLineColors();
         }
         return false; 
     });
@@ -89,19 +92,20 @@ $(document).ready(function() {
         if($("#collection tbody tr").length){
             $("#collection").tablesorter();
              if($(this).attr("class") == "sortup"){
-                var sorting = [[3,0]];
+                var sorting = [[3,0], [2,0], [0,0]];
                 $("#contentHeader th a").removeClass("sortup");
                 $("#contentHeader th a").removeClass("sortdown");
                 $(this).removeClass("sortup");
                 $(this).addClass("sortdown");
             } else {
-                var sorting = [[3,1]];
+                var sorting = [[3,1], [2,0], [0,0]];
                 $("#contentHeader th a").removeClass("sortup");
                 $("#contentHeader th a").removeClass("sortdown"); 
                 $(this).removeClass("sortdown");
                 $(this).addClass("sortup");
             }  
             $("#collection").trigger("sorton",[sorting]); 
+            updateLineColors();
         }
         return false; 
     });
@@ -109,19 +113,20 @@ $(document).ready(function() {
         if($("#collection tbody tr").length){
             $("#collection").tablesorter();
             if($(this).attr("class") == "sortup"){
-                var sorting = [[4,0]];
+                var sorting = [[4,0],[2,0], [3,0], [0,0]];
                 $("#contentHeader th a").removeClass("sortup");
                 $("#contentHeader th a").removeClass("sortdown");
                 $(this).removeClass("sortup");
                 $(this).addClass("sortdown");
             } else {
-                var sorting = [[4,1]];
+                var sorting = [[4,1], [2,0], [3,0], [0,0]];
                 $("#contentHeader th a").removeClass("sortup");
                 $("#contentHeader th a").removeClass("sortdown"); 
                 $(this).removeClass("sortdown");
                 $(this).addClass("sortup");
             }  
             $("#collection").trigger("sorton",[sorting]); 
+            updateLineColors();
         }
         return false; 
     });
@@ -160,3 +165,20 @@ $(document).ready(function() {
     });
     
 } );
+
+/**
+ * Updates the color of the lines
+ */
+function updateLineColors(){
+    $("#collection tbody tr").each(function(index) {
+        if(index % 2){
+            $(this).removeClass("line1");
+            $(this).removeClass("line2");
+            $(this).addClass("line1");
+        } else {
+            $(this).removeClass("line1");
+            $(this).removeClass("line2");
+            $(this).addClass("line2");
+        }
+    });
+}

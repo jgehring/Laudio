@@ -176,10 +176,6 @@ END playlist requests
 def about(request):
     return render_to_response('about.html', {})
 
-
-def friends(request):
-    return render_to_response('friends.html', {})
-
 def search(request):
     return render_to_response('search.html', {})
 

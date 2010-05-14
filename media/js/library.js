@@ -31,6 +31,8 @@ $(function(){
      * loads the artist according to the letter which was clicked
      */
     $('#characters a').click(function() {
+        $("#contentHeader th a").removeClass("sortup");
+        $("#contentHeader th a").removeClass("sortdown");
         $col.fadeOut('fast');
         $('#characters').fadeOut("slow");
         $loading.fadeIn("fast");
@@ -65,6 +67,8 @@ $(function(){
 
 // search
 function search(simple) {
+    $("#contentHeader th a").removeClass("sortup");
+    $("#contentHeader th a").removeClass("sortdown");
     var $col = $('#collection tbody');
     var $loading = $('.loading');
     var all = $("#search input").attr("value");
