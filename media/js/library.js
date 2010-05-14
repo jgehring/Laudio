@@ -23,7 +23,7 @@ $(function(){
     var $audio = $("#player");
     var $col = $('#collection tbody');
     var $loading = $('.loading');
-    $audio[0].addEventListener("ended", checkShuffleRepeat, true);
+    $audio[0].addEventListener("ended", checkRepeat, true);
     $audio[0].addEventListener("playing", updatePlayPause, true);
     $audio[0].addEventListener("pause", updatePlayPause, true);
     
@@ -182,7 +182,7 @@ function selectLine(id){
  * Check if repeat is enabled and set the next song according to this
  *
  */
-function checkShuffleRepeat(){
+function checkRepeat(){
     var repeat = $("body").data("repeat");
     if (repeat === "norepeat"){
         nextSong();
@@ -190,12 +190,12 @@ function checkShuffleRepeat(){
         $("#player")[0].play();
     } else if (repeat === "repeatall"){
         var songId = $("body").data("playing");
-        if ($("row" + songId).next().length){
-            var firstId = $("#collection tbody").first().attr("id");
+        if ($("#row" + songId).next().length !== 0){
+            nextSong();
+        } else {
+            var firstId = $("#collection tbody tr").first().attr("id");
             firstId = firstId.replace("row", "");
             playSong(firstId);
-        } else {
-            nextSong();
         }
     }
 }
@@ -218,13 +218,11 @@ function nextSong(){
         var first = true;
     }
     if (shuffle === "shuffle"){
-        // FIXME!!!
-        // reduce by 1 to exclude row0 in count
-        var entriesLen = $("#collection tbody tr").length - 1;
+        var entriesLen = $("#collection tbody tr").length;
         var randNumber = Math.floor(Math.random() * entriesLen);
-        // we dont want 0 to be a result so add 1
-        randNumber++;
-        playSong(randNumber);
+        randId = $("#collection tbody tr:eq(" + randNumber + ")").attr("id");
+        randId = randId.replace("row", "");
+        playSong(randId);
     // if there is a song next, play it
     } else if($currentSong.next().length !== 0){
         if(first === true){
@@ -268,12 +266,16 @@ function updatePlayPause(){
     var $playButton = $("#playButton img");
     if ($audio.attr("paused") === true){
         $playButton.attr("src", "/laudio/media/style/img/play.png");
+        $playButton.attr("title", "play");
+        $playButton.attr("alt", "play");
     } else {
         // update title information
         var title = $("#currentSong tr:eq(0) td").html();
         var artist = $("#currentSong tr:eq(3) td").html();
         document.title = title + " - " + artist;
         $playButton.attr("src", "/laudio/media/style/img/pause.png");
+        $playButton.attr("title", "pause");
+        $playButton.attr("alt", "pause");
     }
 }
 
@@ -286,5 +288,49 @@ function play(){
         $audio[0].play();
     } else {
         $audio[0].pause();
+    }
+}
+
+/**
+ * set repeat
+ */
+function setRepeat(){
+    var repeat = $("body").data("repeat");
+    var $repeatButton = $("#repeatButton img")
+    if(repeat === "norepeat"){
+        $("body").data("repeat", "repeat");
+        $repeatButton.attr("src", "/laudio/media/style/img/repeat.png");
+        $repeatButton.attr("title", "repeatall");
+        $repeatButton.attr("alt", "repeatall");
+    } else if (repeat === "repeat"){
+        $("body").data("repeat", "repeatall");
+        $repeatButton.attr("src", "/laudio/media/style/img/repeatall.png");
+        $repeatButton.attr("title", "repeatoff");
+        $repeatButton.attr("alt", "repeatoff");
+    } else {
+        $("body").data("repeat", "norepeat");
+        $repeatButton.attr("src", "/laudio/media/style/img/repeatoff.png");
+        $repeatButton.attr("title", "repeat");
+        $repeatButton.attr("alt", "repeat");
+    }
+}
+
+
+/**
+ * set repeat
+ */
+function setShuffle(){
+    var shuffle = $("body").data("shuffle");
+    var $shuffleButton = $("#shuffleButton img")
+    if(shuffle === "noshuffle"){
+        $("body").data("shuffle", "shuffle");
+        $shuffleButton.attr("src", "/laudio/media/style/img/shuffle.png");
+        $shuffleButton.attr("title", "shuffleoff");
+        $shuffleButton.attr("alt", "shuffleoff");
+    } else {
+        $("body").data("shuffle", "noshuffle");
+        $shuffleButton.attr("src", "/laudio/media/style/img/shuffleoff.png");
+        $shuffleButton.attr("title", "shuffle");
+        $shuffleButton.attr("alt", "shuffle");
     }
 }
