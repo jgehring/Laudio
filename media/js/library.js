@@ -300,18 +300,18 @@ function setRepeat(){
     if(repeat === "norepeat"){
         $("body").data("repeat", "repeat");
         $repeatButton.attr("src", "/laudio/media/style/img/repeat.png");
-        $repeatButton.attr("title", "repeatall");
-        $repeatButton.attr("alt", "repeatall");
+        $repeatButton.attr("title", "repeat");
+        $repeatButton.attr("alt", "repeat");
     } else if (repeat === "repeat"){
         $("body").data("repeat", "repeatall");
         $repeatButton.attr("src", "/laudio/media/style/img/repeatall.png");
-        $repeatButton.attr("title", "repeatoff");
-        $repeatButton.attr("alt", "repeatoff");
+        $repeatButton.attr("title", "repeatall");
+        $repeatButton.attr("alt", "repeatall");
     } else {
         $("body").data("repeat", "norepeat");
         $repeatButton.attr("src", "/laudio/media/style/img/repeatoff.png");
-        $repeatButton.attr("title", "repeat");
-        $repeatButton.attr("alt", "repeat");
+        $repeatButton.attr("title", "repeatoff");
+        $repeatButton.attr("alt", "repeatoff");
     }
 }
 
@@ -325,12 +325,12 @@ function setShuffle(){
     if(shuffle === "noshuffle"){
         $("body").data("shuffle", "shuffle");
         $shuffleButton.attr("src", "/laudio/media/style/img/shuffle.png");
-        $shuffleButton.attr("title", "shuffleoff");
-        $shuffleButton.attr("alt", "shuffleoff");
+        $shuffleButton.attr("title", "shuffle");
+        $shuffleButton.attr("alt", "shuffle");
     } else {
         $("body").data("shuffle", "noshuffle");
         $shuffleButton.attr("src", "/laudio/media/style/img/shuffleoff.png");
-        $shuffleButton.attr("title", "shuffle");
-        $shuffleButton.attr("alt", "shuffle");
+        $shuffleButton.attr("title", "shuffleoff");
+        $shuffleButton.attr("alt", "shuffleoff");
     }
 }
