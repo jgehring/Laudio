@@ -46,6 +46,8 @@ $(function(){
                     if (lastSong !== 0){
                         $("#row" + lastSong).addClass("playing");
                     }
+                    // update table sorting
+                    $("#collection").trigger("update");
                 });
             });            
         } else {
@@ -57,6 +59,8 @@ $(function(){
                     if (lastSong !== 0){
                         $("#row" + lastSong).addClass("playing");
                     }
+                    // update table sorting
+                    $("#collection").trigger("update");
                 });
             });
         }
@@ -94,6 +98,8 @@ function search(simple) {
                 if (lastSong !== 0){
                     $("#row" + lastSong).addClass("playing");
                 }
+                // update table sorting
+                    $("#collection").trigger("update");
             });
         });
            
@@ -110,6 +116,8 @@ function search(simple) {
             if (lastSong !== 0){
                 $("#row" + lastSong).addClass("playing");
             }
+            // update table sorting
+            $("#collection").trigger("update");
         });
     } else {
         return false
