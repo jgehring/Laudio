@@ -7,4 +7,7 @@
   "genre": "{{ song.genre|escape }}",
   "path": "{{ song.path|urlencode }}",
   "codec": "{{ song.codec|escape }}",
+  "bitrate": "{{ song.bitrate|escape }}",
+  "duration": {{ song.length|escape }},
+  "date": "{{ song.date|escape }}"
 }

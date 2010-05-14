@@ -194,7 +194,7 @@ def laudio_settings(request):
 
     # get the symlink of the music collection if it exists
     collSymlink = os.path.join( os.path.dirname(__file__),
-                                            'static/audio').replace('\\', '/' )
+                                            'media/audio').replace('\\', '/' )
     if os.path.exists(collSymlink):
         collection = os.readlink(collSymlink)
     else:
@@ -224,7 +224,7 @@ def laudio_settings(request):
                            -R 0755 %s</b>" % (collPath))
         # check if we can set a symlink and access the db
         staticPath = os.path.join( os.path.dirname(__file__),
-                                            'static').replace('\\', '/' )
+                                            'media').replace('\\', '/' )
         if not os.access(staticPath, os.W_OK):
             raise OSError("No write Access in static directory!<br /> \
                             Use: <b>sudo chmod -R 0777 %s</b>" % (staticPath))
@@ -253,7 +253,7 @@ def laudio_settings(request):
 
     # if scan should be made
     indexer = MusicIndexer( os.path.join(os.path.dirname(__file__),
-                                        'static/audio/').replace('\\', '/') )
+                                        'media/audio/').replace('\\', '/') )
     try:
         scan = request.GET["scan"]
         dbPath = settings.DATABASE_NAME

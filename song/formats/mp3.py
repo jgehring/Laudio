@@ -23,10 +23,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import os
 from time import time
-from mutagen.oggvorbis import OggVorbis
+from mutagen.mp3 import MP3
+from mutagen.easyid3 import EasyID3
 from laudio.song.song import Song
 
-class OGGSong (Song):
+class MP3Song (Song):
 
     def __init__(self, path):
         """ Read metainformation from an ogg file
@@ -34,15 +35,11 @@ class OGGSong (Song):
         Keyword arguments:
         path -- the full path to the song
         """
-        self.codec = "ogg"
+        self.codec = "mp3"
         self.path = path
-        self.song = OggVorbis(self.path)
-        for key in ('title', 'artist', 'album', 'genre', 'date'):
-            setattr(self, key, self.song.get(key, ('',))[0])
+        self.song = MP3(self.path)
+        self.id3 = EasyID3(self.path)
+        for key in ('title', 'artist', 'album', 'genre', 'date', 'tracknumber'):
+            setattr(self, key, self.id3.get(key, ('',))[0])
         self.bitrate = int(self.song.info.bitrate) / 1000
         self.length = int(self.song.info.length)
-        # check for empty track number
-        try:
-            self.tracknumber = int(self.song['tracknumber'][0])
-        except (ValueError, KeyError):
-            self.tracknumber = 0

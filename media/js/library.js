@@ -125,14 +125,17 @@ function playSong(id){
     }
     
     $.getJSON("/laudio/song_data/" + id + "/", function(json){
+        mins = Math.floor(json.duration / 60);
+        secs = json.duration % 60;
         $("#currentSong tr:eq(0) td").html(json.title);
-        //$("#currentSong tr:eq(1) td").html(json.length);
+        $("#currentSong tr:eq(1) td").html(mins + ":" + secs);
         $("#currentSong tr:eq(2) td").html(json.tracknr);
         $("#currentSong tr:eq(3) td").html(json.artist);
         $("#currentSong tr:eq(4) td").html(json.album);
-        $("#currentSong tr:eq(5) td").html(json.genre);
-        $("#currentSong tr:eq(6) td").html(json.codec);
-        //$("#currentSong tr:eq(7) td").html(json.bitrate);
+        $("#currentSong tr:eq(5) td").html(json.date);
+        $("#currentSong tr:eq(6) td").html(json.genre);
+        $("#currentSong tr:eq(7) td").html(json.codec);
+        $("#currentSong tr:eq(8) td").html(json.bitrate +  " kb/s");
         
         if ($audio.attr("paused")){
             $audio.attr("src", "/laudio/media/audio/" + json.path);

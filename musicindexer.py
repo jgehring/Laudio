@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import os
 from laudio.song.formats.ogg import OGGSong
+from laudio.song.formats.mp3 import MP3Song
 from laudio.models import Song
 import mutagen
 import time
@@ -46,16 +47,20 @@ class MusicIndexer (object):
                 songpath = os.path.join(root, name)
                 # TODO: check for ogg audio in the file rather then extension
                 #       possible ogv files could be falsy indexed by this
-                if name.endswith(".ogg") or name.endswith(".oga"):
-                    self.addSong(songpath)
+                if name.lower().endswith(".ogg") or name.lower().endswith(".oga"):
+                    self.addSong(songpath, "ogg")
+                    self.scanned += 1
+                if name.lower().endswith(".mp3"):
+                    self.addSong(songpath, "mp3")
                     self.scanned += 1
 
 
-    def addSong(self, songpath):
+    def addSong(self, songpath, codec):
         """ Add a song to the database.
 
         Keyword arguments:
         songpath -- the full path to the song
+        codec    -- the codec type we're using
 
         """
         # get songpath relative to musicdirectory so change of directory wont
@@ -69,9 +74,10 @@ class MusicIndexer (object):
                 # if last modified date changed, update the songdata
                 if song.lastmodified != lastModified:
                     try:
-                        musicFile = OGGSong(songpath)
+                        musicFile = self.musicFile(songpath, codec)
                         for attr in ('title', 'artist', 'album', 'genre',
-                                     'tracknumber', 'codec'):
+                                     'tracknumber', 'codec', 'bitrate', 
+                                     'length', 'date'):
                             setattr(song, attr, getattr(musicFile, attr))
                         song.lastmodified = lastModified
                         song.path = relSongPath
@@ -83,7 +89,7 @@ class MusicIndexer (object):
             except Song.DoesNotExist:
                 # if song does not exist, add a new line to the db
                 try: 
-                    musicFile = OGGSong(songpath)
+                    musicFile = self.musicFile(songpath, codec)
                     song = Song(title=musicFile.title,
                                 artist=musicFile.artist,
                                 album=musicFile.album,
@@ -93,6 +99,9 @@ class MusicIndexer (object):
                                 lastmodified=lastModified,
                                 path=relSongPath,
                                 added=int( time.time() ),
+                                length=musicFile.length,
+                                bitrate=musicFile.bitrate,
+                                date=musicFile.date
                                 )
                     song.save()
                     self.added += 1
@@ -101,3 +110,17 @@ class MusicIndexer (object):
                     self.broken.append(songpath)
         except IOError:
             self.noRights.append(songpath)
+
+
+    def musicFile(self, songpath, codec):
+        """ Returns the object according to the codec 
+        
+            Keyword arguments:
+            songpath -- the full path to the song
+            codec    -- the codec type we're using
+            
+        """
+        if codec == "ogg":
+            return OGGSong(songpath)
+        elif codec == "mp3":
+            return MP3Song(songpath)
