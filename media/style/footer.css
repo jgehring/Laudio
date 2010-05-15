@@ -37,10 +37,18 @@
 }
 
 #progressbar {
-    background-color: #fefefe;
-    height: 25px;
     width: 300px;
 }
+
+#progressbar:hover {
+    background-color: #ccc !important;
+}
+
+
+#progressbar canvas {
+    background-color: #aaa;
+}
+
 
 #volume {
     background-color: #fefefe;
@@ -59,4 +67,5 @@
     bottom: 0;
     right: 25px;
 }
+
 

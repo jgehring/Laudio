@@ -23,9 +23,21 @@ $(function(){
     var $audio = $("#player");
     var $col = $('#collection tbody');
     var $loading = $('.loading');
+    resetProgressBar();
     $audio[0].addEventListener("ended", checkRepeat, true);
     $audio[0].addEventListener("playing", updatePlayPause, true);
     $audio[0].addEventListener("pause", updatePlayPause, true);
+    $audio[0].addEventListener("timeupdate", updateProgressBar, true);
+    
+    /**
+     * click on the progressbar to change the part
+     */
+    $("#progressbar canvas").click(function(e){
+        var width = e.layerX - $(this).attr("offsetLeft");
+        var duration = $audio.attr("duration");
+        var position = Math.floor( (duration / 300) * width );
+        $("#player").attr("currentTime", position);   
+    });
     
     /**
      * loads the artist according to the letter which was clicked
@@ -159,6 +171,7 @@ function playSong(id){
             $audio[0].load();
             $audio[0].play();
         }
+        resetProgressBar();
         // store the id for later use
         $("body").data("playing", id);
         $("#row" + id).addClass("playing");
@@ -183,6 +196,9 @@ function selectLine(id){
  *
  */
 function checkRepeat(){
+    // if the song ended, set the canvas element back to zero:
+    resetProgressBar();
+    // now check if repeat is enabled
     var repeat = $("body").data("repeat");
     if (repeat === "norepeat"){
         nextSong();
@@ -333,4 +349,27 @@ function setShuffle(){
         $shuffleButton.attr("title", "shuffleoff");
         $shuffleButton.attr("alt", "shuffleoff");
     }
+}
+
+
+function updateProgressBar(){
+    // get audio data
+    var $audio = $("#player");
+    var duration = $audio.attr("duration");
+    var currTime = $audio.attr("currentTime");
+    width = Math.floor((300 / duration) * currTime);
+    var $canvas = $("#progressbar canvas");
+    var ctx = $canvas[0].getContext("2d");
+    ctx.fillStyle = "#333";
+    ctx.fillRect(0,0, width ,24);
+    $("#progressbar").attr("title", Math.floor(currTime) + "/" + Math.floor(duration));    
+}
+
+function resetProgressBar(){
+    var $canvas = $("#progressbar canvas");
+    var ctx = $canvas[0].getContext("2d");
+    ctx.clearRect(0,0, 300 ,24); 
+    var $audio = $("#player");
+    var duration = $audio.attr("duration");
+    $("#progressbar").attr("title", "0/" + Math.floor(duration));
 }

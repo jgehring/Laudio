@@ -150,13 +150,11 @@ $(document).ready(function() {
     // call search at one of these events
     $(".search").keyup(function(e) {
         if(e.keyCode == 13) {
-            event.preventDefault();
             search(true);
         }
     });
     $("#advSearch input").keyup(function(e) {
         if(e.keyCode == 13) {
-            event.preventDefault();
             search(false);
         }
     });
