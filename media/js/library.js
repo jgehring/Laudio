@@ -205,8 +205,6 @@ function selectLine(id){
  *
  */
 function checkRepeat(){
-    // if the song ended, set the canvas element back to zero:
-    resetProgressBar();
     // now check if repeat is enabled
     var repeat = $("body").data("repeat");
     if (repeat === "norepeat"){
