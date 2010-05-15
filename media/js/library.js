@@ -360,6 +360,7 @@ function updateProgressBar(){
     width = Math.floor((300 / duration) * currTime);
     var $canvas = $("#progressbar canvas");
     var ctx = $canvas[0].getContext("2d");
+    resetProgressBar();
     ctx.fillStyle = "#333";
     ctx.fillRect(0,0, width ,24);
     $("#progressbar").attr("title", Math.floor(currTime) + "/" + Math.floor(duration));    
