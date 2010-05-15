@@ -23,7 +23,6 @@ $(function(){
     var $audio = $("#player");
     var $col = $('#collection tbody');
     var $loading = $('.loading');
-    resetProgressBar();
     $audio[0].addEventListener("ended", checkRepeat, true);
     $audio[0].addEventListener("playing", updatePlayPause, true);
     $audio[0].addEventListener("pause", updatePlayPause, true);
@@ -171,7 +170,6 @@ function playSong(id){
             $audio[0].load();
             $audio[0].play();
         }
-        resetProgressBar();
         // store the id for later use
         $("body").data("playing", id);
         $("#row" + id).addClass("playing");
