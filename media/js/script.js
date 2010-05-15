@@ -134,6 +134,7 @@ $(document).ready(function() {
     // set default value for last played and last selected songs
     $("body").data("playing", 0);
     $("body").data("select", 1);
+    $("body").data("volume", 1);
     $("body").data("repeat", "norepeat");
     $("body").data("shuffle", "noshuffle");
     

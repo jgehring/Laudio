@@ -380,8 +380,25 @@ function updateVolume(){
     var $audio = $("#player");
     var ctx = $canvas[0].getContext("2d");
     var volume = $audio.attr("volume");
+    if (volume === 0){
+        $("#mute img").attr("src", "/laudio/media/style/img/muted.png");
+    } else {
+        $("#mute img").attr("src", "/laudio/media/style/img/volume.png");
+    }
     pos = Math.floor(volume * 80);
     ctx.clearRect(0,0, 80 ,24);
     ctx.fillStyle = "#333";
     ctx.fillRect(0,0, pos ,24);
+}
+
+function mute(){
+    var $audio = $("#player");
+    var volume = $audio.attr("volume");
+    if(volume === 0){
+        $audio.attr("volume", $("body").data("volume"));
+    } else {
+        $("body").data("volume", volume);
+        $audio.attr("volume", "0");
+    }
+    updateVolume;
 }
