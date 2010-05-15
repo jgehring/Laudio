@@ -27,6 +27,8 @@ $(function(){
     $audio[0].addEventListener("playing", updatePlayPause, true);
     $audio[0].addEventListener("pause", updatePlayPause, true);
     $audio[0].addEventListener("timeupdate", updateProgressBar, true);
+    $audio[0].addEventListener("volumechange", updateVolume, true);
+    updateVolume();
     
     /**
      * click on the progressbar to change the part
@@ -36,6 +38,15 @@ $(function(){
         var duration = $audio.attr("duration");
         var position = Math.floor( (duration / 300) * width );
         $("#player").attr("currentTime", position);   
+    });
+    
+    /**
+     * click on the volume to change it
+     */
+    $("#volume canvas").click(function(e){
+        var width = e.layerX - $(this).attr("offsetLeft");
+        var vol = width / 80;
+        $("#player").attr("volume", vol);   
     });
     
     /**
@@ -358,17 +369,19 @@ function updateProgressBar(){
     width = Math.floor((300 / duration) * currTime);
     var $canvas = $("#progressbar canvas");
     var ctx = $canvas[0].getContext("2d");
-    resetProgressBar();
+    ctx.clearRect(0,0, 300 ,24);
     ctx.fillStyle = "#333";
     ctx.fillRect(0,0, width ,24);
     $("#progressbar").attr("title", Math.floor(currTime) + "/" + Math.floor(duration));    
 }
 
-function resetProgressBar(){
-    var $canvas = $("#progressbar canvas");
-    var ctx = $canvas[0].getContext("2d");
-    ctx.clearRect(0,0, 300 ,24); 
+function updateVolume(){
+    var $canvas = $("#volume canvas");
     var $audio = $("#player");
-    var duration = $audio.attr("duration");
-    $("#progressbar").attr("title", "0/" + Math.floor(duration));
+    var ctx = $canvas[0].getContext("2d");
+    var volume = $audio.attr("volume");
+    pos = Math.floor(volume * 80);
+    ctx.clearRect(0,0, 80 ,24);
+    ctx.fillStyle = "#333";
+    ctx.fillRect(0,0, pos ,24);
 }
