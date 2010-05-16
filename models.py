@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 """
 
-
 from django.db import models
 
 class Song(models.Model):
@@ -30,7 +29,7 @@ class Song(models.Model):
     album = models.CharField(max_length=150)
     genre = models.CharField(max_length=50)
     codec = models.CharField(max_length=10)
-    tracknumber = models.IntegerField()
+    tracknumber = models.CharField(max_length=100)
     path = models.CharField(max_length=250, unique=True)
     lastmodified = models.IntegerField()
     added =  models.IntegerField()
