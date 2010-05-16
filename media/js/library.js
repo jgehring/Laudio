@@ -160,6 +160,8 @@ function playSong(id){
     
     // get song data
     $.getJSON("/laudio/song_data/" + id + "/", function(json){
+        // store duration, then get mins and secs
+        $("body").data("duration", json.duration);
         mins = Math.floor(json.duration / 60);
         secs = json.duration % 60;
         if(secs < 10){
@@ -376,14 +378,11 @@ function updateProgressBar(){
     var $audio = $("#player");
     var duration = $audio.attr("duration");
     var currTime = $audio.attr("currentTime");
-    width = Math.floor((300 / duration) * currTime);
-    // check for invalid values
-    if (width > 300){
-        width = 300;
+    // prevent duration from being Nan
+    if(isNaN(duration)){
+        duration = $("body").data("duration");
     }
-    if (width < 1){
-        width = 1;
-    }
+    width = Math.floor((300 / duration) * currTime);    
     var $canvas = $("#progressbar canvas");
     var ctx = $canvas[0].getContext("2d");
     ctx.clearRect(0,0, 300 ,24);
