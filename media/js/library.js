@@ -162,6 +162,9 @@ function playSong(id){
     $.getJSON("/laudio/song_data/" + id + "/", function(json){
         mins = Math.floor(json.duration / 60);
         secs = json.duration % 60;
+        if(secs < 10){
+            secs = "0" + secs;
+        }
         $("#currentSong tr:eq(0) td").html(json.title);
         $("#currentSong tr:eq(1) td").html(mins + ":" + secs);
         $("#currentSong tr:eq(2) td").html(json.tracknr);

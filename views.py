@@ -71,6 +71,7 @@ def song_data(request, id):
     return render_to_response('requests/song_data.html', {"song": song})
     
 def cover_fetch(request, id):
+    # TODO: fetch cover from last.fm if not locally available
     song = Song.objects.get(id=id)
     # set default cover path
     cover = "/laudio/media/style/img/nocover.png"
