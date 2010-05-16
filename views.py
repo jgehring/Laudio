@@ -69,7 +69,9 @@ def playlist(request):
 def song_data(request, id):
     song = Song.objects.get(id=id)
     return render_to_response('requests/song_data.html', {"song": song})
-    
+
+
+
 def cover_fetch(request, id):
     # TODO: fetch cover from last.fm if not locally available
     song = Song.objects.get(id=id)
@@ -86,13 +88,15 @@ def cover_fetch(request, id):
     for file in os.listdir(path):
         if file.lower().endswith(".jpg") or file.lower().endswith(".jpeg") or file.lower().endswith(".png"):
             # check for folder.jpg or cover.jpg which is very common
-            if file.lower() == "folder.jpg" or file.lower() == "cover.jpg":
+            if file.lower().startswith("folder.") or file.lower().startswith("cover."):
                 cover = file
                 break
             cover = file
     # now that we got the file get the coverpath
     coverPath = os.path.join("/laudio/media/audio", os.path.join(songPath, cover))
-    return render_to_response('requests/cover.html', {"coverpath": coverPath})
+    return render_to_response('requests/cover.html', {"coverpath": coverPath, "album": song.album})
+
+
 
 def slim_collection(request, artist, playlist=False):
     # get selected artist and songs from db

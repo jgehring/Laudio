@@ -193,6 +193,8 @@ function playSong(id){
     // get album data
     $.getJSON("/laudio/cover/" + id + "/", function(json){
         $("#cover img").attr("src", json.coverpath);
+        $("#cover img").attr("title", json.album);
+        $("#cover img").attr("alt", json.album);
     });
 }
 
