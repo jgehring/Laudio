@@ -35,6 +35,7 @@ import time
 import os
 import urllib
 import urllib2
+from urllib2 import URLError, HTTPError
 from lxml import etree
 
 
@@ -98,15 +99,15 @@ def cover_fetch(request, id):
         coverPath = os.path.join("/laudio/media/audio", os.path.join(songPath, cover))
         return render_to_response('requests/cover.html', {"coverpath": coverPath, "album": song.album})
     else:
-        data = {}
-        data["api_key"] = "a1d1111ab0b08262e6d7484cc5dc949a"
-        data["method"] = "album.getinfo"
-        data["artist"] = unicode(song.artist)
-        data["album"] = unicode(song.album)
-        url_values = urllib.urlencode(data)
-        url = "http://ws.audioscrobbler.com/2.0/"
-        full_url = url + '?' + url_values
         try:
+            data = {}
+            data["api_key"] = "a1d1111ab0b08262e6d7484cc5dc949a"
+            data["method"] = "album.getinfo"
+            data["artist"] = song.artist
+            data["album"] = song.album
+            url_values = urllib.urlencode(data)
+            url = "http://ws.audioscrobbler.com/2.0/"
+            full_url = url + '?' + url_values
             response = urllib2.urlopen(full_url)
             # parse xml and get large picture
             elements = etree.fromstring(response.read())
@@ -124,7 +125,7 @@ def cover_fetch(request, id):
             return render_to_response('requests/coverxml.html', {"coverpath": coverPath, "album": song.album})
         # if we dont have inet connection or cant reach the service
         # return standardcover
-        except (URLError, HTTPError):
+        except (URLError, HTTPError, UnicodeEncodeError):
             coverPath = "/laudio/media/style/img/nocover.png"
             return render_to_response('requests/cover.html', {"coverpath": coverPath, "album": song.album})
 
