@@ -158,6 +158,7 @@ function playSong(id){
         $("#row" + lastSong).removeClass("playing");
     }
     
+    // get song data
     $.getJSON("/laudio/song_data/" + id + "/", function(json){
         mins = Math.floor(json.duration / 60);
         secs = json.duration % 60;
@@ -184,6 +185,11 @@ function playSong(id){
         // store the id for later use
         $("body").data("playing", id);
         $("#row" + id).addClass("playing");
+    });
+    
+    // get album data
+    $.getJSON("/laudio/cover/" + id + "/", function(json){
+        $("#cover img").attr("src", json.coverpath);
     });
 }
 

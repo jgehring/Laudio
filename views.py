@@ -24,13 +24,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 from django.shortcuts import render_to_response
 from laudio.musicindexer import MusicIndexer
 from laudio.models import Song, Playlist, PlaylistEntry
+# django
 from django.db.models import Q
 from django.conf import settings
 from django.utils.datastructures import MultiValueDictKeyError
+from django.conf import settings
+from django.http import HttpResponse
+# other python libs
 import time
 import os
 import urllib2
-from django.conf import settings
+
+
 
 # this is the site for the collection tab
 def index(request):
@@ -64,6 +69,29 @@ def playlist(request):
 def song_data(request, id):
     song = Song.objects.get(id=id)
     return render_to_response('requests/song_data.html', {"song": song})
+    
+def cover_fetch(request, id):
+    song = Song.objects.get(id=id)
+    # set default cover path
+    cover = "/laudio/media/style/img/nocover.png"
+    # get collection path
+    collSymlink = os.path.join( os.path.dirname(__file__),
+                                    'media/audio').replace('\\', '/' )
+    collPath = os.readlink(collSymlink)
+    # get the dirname joined with the collection path and 
+    # look if theres a png or jpeg in it
+    songPath = os.path.dirname(song.path)
+    path = os.path.join(collPath, songPath)
+    for file in os.listdir(path):
+        if file.lower().endswith(".jpg") or file.lower().endswith(".jpeg") or file.lower().endswith(".png"):
+            # check for folder.jpg or cover.jpg which is very common
+            if file.lower() == "folder.jpg" or file.lower() == "cover.jpg":
+                cover = file
+                break
+            cover = file
+    # now that we got the file get the coverpath
+    coverPath = os.path.join("/laudio/media/audio", os.path.join(songPath, cover))
+    return render_to_response('requests/cover.html', {"coverpath": coverPath})
 
 def slim_collection(request, artist, playlist=False):
     # get selected artist and songs from db

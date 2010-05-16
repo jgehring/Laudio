@@ -49,7 +49,7 @@ urlpatterns = patterns('',
     (r'^searchall/(?P<search>.*)/$', search_collection),
     (r'^advsearch/$', adv_search),
     (r'^song_data/(?P<id>.*)/$', song_data),
-    
+    (r'^cover/(?P<id>.*)/$', cover_fetch),
     
     # playlist
     (r'^playlist/$', playlist),
