@@ -39,15 +39,38 @@ $(function(){
         var position = Math.floor( (duration / 300) * width );
         $("#player").attr("currentTime", position);   
     });
+    /**
+     * If the mouse is released anywhere on the site, set clicking to false
+     */
+    $("#site").mouseup(function(){
+        clicking = false;
+    });    
     
     /**
      * click on the volume to change it
      */
-    $("#volume canvas").click(function(e){
+    $("#volume canvas").mousedown(function(e){
         var width = e.layerX - $(this).attr("offsetLeft");
+        var ctx = $(this)[0].getContext("2d");
+        ctx.clearRect(0,0, 80 ,24);
+        ctx.fillStyle = "#333";
+        ctx.fillRect(0,0, width ,24);
         var vol = width / 80;
-        $("#player").attr("volume", vol);   
-    });
+        $("#player").attr("volume", vol); 
+        clicking = true;
+        $(this).mousemove(function(e){
+            if(clicking === false) return;
+            var width = e.layerX - $(this).attr("offsetLeft");
+            var ctx = $(this)[0].getContext("2d");
+            ctx.clearRect(0,0, 80 ,24);
+            ctx.fillStyle = "#333";
+            ctx.fillRect(0,0, width ,24);
+            var vol = width / 80;
+            $("#player").attr("volume", vol);  
+        });
+    })
+    
+    
     
     /**
      * loads the artist according to the letter which was clicked
