@@ -418,3 +418,8 @@ function mute(){
     }
     updateVolume;
 }
+
+function jumpTo(){
+    var songId = $("body").data("playing");
+    document.location.hash = "row" + songId;
+}
