@@ -33,8 +33,9 @@ from django.http import HttpResponse
 # other python libs
 import time
 import os
+import urllib
 import urllib2
-
+from lxml import etree
 
 
 # this is the site for the collection tab
@@ -73,10 +74,8 @@ def song_data(request, id):
 
 
 def cover_fetch(request, id):
-    # TODO: fetch cover from last.fm if not locally available
     song = Song.objects.get(id=id)
-    # set default cover path
-    cover = "/laudio/media/style/img/nocover.png"
+    local = False
     # get collection path
     collSymlink = os.path.join( os.path.dirname(__file__),
                                     'media/audio').replace('\\', '/' )
@@ -90,12 +89,44 @@ def cover_fetch(request, id):
             # check for folder.jpg or cover.jpg which is very common
             if file.lower().startswith("folder.") or file.lower().startswith("cover."):
                 cover = file
+                local = True
                 break
             cover = file
-    # now that we got the file get the coverpath
-    coverPath = os.path.join("/laudio/media/audio", os.path.join(songPath, cover))
-    return render_to_response('requests/cover.html', {"coverpath": coverPath, "album": song.album})
-
+            local = True
+    # check if a cover was found, if not query last.fm
+    if local:
+        coverPath = os.path.join("/laudio/media/audio", os.path.join(songPath, cover))
+        return render_to_response('requests/cover.html', {"coverpath": coverPath, "album": song.album})
+    else:
+        data = {}
+        data["api_key"] = "a1d1111ab0b08262e6d7484cc5dc949a"
+        data["method"] = "album.getinfo"
+        data["artist"] = unicode(song.artist)
+        data["album"] = unicode(song.album)
+        url_values = urllib.urlencode(data)
+        url = "http://ws.audioscrobbler.com/2.0/"
+        full_url = url + '?' + url_values
+        try:
+            response = urllib2.urlopen(full_url)
+            # parse xml and get large picture
+            elements = etree.fromstring(response.read())
+            if elements.get("status") == "ok":
+                for album in elements:
+                    if album.tag == "album":
+                        for category in album:
+                            if category.tag == "image":
+                                if category.get("size") == "extralarge":
+                                    coverPath = category.text
+            else: 
+                coverPath = "/laudio/media/style/img/nocover.png"
+            if coverPath == None:
+                coverPath = "/laudio/media/style/img/nocover.png"
+            return render_to_response('requests/coverxml.html', {"coverpath": coverPath, "album": song.album})
+        # if we dont have inet connection or cant reach the service
+        # return standardcover
+        except (URLError, HTTPError):
+            coverPath = "/laudio/media/style/img/nocover.png"
+            return render_to_response('requests/cover.html', {"coverpath": coverPath, "album": song.album})
 
 
 def slim_collection(request, artist, playlist=False):

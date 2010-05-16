@@ -188,14 +188,15 @@ function playSong(id){
         // store the id for later use
         $("body").data("playing", id);
         $("#row" + id).addClass("playing");
+        // get album data
+        $.getJSON("/laudio/cover/" + id + "/", function(json){
+            $("#cover img").attr("src", json.coverpath);
+            $("#cover img").attr("title", json.album);
+            $("#cover img").attr("alt", json.album);
+        });
     });
     
-    // get album data
-    $.getJSON("/laudio/cover/" + id + "/", function(json){
-        $("#cover img").attr("src", json.coverpath);
-        $("#cover img").attr("title", json.album);
-        $("#cover img").attr("alt", json.album);
-    });
+    
 }
 
 /**
@@ -376,6 +377,13 @@ function updateProgressBar(){
     var duration = $audio.attr("duration");
     var currTime = $audio.attr("currentTime");
     width = Math.floor((300 / duration) * currTime);
+    // check for invalid values
+    if (width > 300){
+        width = 300;
+    }
+    if (width < 1){
+        width = 1;
+    }
     var $canvas = $("#progressbar canvas");
     var ctx = $canvas[0].getContext("2d");
     ctx.clearRect(0,0, 300 ,24);
