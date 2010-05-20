@@ -23,12 +23,14 @@ $(function(){
     var $audio = $("#player");
     var $col = $('#collection tbody');
     var $loading = $('.loading');
-    $audio[0].addEventListener("ended", checkRepeat, true);
+    $audio[0].addEventListener("ended", nextSong, true);
     $audio[0].addEventListener("playing", updatePlayPause, true);
     $audio[0].addEventListener("pause", updatePlayPause, true);
     $audio[0].addEventListener("timeupdate", updateProgressBar, true);
     $audio[0].addEventListener("volumechange", updateVolume, true);
+    $audio[0].addEventListener("canplay", playWhenLoaded, false);
     updateVolume();
+    
     
     /**
      * click on the progressbar to change the part
@@ -39,12 +41,15 @@ $(function(){
         var position = Math.floor( (duration / 300) * width );
         $("#player").attr("currentTime", position);   
     });
+    
+    
     /**
      * If the mouse is released anywhere on the site, set clicking to false
      */
     $("#site").mouseup(function(){
         clicking = false;
     });    
+    
     
     /**
      * click on the volume to change it
@@ -69,7 +74,6 @@ $(function(){
             $("#player").attr("volume", vol);  
         });
     })
-    
     
     
     /**
@@ -114,7 +118,14 @@ $(function(){
 
 });
 
-// search
+
+/*
+ * Does and advanced or simple search
+ * @param boolean simple:   if true, just look up the value from the 
+ *                          simple searchfield, else check the 4 advanced
+ *                          ones
+ * 
+ */
 function search(simple) {
     $("#contentHeader th a").removeClass("sortup");
     $("#contentHeader th a").removeClass("sortdown");
@@ -169,6 +180,7 @@ function search(simple) {
     }
 };
 
+
 /**
  * Plays a Song which matches the id
  * @param id = id of the line (without row, like 143)
@@ -203,12 +215,12 @@ function playSong(id){
         if ($audio.attr("paused")){
             $audio.attr("src", "/laudio/media/audio/" + json.path);
             $audio[0].load();
-            $audio[0].play();
         } else {
             $audio[0].pause();
             $audio.attr("src", "/laudio/media/audio/" + json.path);
             $audio[0].load();
-            $audio[0].play();
+            // note: we direct playing to playWhenLoaded, which starts
+            // playing when the song is being loaded
         }
         // store the id for later use
         $("body").data("playing", id);
@@ -221,8 +233,21 @@ function playSong(id){
         });
     });
     
-    
 }
+
+
+/**
+ * If the song is loaded play it
+ */
+function playWhenLoaded(){
+    // prevent it from playing the first loaded song when you initially
+    // load the site
+    if($("body").data("playing") !== 0){
+        var $audio = $("#player");
+        $audio[0].play();
+    }
+}
+
 
 /**
  * Selects a line (sets a darker bg) when you click on it
@@ -237,53 +262,57 @@ function selectLine(id){
     $("#row" + id).addClass("selected");
 }
 
-/**
- * Check if repeat is enabled and set the next song according to this
- *
- */
-function checkRepeat(){
-    // now check if repeat is enabled
-    var repeat = $("body").data("repeat");
-    if (repeat === "norepeat"){
-        nextSong();
-    } else if (repeat === "repeat") {
-        $("#player")[0].play();
-    } else if (repeat === "repeatall"){
-        var songId = $("body").data("playing");
-        if ($("#row" + songId).next().length !== 0){
-            nextSong();
-        } else {
-            var firstId = $("#collection tbody tr").first().attr("id");
-            firstId = firstId.replace("row", "");
-            playSong(firstId);
-        }
-    }
-}
 
 /**
- * Function to play the next song in line
+ * Function to play the next song in line, checks for repeat and shuffle
+ * activated
  */
 function nextSong(){
     var songId = $("body").data("playing");
     var shuffle = $("body").data("shuffle");
+    var repeat = $("body").data("repeat"); 
     
     // check if the song played is in the current selected library
     if($("#row" + songId).length !== 0){
         var $currentSong = $("#row" + songId);
     } else {
         var $currentSong = $("#collection tbody tr:first");
-        // we need to do this to tell next song is not the next song in 
-        // the list (which would be the first tr), but the first one itself
-        // is the next song
+        /* We need to do this to tell next song is not the next song in 
+         * the list (which would be the first tr), but the first one itself
+         * is the next song
+         */
         var first = true;
     }
+    
+    // First we got to check for repeat
+    if (repeat === "repeat"){
+        /* We suppose that the song is already played and loaded correctly
+         * so we immediately telling it to play again from the beginning
+         */
+        $("#player")[0].play();
+        return;
+    } else if(repeat === "repeatall"){
+        /* If the next song on the list isnt there, we start playing
+         * the first song in the list
+         */
+        if ($("#row" + songId).next().length === 0){
+            var firstId = $("#collection tbody tr").first().attr("id");
+            firstId = firstId.replace("row", "");
+            playSong(firstId);
+            return;
+        }
+    }
+    
+    // then check for shuffle
     if (shuffle === "shuffle"){
         var entriesLen = $("#collection tbody tr").length;
         var randNumber = Math.floor(Math.random() * entriesLen);
         randId = $("#collection tbody tr:eq(" + randNumber + ")").attr("id");
         randId = randId.replace("row", "");
         playSong(randId);
-    // if there is a song next, play it
+
+    /* If no repeat and shuffle were enabled, just play the next song
+     */
     } else if($currentSong.next().length !== 0){
         if(first === true){
             var nextTrId = $currentSong.attr("id");
@@ -294,6 +323,7 @@ function nextSong(){
         playSong(id);
     }
 }
+
 
 /**
  * Function to play the previous song
@@ -377,7 +407,7 @@ function setRepeat(){
 
 
 /**
- * set repeat
+ * set shuffle
  */
 function setShuffle(){
     var shuffle = $("body").data("shuffle");
@@ -395,7 +425,9 @@ function setShuffle(){
     }
 }
 
-
+/**
+ * Updates the filling of the progressbar
+ */
 function updateProgressBar(){
     // get audio data
     var $audio = $("#player");
@@ -414,6 +446,9 @@ function updateProgressBar(){
     $("#progressbar").attr("title", Math.floor(currTime) + "/" + Math.floor(duration));    
 }
 
+/**
+ * Updates the volume bar according to the volume set
+ */
 function updateVolume(){
     var $canvas = $("#volume canvas");
     var $audio = $("#player");
@@ -430,6 +465,10 @@ function updateVolume(){
     ctx.fillRect(0,0, pos ,24);
 }
 
+
+/**
+ * Mute or unmute the player
+ */
 function mute(){
     var $audio = $("#player");
     var volume = $audio.attr("volume");
@@ -442,6 +481,10 @@ function mute(){
     updateVolume;
 }
 
+
+/**
+ * Jump to the currently playing song in the list
+ */
 function jumpTo(){
     var songId = $("body").data("playing");
     document.location.hash = "row" + songId;

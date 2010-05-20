@@ -2,6 +2,12 @@
 
 {% block title %}LAudio - Local Music Collection{% endblock %}
 
+{% block script %}
+    <script src="/laudio/media/js/jquery.tablesorter.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/laudio/media/js/script.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/laudio/media/js/library.js" type="text/javascript" charset="utf-8"></script>
+{% endblock %}
+
 {% block search %}
     {% include "inc/search.html" %}
 {% endblock %}
