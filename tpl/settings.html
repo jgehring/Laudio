@@ -9,36 +9,15 @@
 
     {% if msg %}
         <div id="settingsmsg" title="Information">
-            <p>
-                    {{ msg|safe}}<br />
-            </p>
+            <p>{{ msg|safe }}</p>
         </div>
-        
-        {% block jqery %}
-            <script type="text/javascript">
-                $(function() {
-                    $("#settingsmsg").dialog({
-                        bgiframe: true,
-                        modal: true,
-                        width: 600,
-                        height: 400,
-                        buttons: {
-                            Ok: function() {
-                                $(this).dialog('close');
-                            }
-                        }
-                    });
-                });
-            </script>
-        {% endblock %}
-
     {% endif %}
     
     <form class="settingsform" method="get" action=".">
         <table>
             <tr>
                 <th>Path to Music Collection</th>
-                <td><input value="{{collection}}" class="settingsinput" name="collection" type="text"/></td>
+                <td><input value="{{ collection }}" class="settingsinput" name="collection" type="text"/></td>
             </tr>
             <tr>
                 <th>Completely Reset Music Collection</th>

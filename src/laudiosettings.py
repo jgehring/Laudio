@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 from laudio.models import *
+from laudio.src.musicindexer import MusicIndexer
 from django.conf import settings
 import os
 
@@ -70,6 +71,8 @@ class LaudioSettings(object):
         if we can cd into the folder (we need a+x to cd into it).
         If we get any errors, we stop and tell the user to execute the right
         commands."""
+        
+        # TODO: check cmds!
         checkPath = path.split("/")
         checkedPath = ""
         for p in checkPath:
@@ -102,7 +105,7 @@ class LaudioSettings(object):
         # if the given path exists add a symlink, try except is used to 
         # avoid a race condition
         try:
-            os.unlink(self.collectionPath)
+            os.unlink(settings.AUDIO_DIR)
         except OSError:
             pass
         os.symlink( path, settings.AUDIO_DIR )

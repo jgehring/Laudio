@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 # laudio modules
-from laudio.src.musicindexer import MusicIndexer
 from laudio.src.coverfetcher import CoverFetcher
 from laudio.src.laudiosettings import LaudioSettings
 from laudio.models import *
@@ -60,14 +59,7 @@ def about(request):
 
 def laudio_settings(request):
     """Site where the configuration happens"""
-    # TODO:     get ip and check if it is localhost
-    #           only localhost can access settings (for now)
-    #           Fix this after weve built in user management
-    ip = request.META.get('REMOTE_ADDR')
-    if ip != "127.0.0.1":
-        return render_to_response('403.html', {})
-
-    # configuration object
+    # TODO:     build in auth
     config = LaudioSettings()
 
     if "collection" in request.GET:
@@ -75,7 +67,7 @@ def laudio_settings(request):
             config.setCollectionPath(request.GET["collection"])
         except OSError as e:
             return render_to_response( 'settings.html', 
-                                    { "collection": request.GET.get("collection", ""), 
+                                    { "collection": config.collectionPath, 
                                       "msg": e } )
 
     if "drop" in request.GET:
@@ -86,11 +78,11 @@ def laudio_settings(request):
             config.scan()
         except OSError as e:
             return render_to_response( 'settings.html', 
-                                    { "collection": request.GET.get("collection", ""), 
+                                    { "collection": config.collectionPath, 
                                       "msg": e } )
 
     return render_to_response( 'settings.html', 
-                                { "collection": request.GET.get("collection", ""),  
+                                { "collection": config.collectionPath,  
                                   "msg": config } )
 
 
