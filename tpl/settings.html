@@ -10,25 +10,8 @@
     {% if msg %}
         <div id="settingsmsg" title="Information">
             <p>
-                {% for line in msg %}
-                    {{line|safe}}<br />
-                {% endfor %}
+                    {{ msg|safe}}<br />
             </p>
-            {% if broken %}
-                <p> The following files are broken:
-                    {% for song in broken %}
-                        {{song}}<br />
-                    {% endfor %}
-                </p>
-            {% endif %}
-            {% if noRights %}
-                <p> The following files are not accessable due to wrong filerights:
-                    {% for song in noRights %}
-                        {{song}}<br />
-                    {% endfor %}
-                </p>
-                <p>Try: sudo chmod 0755 /path/to/song to fix it</p>
-            {% endif %}
         </div>
         
         {% block jqery %}

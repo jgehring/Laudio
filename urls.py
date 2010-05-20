@@ -38,31 +38,15 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # (r'^admin/', include(admin.site.urls)),
-    (r'^search/$', search),
     (r'^settings/$', laudio_settings),
     (r'^about/$', about),
 
     #collection
     (r'^$', index),
-    (r'^collection/$', whole_collection),
-    (r'^artist/(?P<artist>.*)/$', slim_collection),
-    (r'^searchall/(?P<search>.*)/$', search_collection),
-    (r'^advsearch/$', adv_search),
-    (r'^song_data/(?P<id>.*)/$', song_data),
-    (r'^cover/(?P<id>.*)/$', cover_fetch),
-    
-    # playlist
-    (r'^playlist/$', playlist),
-    (r'^playlist/collection/$', whole_collection, {'playlist': True}),
-    (r'^playlist/artist/(?P<artist>.*)/$', slim_collection, {'playlist': True}),
-    (r'^playlist/searchall/(?P<search>.*)/$', search_collection, {'playlist': True}),
-    (r'^playlist/advsearch/$', adv_search, {'playlist': True}),
-    # playlist requests
-    (r'^playlist/save/$', save_playlist),
-    (r'^playlist/open/(?P<playlistName>.*)/$', open_playlist),
-    (r'^playlist/delete/(?P<playlistName>.*)/$', delete_playlist),
-    (r'^playlist/rename/(?P<oldName>.*)/(?P<newName>.*)/$', rename_playlist),
-    (r'^playlist/list/$', list_playlists),
-    # ampache api
-    (r'^server/xml.server.php$', ampache_api),
+    (r'^collection/$', ajax_whole_collection),
+    (r'^artist/(?P<artist>.*)/$', ajax_artists_by_letters),
+    (r'^searchall/(?P<search>.*)/$', ajax_search_collection),
+    (r'^advsearch/$', ajax_adv_search_collection),
+    (r'^song_data/(?P<id>.*)/$', ajax_song_metadata),
+    (r'^cover/(?P<id>.*)/$', ajax_cover_fetch),
 )
