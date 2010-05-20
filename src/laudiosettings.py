@@ -55,9 +55,9 @@ class LaudioSettings(object):
                 % (indexer.scanned, indexer.modified, indexer.added) )
         # append broken and no right files
         for file in indexer.broken:
-            self.log.append( "The file: %s is broken") % (file)
+            self.log.append( "The file: <b>%s</b> is broken" % file )
         for file in indexer.noRights:
-            self.log.append( "The file: %s is not accessible due to filerights") % (file)
+            self.log.append( "The file: <b>%s</b> is not accessible due to filerights" % file )
         
         
     def setCollectionPath(self, path):
@@ -123,5 +123,5 @@ class LaudioSettings(object):
 
     def  __str__(self):
         """Returns log entries"""
-        return ''.join(self.log)
+        return '<br />'.join(self.log)
             
