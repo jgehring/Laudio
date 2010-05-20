@@ -33,7 +33,14 @@ from laudio.models import Song
 class MusicIndexer (object):
     
     def __init__(self, musicDir):
-        """ Instances some attributes and sets the music directory """
+        """ Instances some attributes and sets the music directory
+        
+        Keyword arguments:
+        musicDir -- the directory where musiccollection lies; the string
+                    has to end with a slash because we save the relative
+                    path
+        
+        """
         self.musicDir = musicDir
         self.scanned = 0
         self.added = 0

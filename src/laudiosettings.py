@@ -43,7 +43,8 @@ class LaudioSettings(object):
     
     def scan(self):
         """Scan the directory where the collection is"""
-        indexer = MusicIndexer( settings.AUDIO_DIR )
+        # we have to add a trailing slash for scanning
+        indexer = MusicIndexer( settings.AUDIO_DIR + "/")
         dbPath = settings.DATABASE_NAME
         if not os.access(dbPath, os.W_OK):
             raise OSError("No write access to database! \
