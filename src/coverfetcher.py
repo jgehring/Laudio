@@ -53,6 +53,7 @@ class CoverFetcher(object):
         Only Images with "cover" or "folder" are taken. If no cover is
         being found it queries online services and if it doesnt find
         anything the standardcover is being returned. """
+        # FIXME: we got problems with unicode paths
         for file in os.listdir(self.songDir):
             if file.lower().endswith(".jpg") or file.lower().endswith(".jpeg") or file.lower().endswith(".png"):
                 # check for folder.jpg or cover.jpg which is very common
@@ -95,16 +96,8 @@ class CoverFetcher(object):
         
         try:
             response = urllib2.urlopen(full_url)
-            # TODO: maybe we could reduce code size to one line with 
-            #       xpath method when parsing the xml
             elements = etree.fromstring(response.read())
-            if elements.get("status") == "ok":
-                for album in elements:
-                    if album.tag == "album":
-                        for category in album:
-                            if category.tag == "image":
-                                if category.get("size") == "extralarge":
-                                    return category.text
+            return elements.xpath('/lfm/album/image[@size="extralarge"]/text()')[0]
 
         except (URLError, HTTPError, UnicodeEncodeError):
             return None
