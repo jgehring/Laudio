@@ -4,42 +4,53 @@
 
 
 {% block content %}
-<div id="text">
+<div id="about">
     <h1>About Laudio</h1>
-    <p>Laudio, whose name orignites from LAN Audio, is a webclient for your Musiccollection. It
-    aims to replace the currently mostly broken DAAP players, which can stream DAAP shares over
-    the local network. Thanks to Apple, who break/encrypt their services after external programs
-    start using it, DAAP is partly broken ever since including iTunes 7.</p>
-    <p>Future Releases also plan some filesharing service for you and your friends 
-    (only legal tracks should be shared -> jamendo.com) and an access control to your collection.
-    Maybe we'll support ampache xml interfaces too if it isnt too hard ;)</p>
+    <p>Laudio is a webclient and server for your Musiccollection. It aims
+    to replace the DAAP standard which originates from Apple.
+    After some years, Apple decided to encrypt iTunes' DAAP service making
+    it nearly impossible to set up shares or listen to shares.</p>
     
-    <h3>Recommended webbrowser are: </h3>
+    <p>Other than Ampache, Laudio implements an easy to use interface and
+    uses some of the web's newest features such as the HTML5 audio and 
+    tag canvas. This requires the users to have a recent browser which 
+    supports HTML5.</p>
+    
+    <p>Laudio supports MP3 and Ogg Vorbis, both implemented using HTML5.
+    That means if you want to listen to MP3, you need a browser which is 
+    able to play MP3, such as Chromium. Firefox only supports Ogg Vorbis.</p>
+    
+    <h2>Recommended Browser </h2>
     <ul>
-        <li>Firefox 3.5+ - A bit slow due to some bugs with large table which we
-are using heavily</li>
+        <li>Firefox 3.5 or higher</li>
+        <li>Chrome 4 or higher</li>
+        <li>Chromium 5 or higher</li>
     </ul>
-    <h3>Less recommended webbrowser are: </h3>
+    
+    <h2>Less recommended webbrowser</h2>
     <ul>
-        <li>Google Chrome/Chromium v. 4+ - Extremely fast but html audio
-tag is broken in all versions.</li>
-        <li>Konqueror 4.4+ - Well, I didnt test it but it should run quite well.
-You'll need the codecs from your gstreamer/xine backend though</li>
-        <li>Epiphany 2.30+ - Supporting audio/video but "support is not perfect"</li>
+        <li>Epiphany: extremely slow</li>
+        <li>Apple Safari - Safari only plays MP3</li> 
     </ul>
-    <h3>Not recommended are the following ones due to these issues:</h3>
+    
+    <h2>Not recommended browsers</h2>
     <ul>
-        <li>Microsoft Internet Explorer any version - Slow and no HTML 5, you really dont want this one</li>
-        <li>Apple Safari - Were replacing an Apple product, so yes, Safari is of course the only browser who doesnt support ogg in its HTML5 audio/video tags</li>
+        <li>Microsoft Internet Explorer any version - Doesnt support HTML5 yet</li>
     </ul>    
-    <h3>Known Issues</h3>
-    <ul>
-        <li>Slow when having huge (10k+ songs) collections</li>
-        <li>Slow in Firefox when displaying a lot of songs: this is a Firefox bug occuring with large tables</li>
-        <li>Lacking mp3 support (think of it as feature, not a bug)</li>
-    </ul>
-    <p>We use the oxygen icons from
-        <a href="http://www.oxygen-icons.org/">http://www.oxygen-icons.org/</a>
-    </p>
+
+    <p>I didnt try Konqueror or Internet Explorer 9 yet, please 
+    <a href="mailto:bernhard.posselt@gmx.at">send me an email</a> so
+    i can update this description.</p>
+
+    <h2>Support</h2>
+    <p>If you want to ask some questions or file a bug, please consider
+    visiting <a href="http://laudio-player.org">our website</a> or our
+    IRC channel #laudio on irc.freenode.net</p>
+    
+    <p>You can also <a href="mailto:bernhard.posselt@gmx.at">send me an email</a>.</p>
+
+    <h2>We thank</h2>
+    <p>We use <a href="http://www.oxygen-icons.org/">Oxygen</a> and 
+    <a href="http://amarok.kde.org/">Amarok</a> Icons, cheers :D</p>
 </div>
 {% endblock %}

@@ -1,0 +1,23 @@
+#about {
+    width: 960px;
+    margin: auto;
+}
+
+#about h1 {
+    font-size: 14pt;
+    margin-bottom: 20px;
+}
+
+#about h2 {
+    font-size: 12pt;
+    margin-bottom: 5px;
+}
+
+#about p {
+    margin-bottom: 15px;
+}
+
+#about ul {
+    margin-left: 15px;
+    margin-bottom: 15px;
+}

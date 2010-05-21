@@ -4,7 +4,7 @@
 
 
 {% block content %}
-<div id="text">
+<div id="settings">
     <h1>Setttings</h1>
 
     {% if msg %}
@@ -13,25 +13,70 @@
         </div>
     {% endif %}
     
-    <form class="settingsform" method="get" action=".">
-        <table>
-            <tr>
-                <th>Path to Music Collection</th>
-                <td><input value="{{ collection }}" class="settingsinput" name="collection" type="text"/></td>
-            </tr>
-            <tr>
-                <th>Completely Reset Music Collection</th>
-                <td><input type="checkbox" name="drop" value="true" /></td>
-            </tr>
-            <tr>
-                <th>Scan Music Collection</th>
-                <td><input type="checkbox" name="scan" value="true" /></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td><input type="submit" value="save" /></td>
-            </tr>
-        </table>
+    <form method="get" action=".">
+        <fieldset>
+            <legend>Collection</legend>
+            <table>
+                <tr>
+                    <th>Path to Music Collection</th>
+                    <td><input value="{{ collection }}" class="text" name="collection" type="text"/></td>
+                </tr>
+                <tr>
+                    <th>Reset Music Collection</th>
+                    <td><input type="checkbox" name="drop" value="true" /></td>
+                </tr>
+                <tr>
+                    <th>Scan Music Collection</th>
+                    <td><input type="checkbox" name="scan" value="true" /></td>
+                </tr>
+            </table>
+        </fieldset>
+        
+        <fieldset>
+            <legend>Admin</legend>
+            <table>
+                <tr>
+                    <th>Username</th>
+                    <td><input value="" class="text" name="adminname" type="text"/></td>
+                </tr>
+                <tr>
+                    <th>Password</th>
+                    <td><input value="" class="text" name="adminpass" type="password"/></td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td><input value="" class="text" name="email" type="text"/></td>
+                </tr>
+                <tr>
+                    <th>Require users to log in</th>
+                    <td><input type="checkbox" name="login" value="true" /></td>
+                </tr>
+            </table>
+        </fieldset>
+        
+        <fieldset>
+            <legend>Last FM</legend>
+            <table>
+                <tr>
+                    <th>Username</th>
+                    <td><input value="" class="text" name="lastfmname" type="text"/></td>
+                </tr>
+                <tr>
+                    <th>Password</th>
+                    <td><input value="" class="text" name="lastfmpass" type="password"/></td>
+                </tr>
+                <tr>
+                    <th>Submit tracks</th>
+                    <td><input type="checkbox" name="submitlastfm" value="true" /></td>
+                </tr>
+            </table>
+        </fieldset>
+        
+        <fieldset>
+            <legend>Save</legend>
+            <p><input type="submit" value="save" /></p>
+        </fieldset>
     </form>
+    <h1>Manage Users</h1>
 </div>
 {% endblock %}

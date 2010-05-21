@@ -1,0 +1,50 @@
+#settings {
+    width: 960px;
+    margin: auto;
+}
+
+#settings h1 {
+    font-size: 14pt;
+    margin-bottom: 20px;
+}
+
+#settings form table {
+    width: 900px;
+    margin: auto;
+}
+
+#settings form fieldset {
+    margin: 20px 0;
+    padding: 5px;
+    padding-bottom: 15px;
+}
+
+#settings form th {
+    background-color: #ccc;
+    font-weight: normal;
+    text-align: right;
+    width: 270px;
+    padding: 5px;
+    padding-right: 20px;
+}
+
+#settings form input.text {
+    width: 500px;
+    border: 1px solid #aaa;
+    background-color: #fafafa;
+    height: 18px;
+    padding: 2px;
+}
+
+#settings form input.text:focus {
+    background-color: #fefefe;
+}
+
+#settings form td {
+    background-color: #eaeaea;
+    padding-left: 20px;
+}
+
+#settings form p {
+    text-align: center;
+}
