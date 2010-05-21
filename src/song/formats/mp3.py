@@ -43,3 +43,6 @@ class MP3Song (Song):
             setattr(self, key, self.id3.get(key, ('',))[0])
         self.bitrate = int(self.song.info.bitrate) / 1000
         self.length = int(self.song.info.length)
+        # check if tracknumber is numeric
+        if not self.tracknumber.isdigit():
+            this.tracknumber = 0

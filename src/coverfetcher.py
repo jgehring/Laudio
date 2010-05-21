@@ -96,8 +96,6 @@ class CoverFetcher(object):
         
         try:
             response = urllib2.urlopen(full_url)
-            # TODO: maybe we could reduce code size to one line with 
-            #       xpath method when parsing the xml
             elements = etree.fromstring(response.read())
             if elements.get("status") == "ok":
                 return elements.xpath('/lfm/album/image[@size="extralarge"]/text()')[0]

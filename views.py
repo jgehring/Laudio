@@ -89,10 +89,6 @@ def laudio_settings(request):
 ########################################################################
 # AJAX Requests                                                        #
 ########################################################################
-#
-# FIXME:    apparently switching from integerfield to charfield completely
-#           broke ordering by trackid
-#
 def ajax_song_metadata(request, id):
     """Returns a json object with metainformation about the song
     

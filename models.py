@@ -29,7 +29,7 @@ class Song(models.Model):
     album = models.CharField(max_length=150)
     genre = models.CharField(max_length=50)
     codec = models.CharField(max_length=10)
-    tracknumber = models.CharField(max_length=100)
+    tracknumber = models.IntegerField()
     path = models.CharField(max_length=250, unique=True)
     lastmodified = models.IntegerField()
     added =  models.IntegerField()
