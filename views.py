@@ -94,7 +94,7 @@ def laudio_settings(request):
                             
     
 def laudio_settings_new_user(request):
-    
+    """Create a new user"""
     if request.method == 'POST':
         userform = UserForm(request.POST)
         profileform = UserProfileForm(request.POST)
@@ -120,6 +120,7 @@ def laudio_settings_new_user(request):
     return render_to_response( 'newuser.html', { 
                                 "userform": userform,  
                                 "profileform": profileform,
+                                "header": "Add new user"
                                 }
                             )
 
@@ -133,6 +134,8 @@ def laudio_settings_edit_user(request, userid):
         
         if userform.is_valid() and profileform.is_valid(): 
             user = User.objects.get(pk=userid)
+            # FIXME: throws a user already exists error if username 
+            #        doesnt change
             user.username = userform.cleaned_data['username']
             user.password = userform.cleaned_data['password']
             user.email = userform.cleaned_data['email']
@@ -157,6 +160,7 @@ def laudio_settings_edit_user(request, userid):
     return render_to_response( 'newuser.html', { 
                                 "userform": userform,  
                                 "profileform": profileform,
+                                "header": "Edit user"
                                 }
                             )
     return HttpResponseRedirect(settings.URL_PREFIX + 'settings/')
