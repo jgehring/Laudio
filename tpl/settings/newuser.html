@@ -2,13 +2,14 @@
 
 {% block title %}LAudio - Add a new user{% endblock %}
 
-
 {% block content %}
+
+
 <div id="settings">
     <h1>Add a new user</h1>
     <form method="post" action=".">
         <fieldset>
-            <legend>Collection</legend>
+            <legend>User</legend>
             <table>
                 
                 {% for field in userform %}
@@ -39,7 +40,7 @@
 
                 <tr>
                     <th></th>
-                    <td><input name="submit" type="submit" value="save" /></td>
+                    <td><input name="submit" class="submit" type="submit" value="save" /></td>
                 </tr>
             </table>
         </fieldset>

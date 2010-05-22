@@ -37,6 +37,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.contrib.auth import authenticate, login
+from django.template import RequestContext
 
 # other python libs
 import time
@@ -56,7 +57,8 @@ def laudio_index(request):
         firstsong = song[0].path
     else:
         firstsong = ""
-    return render_to_response('index.html', { 'firstsong': firstsong })
+    return render_to_response('index.html', { 'firstsong': firstsong }, 
+                                context_instance=RequestContext(request))
 
 
 def laudio_about(request):
@@ -76,12 +78,15 @@ def laudio_login(request):
                 return HttpResponseRedirect(settings.URL_PREFIX)
             else:
                 success = "Your account has been disabled!"
-                return render_to_response( 'login.html', {"success": success} )
+                return render_to_response( 'login.html', {"success": success}, 
+                                context_instance=RequestContext(request) )
         else:
             success = "Username or Password is wrong!"
-            return render_to_response( 'login.html', {"success": success} )
+            return render_to_response( 'login.html', {"success": success}, 
+                                context_instance=RequestContext(request) )
     else:
-        return render_to_response( 'login.html', {} )
+        return render_to_response( 'login.html', {}, 
+                                context_instance=RequestContext(request) )
 
 
 def laudio_logout(request):
@@ -120,7 +125,8 @@ def laudio_settings(request):
                                 "collection": config.collectionPath,  
                                 "settingsForm": settingsForm,
                                 "users": users 
-                                }
+                                }, 
+                                context_instance=RequestContext(request)
                             )
                      
                             
@@ -152,7 +158,8 @@ def laudio_settings_new_user(request):
     return render_to_response( 'settings/newuser.html', { 
                                 "userform": userform,  
                                 "profileform": profileform
-                                }
+                                }, 
+                                context_instance=RequestContext(request)
                             )
 
 
@@ -166,8 +173,6 @@ def laudio_settings_edit_user(request, userid):
         
         if userform.is_valid() and profileform.is_valid(): 
             user = User.objects.get(pk=userid)
-            # FIXME: throws a user already exists error if username 
-            #        doesnt change
             user.email = userform.cleaned_data['email']
             user.is_superuser = userform.cleaned_data['is_superuser']
             user.is_active = userform.cleaned_data['is_active']
@@ -192,10 +197,10 @@ def laudio_settings_edit_user(request, userid):
     return render_to_response( 'settings/edituser.html', { 
                                 "userform": userform,  
                                 "profileform": profileform
-                                }
+                                }, 
+                                context_instance=RequestContext(request)
                             )
-    return HttpResponseRedirect(settings.URL_PREFIX + 'settings/')
-    
+
 
 @check_login("admin")
 def laudio_settings_delete_user(request, userid):
@@ -203,6 +208,43 @@ def laudio_settings_delete_user(request, userid):
     user = User.objects.get(pk=userid)
     user.delete()
     return HttpResponseRedirect(settings.URL_PREFIX + 'settings/')
+    
+    
+@check_login("user")
+def laudio_profile(request):
+    """Edit a profile"""
+    user = request.user
+    
+    if request.method == 'POST':
+        
+        userform = UserEditProfileForm(request.POST)
+        profileform = UserProfileForm(request.POST)
+        
+        if userform.is_valid() and profileform.is_valid(): 
+            user.email = userform.cleaned_data['email']
+            if request.POST.get('password') != "":
+                user.set_password( request.POST.get('password') )
+            user.save()
+            # profile
+            profile = UserProfile.objects.get(user=user)
+            profile.user = user
+            profile.lastFMName = profileform.cleaned_data['lastFMName']
+            profile.lastFMPass = profileform.cleaned_data['lastFMPass']
+            profile.lastFMSubmit = profileform.cleaned_data['lastFMSubmit']
+            profile.save()
+            return HttpResponseRedirect(settings.URL_PREFIX + 'profile/')
+    else:
+        
+        userform = UserEditProfileForm(instance=user)
+        profile = UserProfile.objects.get(user=user)
+        profileform = UserProfileForm(instance=profile)
+
+    return render_to_response( 'profile.html', { 
+                                "userform": userform,  
+                                "profileform": profileform
+                                }, 
+                                context_instance=RequestContext(request)
+                            )
 ########################################################################
 # AJAX Requests                                                        #
 ########################################################################

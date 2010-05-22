@@ -23,6 +23,7 @@ $(function(){
     var $audio = $("#player");
     var $col = $('#collection tbody');
     var $loading = $('.loading');
+    var URL_PREFIX = $('meta[name=urlprefix]').attr("content");
     $audio[0].addEventListener("ended", nextSong, true);
     $audio[0].addEventListener("playing", updatePlayPause, true);
     $audio[0].addEventListener("pause", updatePlayPause, true);
@@ -87,7 +88,7 @@ $(function(){
         $loading.fadeIn("fast");
         var content_show = $(this).html();
         if (content_show == "All"){
-            $col.load("/laudio/collection/", function (){ 
+            $col.load( URL_PREFIX + "collection/", function (){ 
                 $loading.fadeOut('fast', function(){
                     $col.fadeIn('fast');
                     // set color to just playing song
@@ -100,7 +101,7 @@ $(function(){
                 });
             });            
         } else {
-            $col.load("/laudio/artist/" + content_show + "/", function (){ 
+            $col.load( URL_PREFIX + "artist/" + content_show + "/", function (){ 
                 $loading.fadeOut('fast', function(){
                     $col.fadeIn('fast');
                     // set color to just playing song
@@ -118,6 +119,8 @@ $(function(){
 
 });
 
+// set url prefix
+var URL_PREFIX = $('meta[name=urlprefix]').attr("content");
 
 /*
  * Does and advanced or simple search
@@ -141,7 +144,7 @@ function search(simple) {
     if((title || artist || album || genre) && !simple){
         $col.fadeOut('fast');
         $loading.fadeIn("slow");
-        var url = "/laudio/advsearch/";
+        var url =  URL_PREFIX + "advsearch/";
         // FIXME: maybe set this as data instead of url, wouldnt be much
         // shorter though
         var query = "?artist=" + artist + "&amp;title=" + title +
@@ -164,7 +167,7 @@ function search(simple) {
         $col.fadeOut('fast');
         $loading.fadeIn("slow");
         var searchValue = encodeURIComponent($('.search').attr("value"));
-        $col.load("/laudio/searchall/" + searchValue + "/", function() {
+        $col.load( URL_PREFIX + "searchall/" + searchValue + "/", function() {
             $loading.fadeOut('fast');
             $col.fadeIn('slow');
             // set color to just playing song
@@ -194,7 +197,7 @@ function playSong(id){
     }
     
     // get song data
-    $.getJSON("/laudio/song_data/" + id + "/", function(json){
+    $.getJSON( URL_PREFIX + "song_data/" + id + "/", function(json){
         // store duration, then get mins and secs
         $("body").data("duration", json.duration);
         mins = Math.floor(json.duration / 60);
@@ -213,11 +216,11 @@ function playSong(id){
         $("#currentSong tr:eq(8) td").html(json.bitrate +  " kb/s");
         
         if ($audio.attr("paused")){
-            $audio.attr("src", "/laudio/media/audio/" + json.path);
+            $audio.attr("src", URL_PREFIX + "media/audio/" + json.path);
             $audio[0].load();
         } else {
             $audio[0].pause();
-            $audio.attr("src", "/laudio/media/audio/" + json.path);
+            $audio.attr("src", URL_PREFIX + "media/audio/" + json.path);
             $audio[0].load();
             // note: we direct playing to playWhenLoaded, which starts
             // playing when the song is being loaded
@@ -226,7 +229,7 @@ function playSong(id){
         $("body").data("playing", id);
         $("#row" + id).addClass("playing");
         // get album data
-        $.getJSON("/laudio/cover/" + id + "/", function(json){
+        $.getJSON( URL_PREFIX + "cover/" + id + "/", function(json){
             $("#cover img").attr("src", json.coverpath);
             $("#cover img").attr("title", json.album);
             $("#cover img").attr("alt", json.album);
@@ -355,7 +358,7 @@ function updatePlayPause(){
     var $audio = $("#player");
     var $playButton = $("#playButton img");
     if ($audio.attr("paused") === true){
-        $playButton.attr("src", "/laudio/media/style/img/play.png");
+        $playButton.attr("src",  URL_PREFIX + "media/style/img/play.png");
         $playButton.attr("title", "play");
         $playButton.attr("alt", "play");
     } else {
@@ -363,7 +366,7 @@ function updatePlayPause(){
         var title = $("#currentSong tr:eq(0) td").html();
         var artist = $("#currentSong tr:eq(3) td").html();
         document.title = title + " - " + artist;
-        $playButton.attr("src", "/laudio/media/style/img/pause.png");
+        $playButton.attr("src",  URL_PREFIX + "media/style/img/pause.png");
         $playButton.attr("title", "pause");
         $playButton.attr("alt", "pause");
     }
@@ -389,17 +392,17 @@ function setRepeat(){
     var $repeatButton = $("#repeatButton img")
     if(repeat === "norepeat"){
         $("body").data("repeat", "repeat");
-        $repeatButton.attr("src", "/laudio/media/style/img/repeat.png");
+        $repeatButton.attr("src",  URL_PREFIX + "media/style/img/repeat.png");
         $repeatButton.attr("title", "repeat");
         $repeatButton.attr("alt", "repeat");
     } else if (repeat === "repeat"){
         $("body").data("repeat", "repeatall");
-        $repeatButton.attr("src", "/laudio/media/style/img/repeatall.png");
+        $repeatButton.attr("src",  URL_PREFIX + "media/style/img/repeatall.png");
         $repeatButton.attr("title", "repeatall");
         $repeatButton.attr("alt", "repeatall");
     } else {
         $("body").data("repeat", "norepeat");
-        $repeatButton.attr("src", "/laudio/media/style/img/repeatoff.png");
+        $repeatButton.attr("src",  URL_PREFIX + "media/style/img/repeatoff.png");
         $repeatButton.attr("title", "repeatoff");
         $repeatButton.attr("alt", "repeatoff");
     }
@@ -414,12 +417,12 @@ function setShuffle(){
     var $shuffleButton = $("#shuffleButton img")
     if(shuffle === "noshuffle"){
         $("body").data("shuffle", "shuffle");
-        $shuffleButton.attr("src", "/laudio/media/style/img/shuffle.png");
+        $shuffleButton.attr("src",  URL_PREFIX + "media/style/img/shuffle.png");
         $shuffleButton.attr("title", "shuffle");
         $shuffleButton.attr("alt", "shuffle");
     } else {
         $("body").data("shuffle", "noshuffle");
-        $shuffleButton.attr("src", "/laudio/media/style/img/shuffleoff.png");
+        $shuffleButton.attr("src",  URL_PREFIX + "media/style/img/shuffleoff.png");
         $shuffleButton.attr("title", "shuffleoff");
         $shuffleButton.attr("alt", "shuffleoff");
     }
@@ -455,9 +458,9 @@ function updateVolume(){
     var ctx = $canvas[0].getContext("2d");
     var volume = $audio.attr("volume");
     if (volume === 0){
-        $("#mute img").attr("src", "/laudio/media/style/img/muted.png");
+        $("#mute img").attr("src",  URL_PREFIX + "media/style/img/muted.png");
     } else {
-        $("#mute img").attr("src", "/laudio/media/style/img/volume.png");
+        $("#mute img").attr("src",  URL_PREFIX + "media/style/img/volume.png");
     }
     pos = Math.floor(volume * 80);
     ctx.clearRect(0,0, 80 ,24);

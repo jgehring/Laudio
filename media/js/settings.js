@@ -21,10 +21,12 @@
 
 
 $(document).ready(function() { 
+    var URL_PREFIX = $('meta[name=urlprefix]').attr("content");
+    
     $("#resetcoll").click(function() {
         $("#popup").fadeIn("slow");
         $("#popup").addClass("loading");
-        $("#popup").load("/laudio/settings/resetdb/", function (){ 
+        $("#popup").load( URL_PREFIX + "settings/resetdb/", function (){ 
             $("#popup").removeClass("loading");
             $("#popup p").fadeIn("slow");
         });       
@@ -35,9 +37,9 @@ $(document).ready(function() {
     });
     
     $("#scancoll").click(function() {
-       $("#popup").fadeIn("slow");
+        $("#popup").fadeIn("slow");
         $("#popup").addClass("loading");
-        $("#popup").load("/laudio/settings/scan/", function (){ 
+        $("#popup").load( URL_PREFIX + "settings/scan/", function (){ 
             $("#popup").removeClass("loading");
             $("#popup p").fadeIn("slow");
         });   

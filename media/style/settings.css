@@ -52,6 +52,11 @@
     padding: 2px;
 }
 
+#settings form input.submit {
+    padding: 0;
+    height: 24px;
+}
+
 #settings form input:focus {
     background-color: #fefefe;
 }

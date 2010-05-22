@@ -58,6 +58,7 @@ urlpatterns = patterns('',
     
     # other sites
     (r'^about/$', laudio_about),
+    (r'^profile/$', laudio_profile),
     (r'^login/$', laudio_login),
     (r'^logout/$', laudio_logout),
 )

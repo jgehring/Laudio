@@ -29,7 +29,7 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.models import User
 
 def check_login(authLevel):
-    """This decorator checks if the user as to be authenticated and checks
+    """This decorator checks if the user has to be authenticated and checks
     if the level is right. Basic usage is
     
     @login("admin")

@@ -5,10 +5,11 @@
     <head>
         <title>{% block title %}{% endblock %}</title>
         <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-        <link rel="stylesheet" href="/laudio/media/style/style.css" type="text/css" media="all" charset="utf-8" />
-        <script src="/laudio/media/js/jquery-1.4.2.min.js" type="text/javascript" charset="utf-8"></script>
+        <meta name="urlprefix" content="{{ URL_PREFIX }}" />
+        <link rel="stylesheet" href="{{ URL_PREFIX }}media/style/style.css" type="text/css" media="all" charset="utf-8" />
+        <script src="{{ URL_PREFIX }}media/js/jquery-1.4.2.min.js" type="text/javascript" charset="utf-8"></script>
         {% block script%}{% endblock %}
-        <link rel="icon" type="image/png" href="/laudio/media/style/img/favicon.png" />
+        <link rel="icon" type="image/png" href="{{ URL_PREFIX }}media/style/img/favicon.png" />
     </head>
 
     <body>
@@ -16,10 +17,16 @@
     
         <div id="nav">
             <ul>
-                <li><a href="/laudio">Collection</a></li>
-                <li><a href="/laudio/playlist">Playlist</a></li>
-                <li><a href="/laudio/settings">Settings</a></li>
-                <li><a href="/laudio/about">About</a></li>
+                <li><a href="{{ URL_PREFIX }}">Collection</a></li>
+                <li><a href="{{ URL_PREFIX }}playlist">Playlist</a></li>
+                <li><a href="{{ URL_PREFIX }}settings">Settings</a></li>
+                {% if LOGGED_IN %}
+                    <li><a href="{{ URL_PREFIX }}profile">Profile</a></li>
+                    <li><a href="{{ URL_PREFIX }}logout">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ URL_PREFIX }}login">Login</a></li>
+                {% endif %}
+                <li><a href="{{ URL_PREFIX }}about">About</a></li>
             </ul>
         </div>
 

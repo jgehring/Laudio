@@ -26,6 +26,13 @@ class UserEditForm(forms.ModelForm):
                    "date_joined", "groups", "user_permissions", "password",
                    "username")
 
+class UserEditProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        exclude = ("first_name", "last_name", "is_staff", "last_login", 
+                   "date_joined", "groups", "user_permissions", "password",
+                   "username", "is_active", "is_superuser")
+
 class SettingsForm(forms.ModelForm):
     class Meta:
         model = Settings

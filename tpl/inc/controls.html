@@ -1,17 +1,17 @@
 <div id="controls">
     <ul>
-        <li onclick="prevSong()"><img src="/laudio/media/style/img/previous.png" alt="previous" title="previous"/></li>
+        <li onclick="prevSong()"><img src="{{ URL_PREFIX }}media/style/img/previous.png" alt="previous" title="previous"/></li>
         <li id="progressbar"><canvas height="24" width="300"></canvas></li>
-        <li onclick="nextSong()"><img src="/laudio/media/style/img/next.png" alt="next" title="next"/></li>
-        <li id="playButton" onclick="play()"><img src="/laudio/media/style/img/play.png" alt="play" title="play"/></li>
-        <li onclick="jumpTo()"><img src="/laudio/media/style/img/jumpto.png" alt="jumpTo" title="jumpTo"/></li>
+        <li onclick="nextSong()"><img src="{{ URL_PREFIX }}media/style/img/next.png" alt="next" title="next"/></li>
+        <li id="playButton" onclick="play()"><img src="{{ URL_PREFIX }}media/style/img/play.png" alt="play" title="play"/></li>
+        <li onclick="jumpTo()"><img src="{{ URL_PREFIX }}media/style/img/jumpto.png" alt="jumpTo" title="jumpTo"/></li>
     </ul>
 </div>
 <div id="extraControls">
     <ul>
-        <li id="repeatButton" onclick="setRepeat()"><img src="/laudio/media/style/img/repeatoff.png" alt="repeat" title="repeat"/></li>
-        <li id="shuffleButton" onclick="setShuffle()"><img src="/laudio/media/style/img/shuffleoff.png" alt="shuffle" title="shuffle"/></li>
-        <li id="mute" onclick="mute()"><img src="/laudio/media/style/img/volume.png" alt="mute" title="mute"/></li>
+        <li id="repeatButton" onclick="setRepeat()"><img src="{{ URL_PREFIX }}media/style/img/repeatoff.png" alt="repeat" title="repeat"/></li>
+        <li id="shuffleButton" onclick="setShuffle()"><img src="{{ URL_PREFIX }}media/style/img/shuffleoff.png" alt="shuffle" title="shuffle"/></li>
+        <li id="mute" onclick="mute()"><img src="{{ URL_PREFIX }}media/style/img/volume.png" alt="mute" title="mute"/></li>
         <li id="volume" title="volume"><canvas height="24" width="80"></canvas></li>
     </ul>
 </div>
