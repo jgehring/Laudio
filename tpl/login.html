@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}LAudio - Login{% endblock %}
+
+
+{% block content %}
+
+<div id="settings">
+    <h1>Login</h1>
+    <ul class="errorlist">
+        <li>{{ success }}</li>
+    </ul>
+    <form action="." method="post">
+        <table>
+            <tr>
+                <th>Username</th>
+                <td><input name="username" type="text" /></td>
+            </tr>
+            <tr>
+                <th>Username</th>
+                <td><input name="password" type="password" /></td>
+            </tr>
+            <tr>
+                <th></th>
+                <td><input name="submit" type="submit" value="login"/></td>
+            </tr>
+        </table>
+    </form>
+</div>
+{% endblock %}

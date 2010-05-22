@@ -71,7 +71,8 @@ td.errors {
 
 .errorlist li {
     list-style-type: none;
-    color: #fefefe;    
+    color: #fefefe;
+    background-color: #D24A4A;    
 }
 
 #settings #users th {

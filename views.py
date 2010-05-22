@@ -24,17 +24,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 # laudio modules
 from laudio.src.coverfetcher import CoverFetcher
 from laudio.src.laudiosettings import LaudioSettings
+from laudio.src.decorators import check_login
 from laudio.models import *
 from laudio.forms import *
 # django
 from django.shortcuts import render_to_response
 from django.db.models import Q
-from django.conf import settings
 from django.utils.datastructures import MultiValueDictKeyError
 from django.conf import settings
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
+from django.contrib.auth import logout
+from django.contrib.auth import authenticate, login
+
 # other python libs
 import time
 import os
@@ -43,7 +46,8 @@ import os
 ########################################################################
 # Visible Sites                                                        #
 ########################################################################
-def index(request):
+@check_login("user")
+def laudio_index(request):
     """The collection view which is displayed as index by default
     Returns one song which we have to set for the audio element in order
     to work properly"""
@@ -55,11 +59,38 @@ def index(request):
     return render_to_response('index.html', { 'firstsong': firstsong })
 
 
-def about(request):
+def laudio_about(request):
     """A plain about site"""
     return render_to_response('about.html', {})
 
 
+def laudio_login(request):
+    """A site which tells the user to log in"""
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return HttpResponseRedirect(settings.URL_PREFIX)
+            else:
+                success = "Your account has been disabled!"
+                return render_to_response( 'login.html', {"success": success} )
+        else:
+            success = "Username or Password is wrong!"
+            return render_to_response( 'login.html', {"success": success} )
+    else:
+        return render_to_response( 'login.html', {} )
+
+
+def laudio_logout(request):
+    """Logs out a user"""
+    logout(request)
+    return HttpResponseRedirect(settings.URL_PREFIX + 'login/')
+
+
+@check_login("admin")
 def laudio_settings(request):
     """Site where the configuration happens"""
     config = LaudioSettings()
@@ -85,14 +116,15 @@ def laudio_settings(request):
             settingsForm = SettingsForm(instance=settings)
         except Settings.DoesNotExist:
             settingsForm = SettingsForm(settings)
-    return render_to_response( 'settings.html', { 
+    return render_to_response( 'settings/settings.html', { 
                                 "collection": config.collectionPath,  
                                 "settingsForm": settingsForm,
                                 "users": users 
                                 }
                             )
+                     
                             
-    
+@check_login("admin")    
 def laudio_settings_new_user(request):
     """Create a new user"""
     if request.method == 'POST':
@@ -101,10 +133,10 @@ def laudio_settings_new_user(request):
         
         if userform.is_valid() and profileform.is_valid(): 
             user = User(username=userform.cleaned_data['username'],
-                        password=userform.cleaned_data['password'],
                         email=userform.cleaned_data['email'],
                         is_superuser=userform.cleaned_data['is_superuser'],
                         is_active=userform.cleaned_data['is_active'])
+            user.set_password( request.POST.get('password') )
             user.save()
             # profile
             profile = UserProfile(user=user,
@@ -117,30 +149,30 @@ def laudio_settings_new_user(request):
         userform = UserForm()
         profileform = UserProfileForm()
 
-    return render_to_response( 'newuser.html', { 
+    return render_to_response( 'settings/newuser.html', { 
                                 "userform": userform,  
-                                "profileform": profileform,
-                                "header": "Add new user"
+                                "profileform": profileform
                                 }
                             )
 
 
+@check_login("admin")
 def laudio_settings_edit_user(request, userid):
     """Edit a user by userid"""
     if request.method == 'POST':
         
-        userform = UserForm(request.POST)
+        userform = UserEditForm(request.POST)
         profileform = UserProfileForm(request.POST)
         
         if userform.is_valid() and profileform.is_valid(): 
             user = User.objects.get(pk=userid)
             # FIXME: throws a user already exists error if username 
             #        doesnt change
-            user.username = userform.cleaned_data['username']
-            user.password = userform.cleaned_data['password']
             user.email = userform.cleaned_data['email']
             user.is_superuser = userform.cleaned_data['is_superuser']
             user.is_active = userform.cleaned_data['is_active']
+            if request.POST.get('password') != "":
+                user.set_password( request.POST.get('password') )
             user.save()
             # profile
             profile = UserProfile.objects.get(user=user)
@@ -153,19 +185,19 @@ def laudio_settings_edit_user(request, userid):
     else:
         
         user = User.objects.get(pk=userid)
-        userform = UserForm(instance=user)
+        userform = UserEditForm(instance=user)
         profile = UserProfile.objects.get(user=user)
         profileform = UserProfileForm(instance=profile)
 
-    return render_to_response( 'newuser.html', { 
+    return render_to_response( 'settings/edituser.html', { 
                                 "userform": userform,  
-                                "profileform": profileform,
-                                "header": "Edit user"
+                                "profileform": profileform
                                 }
                             )
     return HttpResponseRedirect(settings.URL_PREFIX + 'settings/')
     
 
+@check_login("admin")
 def laudio_settings_delete_user(request, userid):
     """Deletes a user by userid"""
     user = User.objects.get(pk=userid)
@@ -174,6 +206,7 @@ def laudio_settings_delete_user(request, userid):
 ########################################################################
 # AJAX Requests                                                        #
 ########################################################################
+@check_login("admin")
 def ajax_drop_collection_db(request):
     """Deletes all playlists and songs in the db"""
     config = LaudioSettings()
@@ -181,6 +214,7 @@ def ajax_drop_collection_db(request):
     return render_to_response('requests/dropscan.html', { "msg": config })
 
 
+@check_login("admin")
 def ajax_scan_collection(request):
     """Scan the files in the collection"""
     config = LaudioSettings()
@@ -191,6 +225,7 @@ def ajax_scan_collection(request):
     return render_to_response('requests/dropscan.html', { "msg": config })
 
 
+@check_login("user")
 def ajax_song_metadata(request, id):
     """Returns a json object with metainformation about the song
     
@@ -202,6 +237,7 @@ def ajax_song_metadata(request, id):
     return render_to_response('requests/song_data.html', {"song": song})
 
 
+@check_login("user")
 def ajax_cover_fetch(request, id):
     """Fetches the URL of albumcover, either locally or from the Internet
     
@@ -215,6 +251,7 @@ def ajax_cover_fetch(request, id):
     return render_to_response('requests/cover.html', {"coverpath": cover, "album": song.album})
 
 
+@check_login("user")
 def ajax_artists_by_letters(request, artist):
     """Returns songs of all artists starting with artist
     
@@ -228,6 +265,7 @@ def ajax_artists_by_letters(request, artist):
     return render_to_response('requests/songs.html', {'songs': songs, })
 
 
+@check_login("user")
 def ajax_whole_collection(request):
     """Get all the songs from the collection"""
     songs = Song.objects.all().extra(select=
@@ -236,6 +274,7 @@ def ajax_whole_collection(request):
     return render_to_response('requests/songs.html', {'songs': songs, })
 
 
+@check_login("user")
 def ajax_search_collection(request, search):
     """Get song where any field matches the search
     
@@ -258,6 +297,7 @@ def ajax_search_collection(request, search):
     return render_to_response('requests/songs.html', {'songs': songs, })
 
 
+@check_login("user")
 def ajax_adv_search_collection(request):
     """Get songs where the fields contain the search params"""
     title = request.GET["title"]

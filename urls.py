@@ -38,20 +38,26 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # (r'^admin/', include(admin.site.urls)),
+    
+    # settings
     (r'^settings/$', laudio_settings),
     (r'^settings/resetdb/$', ajax_drop_collection_db),
     (r'^settings/scan/$', ajax_scan_collection),
     (r'^settings/newuser/$', laudio_settings_new_user),
     (r'^settings/deleteuser/(?P<userid>.*)/$', laudio_settings_delete_user),
     (r'^settings/edituser/(?P<userid>.*)/$', laudio_settings_edit_user),
-    (r'^about/$', about),
-
-    #collection
-    (r'^$', index),
+    
+    # collection
+    (r'^$', laudio_index),
     (r'^collection/$', ajax_whole_collection),
     (r'^artist/(?P<artist>.*)/$', ajax_artists_by_letters),
     (r'^searchall/(?P<search>.*)/$', ajax_search_collection),
     (r'^advsearch/$', ajax_adv_search_collection),
     (r'^song_data/(?P<id>.*)/$', ajax_song_metadata),
     (r'^cover/(?P<id>.*)/$', ajax_cover_fetch),
+    
+    # other sites
+    (r'^about/$', laudio_about),
+    (r'^login/$', laudio_login),
+    (r'^logout/$', laudio_logout),
 )
