@@ -66,6 +66,8 @@ MEDIA_ROOT = os.path.join(os.path.dirname(__file__), '/media/').replace('\\', '/
 URL_PREFIX = '/laudio/'
 AUDIO_DIR = os.path.join( os.path.dirname(__file__),
                                     'media/audio').replace('\\', '/' )
+                                    
+LAST_FM_API_KEY = "a1d1111ab0b08262e6d7484cc5dc949a"
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -117,5 +119,5 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'laudio',
-    'laudio.celery',
+    'laudio.src.celery',
 )

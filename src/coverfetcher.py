@@ -86,7 +86,7 @@ class CoverFetcher(object):
         your app at last.fm to tell it with which app you submit/get
         data
         """
-        data["api_key"] = "a1d1111ab0b08262e6d7484cc5dc949a"
+        data["api_key"] = settings.LAST_FM_API_KEY
         data["method"] = "album.getinfo"
         data["artist"] = self.artist
         data["album"] = self.album

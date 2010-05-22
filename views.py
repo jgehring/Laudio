@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 from laudio.src.coverfetcher import CoverFetcher
 from laudio.src.laudiosettings import LaudioSettings
 from laudio.src.decorators import check_login
+import laudio.src.scrobbler as scrobbler
 from laudio.models import *
 from laudio.forms import *
 # django
@@ -277,6 +278,26 @@ def ajax_song_metadata(request, id):
     
     """
     song = Song.objects.get(id=id)
+    
+    # if user is logged in submit stats
+    if request.user.is_authenticated():
+        if request.user.get_profile().lastFMSubmit:
+            userprofile = request.user.get_profile()
+            if userprofile.lastFMName != "" and userprofile.lastFMPass != "":
+                try:
+                    
+                    now = int(time.mktime(time.gmtime()))
+                    scrobbler.login(userprofile.lastFMName, userprofile.lastFMPass)
+                    scrobbler.submit(song.artist, song.title, now, source='P',
+                                   length=song.length)
+                    scrobbler.flush()
+                # if something bad happens, just ignore it
+                except (scrobbler.BackendError, scrobbler.AuthError,
+                        scrobbler.PostError, scrobbler.SessionError,
+                        scrobbler.ProtocolError):
+                    pass
+
+    
     return render_to_response('requests/song_data.html', {"song": song})
 
 
