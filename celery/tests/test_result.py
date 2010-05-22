@@ -1,12 +1,15 @@
-import unittest
+from __future__ import generators
+
+import unittest2 as unittest
 
 from celery import states
 from celery.utils import gen_unique_id
-from celery.tests.utils import skip_if_quick
 from celery.result import AsyncResult, TaskSetResult
 from celery.backends import default_backend
 from celery.exceptions import TimeoutError
 from celery.task.base import Task
+
+from celery.tests.utils import skip_if_quick
 
 
 def mock_task(name, status, result):
@@ -55,19 +58,19 @@ class TestAsyncResult(unittest.TestCase):
         ok_res = AsyncResult(self.task1["id"])
         ok2_res = AsyncResult(self.task2["id"])
         nok_res = AsyncResult(self.task3["id"])
-        self.assertEquals(str(ok_res), self.task1["id"])
-        self.assertEquals(str(ok2_res), self.task2["id"])
-        self.assertEquals(str(nok_res), self.task3["id"])
+        self.assertEqual(str(ok_res), self.task1["id"])
+        self.assertEqual(str(ok2_res), self.task2["id"])
+        self.assertEqual(str(nok_res), self.task3["id"])
 
     def test_repr(self):
         ok_res = AsyncResult(self.task1["id"])
         ok2_res = AsyncResult(self.task2["id"])
         nok_res = AsyncResult(self.task3["id"])
-        self.assertEquals(repr(ok_res), "<AsyncResult: %s>" % (
+        self.assertEqual(repr(ok_res), "<AsyncResult: %s>" % (
                 self.task1["id"]))
-        self.assertEquals(repr(ok2_res), "<AsyncResult: %s>" % (
+        self.assertEqual(repr(ok2_res), "<AsyncResult: %s>" % (
                 self.task2["id"]))
-        self.assertEquals(repr(nok_res), "<AsyncResult: %s>" % (
+        self.assertEqual(repr(nok_res), "<AsyncResult: %s>" % (
                 self.task3["id"]))
 
     def test_get_traceback(self):
@@ -84,10 +87,10 @@ class TestAsyncResult(unittest.TestCase):
         nok_res = AsyncResult(self.task3["id"])
         nok2_res = AsyncResult(self.task4["id"])
 
-        self.assertEquals(ok_res.get(), "the")
-        self.assertEquals(ok2_res.get(), "quick")
+        self.assertEqual(ok_res.get(), "the")
+        self.assertEqual(ok2_res.get(), "quick")
         self.assertRaises(KeyError, nok_res.get)
-        self.assertTrue(isinstance(nok2_res.result, KeyError))
+        self.assertIsInstance(nok2_res.result, KeyError)
 
     def test_get_timeout(self):
         res = AsyncResult(self.task4["id"]) # has RETRY status
@@ -102,7 +105,7 @@ class TestAsyncResult(unittest.TestCase):
         oks = (AsyncResult(self.task1["id"]),
                AsyncResult(self.task2["id"]),
                AsyncResult(self.task3["id"]))
-        [self.assertTrue(ok.ready()) for ok in oks]
+        self.assertTrue(all(result.ready() for result in oks))
         self.assertFalse(AsyncResult(self.task4["id"]).ready())
 
 
@@ -135,7 +138,7 @@ class TestTaskSetResult(unittest.TestCase):
         self.ts = TaskSetResult(gen_unique_id(), make_mock_taskset(self.size))
 
     def test_total(self):
-        self.assertEquals(self.ts.total, self.size)
+        self.assertEqual(self.ts.total, self.size)
 
     def test_iterate_raises(self):
         ar = MockAsyncResultFailure(gen_unique_id())
@@ -148,8 +151,8 @@ class TestTaskSetResult(unittest.TestCase):
         ar2 = MockAsyncResultSuccess(gen_unique_id())
         ts = TaskSetResult(gen_unique_id(), [ar, ar2])
         it = iter(ts)
-        self.assertEquals(it.next(), 42)
-        self.assertEquals(it.next(), 42)
+        self.assertEqual(it.next(), 42)
+        self.assertEqual(it.next(), 42)
 
     def test_join_timeout(self):
         ar = MockAsyncResultSuccess(gen_unique_id())
@@ -163,18 +166,18 @@ class TestTaskSetResult(unittest.TestCase):
         it = self.ts.itersubtasks()
 
         for i, t in enumerate(it):
-            self.assertEquals(t.get(), i)
+            self.assertEqual(t.get(), i)
 
     def test___iter__(self):
 
         it = iter(self.ts)
 
         results = sorted(list(it))
-        self.assertEquals(results, list(xrange(self.size)))
+        self.assertListEqual(results, list(xrange(self.size)))
 
     def test_join(self):
         joined = self.ts.join()
-        self.assertEquals(joined, list(xrange(self.size)))
+        self.assertListEqual(joined, list(xrange(self.size)))
 
     def test_successful(self):
         self.assertTrue(self.ts.successful())
@@ -189,7 +192,7 @@ class TestTaskSetResult(unittest.TestCase):
         self.assertTrue(self.ts.ready())
 
     def test_completed_count(self):
-        self.assertEquals(self.ts.completed_count(), self.ts.total)
+        self.assertEqual(self.ts.completed_count(), self.ts.total)
 
 
 class TestPendingAsyncResult(unittest.TestCase):
@@ -198,7 +201,7 @@ class TestPendingAsyncResult(unittest.TestCase):
         self.task = AsyncResult(gen_unique_id())
 
     def test_result(self):
-        self.assertTrue(self.task.result is None)
+        self.assertIsNone(self.task.result)
 
 
 class TestFailedTaskSetResult(TestTaskSetResult):
@@ -217,11 +220,11 @@ class TestFailedTaskSetResult(TestTaskSetResult):
 
         for i in xrange(self.size - 1):
             t = it.next()
-            self.assertEquals(t.get(), i)
+            self.assertEqual(t.get(), i)
         self.assertRaises(KeyError, it.next().get)
 
     def test_completed_count(self):
-        self.assertEquals(self.ts.completed_count(), self.ts.total - 1)
+        self.assertEqual(self.ts.completed_count(), self.ts.total - 1)
 
     def test___iter__(self):
         it = iter(self.ts)
@@ -249,7 +252,7 @@ class TestTaskSetPending(unittest.TestCase):
                                         AsyncResult(gen_unique_id())])
 
     def test_completed_count(self):
-        self.assertEquals(self.ts.completed_count(), 0)
+        self.assertEqual(self.ts.completed_count(), 0)
 
     def test_ready(self):
         self.assertFalse(self.ts.ready())

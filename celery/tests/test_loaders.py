@@ -1,13 +1,13 @@
 import os
 import sys
-import unittest
+import unittest2 as unittest
 
-from billiard.utils.functional import wraps
-
+from celery import task
 from celery import loaders
 from celery.loaders import base
 from celery.loaders import djangoapp
 from celery.loaders import default
+
 from celery.tests.utils import with_environ
 
 
@@ -15,19 +15,19 @@ class TestLoaders(unittest.TestCase):
 
     def test_get_loader_cls(self):
 
-        self.assertEquals(loaders.get_loader_cls("django"),
+        self.assertEqual(loaders.get_loader_cls("django"),
                           loaders.DjangoLoader)
-        self.assertEquals(loaders.get_loader_cls("default"),
+        self.assertEqual(loaders.get_loader_cls("default"),
                           loaders.DefaultLoader)
         # Execute cached branch.
-        self.assertEquals(loaders.get_loader_cls("django"),
+        self.assertEqual(loaders.get_loader_cls("django"),
                           loaders.DjangoLoader)
-        self.assertEquals(loaders.get_loader_cls("default"),
+        self.assertEqual(loaders.get_loader_cls("default"),
                           loaders.DefaultLoader)
 
     @with_environ("CELERY_LOADER", "default")
     def test_detect_loader_CELERY_LOADER(self):
-        self.assertEquals(loaders.detect_loader(), loaders.DefaultLoader)
+        self.assertEqual(loaders.detect_loader(), loaders.DefaultLoader)
 
 
 class DummyLoader(base.BaseLoader):
@@ -52,18 +52,16 @@ class TestLoaderBase(unittest.TestCase):
         self.loader.on_worker_init()
 
     def test_import_task_module(self):
-        import sys
-        self.assertEquals(sys, self.loader.import_task_module("sys"))
+        self.assertEqual(sys, self.loader.import_task_module("sys"))
 
     def test_conf_property(self):
-        self.assertEquals(self.loader.conf.foo, "bar")
-        self.assertEquals(self.loader._conf_cache.foo, "bar")
-        self.assertEquals(self.loader.conf.foo, "bar")
+        self.assertEqual(self.loader.conf.foo, "bar")
+        self.assertEqual(self.loader._conf_cache.foo, "bar")
+        self.assertEqual(self.loader.conf.foo, "bar")
 
     def test_import_default_modules(self):
-        import os
-        import sys
-        self.assertEquals(self.loader.import_default_modules(), [os, sys])
+        self.assertItemsEqual(self.loader.import_default_modules(),
+                              [os, sys, task])
 
 
 class TestDjangoLoader(unittest.TestCase):
@@ -73,7 +71,7 @@ class TestDjangoLoader(unittest.TestCase):
 
     def test_on_worker_init(self):
         from django.conf import settings
-        old_imports = settings.CELERY_IMPORTS
+        old_imports = getattr(settings, "CELERY_IMPORTS", None)
         settings.CELERY_IMPORTS = ("xxx.does.not.exist", )
         try:
             self.assertRaises(ImportError, self.loader.on_worker_init)
@@ -95,6 +93,22 @@ class TestDjangoLoader(unittest.TestCase):
                                                        "frobulators"))
 
 
+def modifies_django_env(fun):
+
+    def _protected(*args, **kwargs):
+        from django.conf import settings
+        current = dict((key, getattr(settings, key))
+                        for key in settings.get_all_members()
+                            if key.isupper())
+        try:
+            return fun(*args, **kwargs)
+        finally:
+            for key, value in current.items():
+                setattr(settings, key, value)
+
+    return _protected
+
+
 class TestDefaultLoader(unittest.TestCase):
 
     def test_wanted_module_item(self):
@@ -103,6 +117,7 @@ class TestDefaultLoader(unittest.TestCase):
         self.assertFalse(default.wanted_module_item("_foo"))
         self.assertFalse(default.wanted_module_item("__foo"))
 
+    @modifies_django_env
     def test_read_configuration(self):
         from types import ModuleType
 
@@ -116,11 +131,11 @@ class TestDefaultLoader(unittest.TestCase):
         try:
             l = default.Loader()
             settings = l.read_configuration()
-            self.assertEquals(settings.CELERY_IMPORTS, ("os", "sys"))
+            self.assertTupleEqual(settings.CELERY_IMPORTS, ("os", "sys"))
             from django.conf import settings
             settings.configured = False
             settings = l.read_configuration()
-            self.assertEquals(settings.CELERY_IMPORTS, ("os", "sys"))
+            self.assertTupleEqual(settings.CELERY_IMPORTS, ("os", "sys"))
             self.assertTrue(settings.configured)
             l.on_worker_init()
         finally:

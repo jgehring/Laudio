@@ -1,7 +1,5 @@
-from __future__ import with_statement
-
-import unittest
-from Queue import Queue, Empty
+import unittest2 as unittest
+from Queue import Empty
 from datetime import datetime, timedelta
 from multiprocessing import get_logger
 
@@ -10,13 +8,17 @@ from carrot.backends.base import BaseMessage
 from billiard.serialization import pickle
 
 from celery import conf
-from celery.utils import gen_unique_id, noop
+from celery.utils import gen_unique_id
 from celery.worker import WorkController
-from celery.worker.listener import CarrotListener, RUN, CLOSE
 from celery.worker.job import TaskWrapper
+from celery.worker.buckets import FastQueue
+from celery.worker.listener import CarrotListener, RUN
 from celery.worker.scheduler import Scheduler
 from celery.decorators import task as task_dec
 from celery.decorators import periodic_task as periodic_task_dec
+
+from celery.tests.utils import execute_context
+from celery.tests.compat import catch_warnings
 
 
 class PlaceHolder(object):
@@ -124,7 +126,7 @@ def create_message(backend, **data):
 class TestCarrotListener(unittest.TestCase):
 
     def setUp(self):
-        self.ready_queue = Queue()
+        self.ready_queue = FastQueue()
         self.eta_schedule = Scheduler(self.ready_queue)
         self.logger = get_logger()
         self.logger.setLevel(0)
@@ -138,7 +140,7 @@ class TestCarrotListener(unittest.TestCase):
             def drain_events(self):
                 return "draining"
 
-        l.connection = PlaceHolder()
+        l.connection = MockConnection()
         l.connection.connection = MockConnection()
 
         it = l._mainloop()
@@ -160,14 +162,14 @@ class TestCarrotListener(unittest.TestCase):
         l.task_consumer.add_consumer = create_recorder("consumer_add")
 
         records.clear()
-        self.assertEquals(l._detect_wait_method(), l._mainloop)
-        self.assertTrue(records.get("broadcast_callback"))
-        self.assertTrue(records.get("consume_broadcast"))
-        self.assertTrue(records.get("consume_tasks"))
+        self.assertEqual(l._detect_wait_method(), l._mainloop)
+        for record in ("broadcast_callback", "consume_broadcast",
+                "consume_tasks"):
+            self.assertTrue(records.get(record))
 
         records.clear()
         l.connection.connection = PlaceHolder()
-        self.assertTrue(l._detect_wait_method() is l.task_consumer.iterconsume)
+        self.assertIs(l._detect_wait_method(), l.task_consumer.iterconsume)
         self.assertTrue(records.get("consumer_add"))
 
     def test_connection(self):
@@ -175,18 +177,19 @@ class TestCarrotListener(unittest.TestCase):
                            send_events=False)
 
         l.reset_connection()
-        self.assertTrue(isinstance(l.connection, BrokerConnection))
+        self.assertIsInstance(l.connection, BrokerConnection)
 
-        l.close_connection()
-        self.assertTrue(l.connection is None)
-        self.assertTrue(l.task_consumer is None)
+        l.stop_consumers()
+        self.assertIsNone(l.connection)
+        self.assertIsNone(l.task_consumer)
 
         l.reset_connection()
-        self.assertTrue(isinstance(l.connection, BrokerConnection))
+        self.assertIsInstance(l.connection, BrokerConnection)
 
         l.stop()
-        self.assertTrue(l.connection is None)
-        self.assertTrue(l.task_consumer is None)
+        l.close_connection()
+        self.assertIsNone(l.connection)
+        self.assertIsNone(l.task_consumer)
 
     def test_receive_message_control_command(self):
         l = CarrotListener(self.ready_queue, self.eta_schedule, self.logger,
@@ -196,7 +199,7 @@ class TestCarrotListener(unittest.TestCase):
         l.event_dispatcher = MockEventDispatcher()
         l.control_dispatch = MockControlDispatch()
         l.receive_message(m.decode(), m)
-        self.assertTrue("shutdown" in l.control_dispatch.commands)
+        self.assertIn("shutdown", l.control_dispatch.commands)
 
     def test_close_connection(self):
         l = CarrotListener(self.ready_queue, self.eta_schedule, self.logger,
@@ -209,7 +212,7 @@ class TestCarrotListener(unittest.TestCase):
         eventer = l.event_dispatcher = MockEventDispatcher()
         heart = l.heart = MockHeart()
         l._state = RUN
-        l.close_connection()
+        l.stop_consumers()
         self.assertTrue(eventer.closed)
         self.assertTrue(heart.closed)
 
@@ -220,11 +223,14 @@ class TestCarrotListener(unittest.TestCase):
         m = create_message(backend, unknown={"baz": "!!!"})
         l.event_dispatcher = MockEventDispatcher()
         l.control_dispatch = MockControlDispatch()
-        import warnings
-        with warnings.catch_warnings(record=True) as log:
-                l.receive_message(m.decode(), m)
-                self.assertTrue(log)
-                self.assertTrue("unknown message" in log[0].message.args[0])
+
+        def with_catch_warnings(log):
+            l.receive_message(m.decode(), m)
+            self.assertTrue(log)
+            self.assertIn("unknown message", log[0].message.args[0])
+
+        context = catch_warnings(record=True)
+        execute_context(context, with_catch_warnings)
 
     def test_receieve_message(self):
         l = CarrotListener(self.ready_queue, self.eta_schedule, self.logger,
@@ -237,9 +243,9 @@ class TestCarrotListener(unittest.TestCase):
         l.receive_message(m.decode(), m)
 
         in_bucket = self.ready_queue.get_nowait()
-        self.assertTrue(isinstance(in_bucket, TaskWrapper))
-        self.assertEquals(in_bucket.task_name, foo_task.name)
-        self.assertEquals(in_bucket.execute(), 2 * 4 * 8)
+        self.assertIsInstance(in_bucket, TaskWrapper)
+        self.assertEqual(in_bucket.task_name, foo_task.name)
+        self.assertEqual(in_bucket.execute(), 2 * 4 * 8)
         self.assertTrue(self.eta_schedule.empty())
 
     def test_receieve_message_eta_isoformat(self):
@@ -261,7 +267,7 @@ class TestCarrotListener(unittest.TestCase):
         self.assertTrue(found)
 
     def test_revoke(self):
-        ready_queue = Queue()
+        ready_queue = FastQueue()
         l = CarrotListener(ready_queue, self.eta_schedule, self.logger,
                            send_events=False)
         backend = MockBackend()
@@ -273,7 +279,7 @@ class TestCarrotListener(unittest.TestCase):
         l.event_dispatcher = MockEventDispatcher()
         l.receive_message(c.decode(), c)
         from celery.worker.revoke import revoked
-        self.assertTrue(id in revoked)
+        self.assertIn(id, revoked)
 
         l.receive_message(t.decode(), t)
         self.assertTrue(ready_queue.empty())
@@ -307,12 +313,12 @@ class TestCarrotListener(unittest.TestCase):
         l.receive_message(m.decode(), m)
 
         in_hold = self.eta_schedule.queue[0]
-        self.assertEquals(len(in_hold), 4)
+        self.assertEqual(len(in_hold), 4)
         eta, priority, task, on_accept = in_hold
-        self.assertTrue(isinstance(task, TaskWrapper))
+        self.assertIsInstance(task, TaskWrapper)
         self.assertTrue(callable(on_accept))
-        self.assertEquals(task.task_name, foo_task.name)
-        self.assertEquals(task.execute(), 2 * 4 * 8)
+        self.assertEqual(task.task_name, foo_task.name)
+        self.assertEqual(task.execute(), 2 * 4 * 8)
         self.assertRaises(Empty, self.ready_queue.get_nowait)
 
 
@@ -324,7 +330,7 @@ class TestWorkController(unittest.TestCase):
 
     def test_attrs(self):
         worker = self.worker
-        self.assertTrue(isinstance(worker.eta_schedule, Scheduler))
+        self.assertIsInstance(worker.eta_schedule, Scheduler)
         self.assertTrue(worker.scheduler)
         self.assertTrue(worker.pool)
         self.assertTrue(worker.listener)

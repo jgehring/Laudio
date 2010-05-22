@@ -48,7 +48,7 @@ class LaudioSettings(object):
         dbPath = settings.DATABASE_NAME
         if not os.access(dbPath, os.W_OK):
             raise OSError("No write access to database! \
-                            Use: <b>sudo chmod 0775 %s</b>" % (dbPath))
+                            Use: <b>sudo chmod 0777 %s</b>" % (dbPath))
         indexer.scan()
         self.log.append( "Scanned <b>%i</b> files, updated <b>%i</b> files and \
                          added <b>%i</b> songs to the library!"
@@ -67,41 +67,6 @@ class LaudioSettings(object):
         songpath -- The new path to the collection
 
         """
-        
-        """We move down folder by folder from the given path and check,
-        if we can cd into the folder (we need a+x to cd into it).
-        If we get any errors, we stop and tell the user to execute the right
-        commands."""
-        
-        # TODO: check cmds!
-        checkPath = path.split("/")
-        checkedPath = ""
-        for p in checkPath:
-            
-            # if path is empty check the next element
-            # concerns the first and last slash
-            if not p:
-                continue
-            checkedPath += "/" + p
-            
-            # check for path existence and access rights
-            if not os.access(checkedPath, os.F_OK):
-                raise OSError("Path %s does not exist!" % checkedPath)
-            if not os.access(checkedPath, os.X_OK):
-                raise OSError( "No access rights for %s! Use: <b>sudo \
-                        chmod a+x %s</b>" % (checkedPath, checkedPath) )
-                
-        """now check if we got read rights on the music folder, we could do this
-        recursively to check every folder but that would waste too mucht time"""
-        if not os.access(path, os.R_OK):
-            raise OSError( "Music collection is not readable! Use: <b>sudo chmod \
-                           -R 0755 %s</b>" % (path) )
-
-        # check if we can set a symlink
-        mediaPath = settings.MEDIA_ROOT
-        if not os.access(mediaPath, os.R_OK):
-            raise OSError( "No write Access in media directory! \
-                           Use: <b>sudo chmod -R 0777 %s</b>" % (mediaPath) )
 
         # if the given path exists add a symlink, try except is used to 
         # avoid a race condition

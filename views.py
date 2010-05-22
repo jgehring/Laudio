@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 from laudio.src.coverfetcher import CoverFetcher
 from laudio.src.laudiosettings import LaudioSettings
 from laudio.models import *
+from laudio.forms import *
 # django
 from django.shortcuts import render_to_response
 from django.db.models import Q
@@ -32,6 +33,8 @@ from django.conf import settings
 from django.utils.datastructures import MultiValueDictKeyError
 from django.conf import settings
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
+from django.contrib.auth.models import User
 # other python libs
 import time
 import os
@@ -59,36 +62,131 @@ def about(request):
 
 def laudio_settings(request):
     """Site where the configuration happens"""
-    # TODO:     build in auth
     config = LaudioSettings()
-
-    if "collection" in request.GET:
+    users = User.objects.all()
+    if request.method == 'POST':
+        settingsForm = SettingsForm(request.POST)
+        if settingsForm.is_valid(): 
+            collection = settingsForm.cleaned_data['collection']
+            requireLogin = settingsForm.cleaned_data['requireLogin']
+            # get the first setting in the db
+            try:
+                settings = Settings.objects.get(pk=1)
+            except Settings.DoesNotExist:
+                settings = Settings()
+            settings.collection = collection
+            settings.requireLogin = requireLogin
+            settings.save()
+            # set symlink
+            config.setCollectionPath(collection)
+    else:
         try:
-            config.setCollectionPath(request.GET["collection"])
-        except OSError as e:
-            return render_to_response( 'settings.html', 
-                                    { "collection": config.collectionPath, 
-                                      "msg": e } )
+            settings = Settings.objects.get(pk=1)
+            settingsForm = SettingsForm(instance=settings)
+        except Settings.DoesNotExist:
+            settingsForm = SettingsForm(settings)
+    return render_to_response( 'settings.html', { 
+                                "collection": config.collectionPath,  
+                                "settingsForm": settingsForm,
+                                "users": users 
+                                }
+                            )
+                            
+    
+def laudio_settings_new_user(request):
+    
+    if request.method == 'POST':
+        userform = UserForm(request.POST)
+        profileform = UserProfileForm(request.POST)
+        
+        if userform.is_valid() and profileform.is_valid(): 
+            user = User(username=userform.cleaned_data['username'],
+                        password=userform.cleaned_data['password'],
+                        email=userform.cleaned_data['email'],
+                        is_superuser=userform.cleaned_data['is_superuser'],
+                        is_active=userform.cleaned_data['is_active'])
+            user.save()
+            # profile
+            profile = UserProfile(user=user,
+                                  lastFMName=profileform.cleaned_data['lastFMName'],
+                                  lastFMPass=profileform.cleaned_data['lastFMPass'],
+                                  lastFMSubmit=profileform.cleaned_data['lastFMSubmit'])
+            profile.save()
+            return HttpResponseRedirect(settings.URL_PREFIX + 'settings/')
+    else:
+        userform = UserForm()
+        profileform = UserProfileForm()
 
-    if "drop" in request.GET:
-        config.resetDB()        
-
-    if "scan" in request.GET:
-        try:
-            config.scan()
-        except OSError as e:
-            return render_to_response( 'settings.html', 
-                                    { "collection": config.collectionPath, 
-                                      "msg": e } )
-
-    return render_to_response( 'settings.html', 
-                                { "collection": config.collectionPath,  
-                                  "msg": config } )
+    return render_to_response( 'newuser.html', { 
+                                "userform": userform,  
+                                "profileform": profileform,
+                                }
+                            )
 
 
+def laudio_settings_edit_user(request, userid):
+    """Edit a user by userid"""
+    if request.method == 'POST':
+        
+        userform = UserForm(request.POST)
+        profileform = UserProfileForm(request.POST)
+        
+        if userform.is_valid() and profileform.is_valid(): 
+            user = User.objects.get(pk=userid)
+            user.username = userform.cleaned_data['username']
+            user.password = userform.cleaned_data['password']
+            user.email = userform.cleaned_data['email']
+            user.is_superuser = userform.cleaned_data['is_superuser']
+            user.is_active = userform.cleaned_data['is_active']
+            user.save()
+            # profile
+            profile = UserProfile.objects.get(user=user)
+            profile.user = user
+            profile.lastFMName = profileform.cleaned_data['lastFMName']
+            profile.lastFMPass = profileform.cleaned_data['lastFMPass']
+            profile.lastFMSubmit = profileform.cleaned_data['lastFMSubmit']
+            profile.save()
+            return HttpResponseRedirect(settings.URL_PREFIX + 'settings/')
+    else:
+        
+        user = User.objects.get(pk=userid)
+        userform = UserForm(instance=user)
+        profile = UserProfile.objects.get(user=user)
+        profileform = UserProfileForm(instance=profile)
+
+    return render_to_response( 'newuser.html', { 
+                                "userform": userform,  
+                                "profileform": profileform,
+                                }
+                            )
+    return HttpResponseRedirect(settings.URL_PREFIX + 'settings/')
+    
+
+def laudio_settings_delete_user(request, userid):
+    """Deletes a user by userid"""
+    user = User.objects.get(pk=userid)
+    user.delete()
+    return HttpResponseRedirect(settings.URL_PREFIX + 'settings/')
 ########################################################################
 # AJAX Requests                                                        #
 ########################################################################
+def ajax_drop_collection_db(request):
+    """Deletes all playlists and songs in the db"""
+    config = LaudioSettings()
+    config.resetDB()
+    return render_to_response('requests/dropscan.html', { "msg": config })
+
+
+def ajax_scan_collection(request):
+    """Scan the files in the collection"""
+    config = LaudioSettings()
+    try:
+        config.scan()
+    except OSError as e:
+        return render_to_response( 'settings.html', {"msg": e } )
+    return render_to_response('requests/dropscan.html', { "msg": config })
+
+
 def ajax_song_metadata(request, id):
     """Returns a json object with metainformation about the song
     

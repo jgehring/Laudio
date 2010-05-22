@@ -1,3 +1,4 @@
+from __future__ import generators
 """
 
 Custom Datastructures
@@ -7,6 +8,8 @@ import time
 import traceback
 from UserList import UserList
 from Queue import Queue, Empty as QueueEmpty
+
+from celery.utils.compat import OrderedDict
 
 
 class PositionQueue(UserList):
@@ -223,3 +226,20 @@ class LimitedSet(object):
     def first(self):
         """Get the oldest member."""
         return self.chronologically[0]
+
+
+class LocalCache(OrderedDict):
+    """Dictionary with a finite number of keys.
+
+    Older items expires first.
+
+    """
+
+    def __init__(self, limit=None):
+        super(LocalCache, self).__init__()
+        self.limit = limit
+
+    def __setitem__(self, key, value):
+        while len(self) >= self.limit:
+            self.popitem(last=False)
+        super(LocalCache, self).__setitem__(key, value)

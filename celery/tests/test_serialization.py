@@ -1,15 +1,21 @@
-from __future__ import with_statement
 import sys
-import unittest
+import unittest2 as unittest
+
+from celery.tests.utils import execute_context, mask_modules
 
 
 class TestAAPickle(unittest.TestCase):
 
     def test_no_cpickle(self):
-        from celery.tests.utils import mask_modules
         prev = sys.modules.pop("billiard.serialization")
-        with mask_modules("cPickle"):
-            from billiard.serialization import pickle
-            import pickle as orig_pickle
-            self.assertTrue(pickle.dumps is orig_pickle.dumps)
-        sys.modules["billiard.serialization"] = prev
+        try:
+            def with_cPickle_masked(_val):
+                from billiard.serialization import pickle
+                import pickle as orig_pickle
+                self.assertIs(pickle.dumps, orig_pickle.dumps)
+
+            context = mask_modules("cPickle")
+            execute_context(context, with_cPickle_masked)
+
+        finally:
+            sys.modules["billiard.serialization"] = prev

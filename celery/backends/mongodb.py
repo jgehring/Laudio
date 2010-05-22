@@ -1,7 +1,6 @@
 """MongoDB backend for celery."""
 from datetime import datetime
 
-from django.core.exceptions import ImproperlyConfigured
 from billiard.serialization import pickle
 try:
     import pymongo
@@ -10,8 +9,9 @@ except ImportError:
 
 from celery import conf
 from celery import states
-from celery.backends.base import BaseDictBackend
 from celery.loaders import load_settings
+from celery.backends.base import BaseDictBackend
+from celery.exceptions import ImproperlyConfigured
 
 
 class Bunch:
@@ -34,7 +34,7 @@ class MongoBackend(BaseDictBackend):
     def __init__(self, *args, **kwargs):
         """Initialize MongoDB backend instance.
 
-        :raises django.core.exceptions.ImproperlyConfigured: if
+        :raises celery.exceptions.ImproperlyConfigured: if
             module :mod:`pymongo` is not available.
 
         """
@@ -46,24 +46,23 @@ class MongoBackend(BaseDictBackend):
 
         settings = load_settings()
 
-        conf = getattr(settings, "CELERY_MONGODB_BACKEND_SETTINGS", None)
-        if conf is not None:
-            if not isinstance(conf, dict):
+        config = getattr(settings, "CELERY_MONGODB_BACKEND_SETTINGS", None)
+        if config is not None:
+            if not isinstance(config, dict):
                 raise ImproperlyConfigured(
                     "MongoDB backend settings should be grouped in a dict")
 
-            self.mongodb_host = conf.get('host', self.mongodb_host)
-            self.mongodb_port = int(conf.get('port', self.mongodb_port))
-            self.mongodb_user = conf.get('user', self.mongodb_user)
-            self.mongodb_password = conf.get(
+            self.mongodb_host = config.get('host', self.mongodb_host)
+            self.mongodb_port = int(config.get('port', self.mongodb_port))
+            self.mongodb_user = config.get('user', self.mongodb_user)
+            self.mongodb_password = config.get(
                     'password', self.mongodb_password)
-            self.mongodb_database = conf.get(
+            self.mongodb_database = config.get(
                     'database', self.mongodb_database)
-            self.mongodb_taskmeta_collection = conf.get(
+            self.mongodb_taskmeta_collection = config.get(
                 'taskmeta_collection', self.mongodb_taskmeta_collection)
 
         super(MongoBackend, self).__init__(*args, **kwargs)
-        self._cache = {}
         self._connection = None
         self._database = None
 
@@ -113,8 +112,6 @@ class MongoBackend(BaseDictBackend):
 
     def _get_task_meta_for(self, task_id):
         """Get task metadata for a task by id."""
-        if task_id in self._cache:
-            return self._cache[task_id]
 
         db = self._get_database()
         taskmeta_collection = db[self.mongodb_taskmeta_collection]
@@ -129,8 +126,6 @@ class MongoBackend(BaseDictBackend):
             "date_done": obj["date_done"],
             "traceback": pickle.loads(str(obj["traceback"])),
         }
-        if meta["status"] == states.SUCCESS:
-            self._cache[task_id] = meta
 
         return meta
 

@@ -5,7 +5,7 @@
 
 .. cmdoption:: -s, --schedule
 
-    Path to the schedule database. Defaults to celerybeat-schedule.
+    Path to the schedule database. Defaults to ``celerybeat-schedule``.
     The extension ".db" will be appended to the filename.
 
 .. cmdoption:: -f, --logfile
@@ -67,7 +67,7 @@ def run_clockservice(loglevel=conf.CELERYBEAT_LOG_LEVEL,
     # Run the worker init handler.
     # (Usually imports task modules and such.)
     from celery.loaders import current_loader
-    current_loader().on_worker_init()
+    current_loader().init_worker()
 
 
     # Dump configuration to screen so we have some basic information
@@ -91,6 +91,7 @@ def run_clockservice(loglevel=conf.CELERYBEAT_LOG_LEVEL,
         clockservice = ClockService(logger=logger, schedule_filename=schedule)
 
         try:
+            install_sync_handler(clockservice)
             clockservice.start()
         except Exception, e:
             emergency_error(logfile,
@@ -98,6 +99,18 @@ def run_clockservice(loglevel=conf.CELERYBEAT_LOG_LEVEL,
                             e.__class__, e, traceback.format_exc()))
 
     _run_clock()
+
+
+def install_sync_handler(beat):
+    """Install a ``SIGTERM`` + ``SIGINT`` handler that saves
+    the celerybeat schedule."""
+
+    def _sync(signum, frame):
+        beat.sync()
+        raise SystemExit()
+
+    platform.install_signal_handler("SIGTERM", _sync)
+    platform.install_signal_handler("SIGINT", _sync)
 
 
 def parse_options(arguments):

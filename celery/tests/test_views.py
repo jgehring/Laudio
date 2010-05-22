@@ -1,8 +1,6 @@
 import sys
-import unittest
 
 from django.http import HttpResponse
-from django.test.client import Client
 from django.test.testcases import TestCase as DjangoTestCase
 from django.core.urlresolvers import reverse
 from django.template import TemplateDoesNotExist
@@ -46,10 +44,10 @@ def catch_exception(exception):
 
 class ViewTestCase(DjangoTestCase):
 
-    def assertJSONEquals(self, json, py):
+    def assertJSONEqual(self, json, py):
         json = isinstance(json, HttpResponse) and json.content or json
         try:
-            self.assertEquals(JSON_load(json), py)
+            self.assertEqual(JSON_load(json), py)
         except TypeError, exc:
             raise TypeError("%s: %s" % (exc, json))
 
@@ -59,9 +57,9 @@ class TestTaskApply(ViewTestCase):
     def test_apply(self):
         conf.ALWAYS_EAGER = True
         try:
-            ret = self.client.get(task_apply(kwargs={"task_name":
+            self.client.get(task_apply(kwargs={"task_name":
                 mytask.name}) + "?x=4&y=4")
-            self.assertEquals(scratch["result"], 16)
+            self.assertEqual(scratch["result"], 16)
         finally:
             conf.ALWAYS_EAGER = False
 
@@ -86,12 +84,12 @@ class TestTaskStatus(ViewTestCase):
         expect = dict(id=uuid, status=status, result=res)
         if status in default_backend.EXCEPTION_STATES:
             instore = default_backend.get_result(uuid)
-            self.assertEquals(str(instore.args), str(res.args))
+            self.assertEqual(str(instore.args), str(res.args))
             expect["result"] = str(res.args[0])
             expect["exc"] = get_full_cls_name(res.__class__)
             expect["traceback"] = traceback
 
-        self.assertJSONEquals(json, dict(task=expect))
+        self.assertJSONEqual(json, dict(task=expect))
 
     def test_task_status_success(self):
         self.assertStatusForIs(states.SUCCESS, "The quick brown fox")
@@ -113,8 +111,8 @@ class TestTaskIsSuccessful(ViewTestCase):
         result = gen_unique_id()
         default_backend.store_result(uuid, result, status)
         json = self.client.get(task_is_successful(task_id=uuid))
-        self.assertJSONEquals(json, {"task": {"id": uuid,
-                                              "executed": outcome}})
+        self.assertJSONEqual(json, {"task": {"id": uuid,
+                                             "executed": outcome}})
 
     def test_is_successful_success(self):
         self.assertStatusForIs(states.SUCCESS, True)

@@ -1,6 +1,8 @@
-import unittest
-from celery import conf
+import unittest2 as unittest
+
 from django.conf import settings
+
+from celery import conf
 
 
 SETTING_VARS = (
@@ -18,7 +20,7 @@ class TestConf(unittest.TestCase):
 
     def assertDefaultSetting(self, setting_name, result_var):
         if hasattr(settings, setting_name):
-            self.assertEquals(getattr(conf, result_var),
+            self.assertEqual(getattr(conf, result_var),
                               getattr(settings, setting_name),
                               "Overwritten setting %s is written to %s" % (
                                   setting_name, result_var))
@@ -31,4 +33,4 @@ class TestConf(unittest.TestCase):
     def test_configuration_cls(self):
         for setting_name, result_var in SETTING_VARS:
             self.assertDefaultSetting(setting_name, result_var)
-        self.assertTrue(isinstance(conf.CELERYD_LOG_LEVEL, int))
+        self.assertIsInstance(conf.CELERYD_LOG_LEVEL, int)

@@ -1,17 +1,20 @@
+from __future__ import generators
 import os
 import sys
 sys.path.insert(0, os.getcwd())
 import time
-import unittest
+import unittest2 as unittest
 from itertools import chain, izip
 
 from billiard.utils.functional import curry
 
 from celery.task.base import Task
+from celery.utils import timeutils
 from celery.utils import gen_unique_id
-from celery.tests.utils import skip_if_environ
 from celery.worker import buckets
 from celery.registry import TaskRegistry
+
+from celery.tests.utils import skip_if_environ
 
 skip_if_disabled = curry(skip_if_environ("SKIP_RLIMITS"))
 
@@ -49,11 +52,11 @@ class TestTokenBucketQueue(unittest.TestCase):
     def test_bucket__put_get(self):
         x = buckets.TokenBucketQueue(fill_rate=10)
         x.put("The quick brown fox")
-        self.assertEquals(x.get(), "The quick brown fox")
+        self.assertEqual(x.get(), "The quick brown fox")
 
         x.put_nowait("The lazy dog")
         time.sleep(0.2)
-        self.assertEquals(x.get_nowait(), "The lazy dog")
+        self.assertEqual(x.get_nowait(), "The lazy dog")
 
     @skip_if_disabled
     def test_fill_rate(self):
@@ -64,7 +67,7 @@ class TestTokenBucketQueue(unittest.TestCase):
         for i in xrange(20):
             sys.stderr.write("x")
             x.wait()
-        self.assertTrue(time.time() - time_start > 1.5)
+        self.assertGreater(time.time() - time_start, 1.5)
 
     @skip_if_disabled
     def test_can_consume(self):
@@ -88,27 +91,22 @@ class TestTokenBucketQueue(unittest.TestCase):
         x = buckets.TokenBucketQueue(fill_rate=1)
         x.put("The quick brown fox")
         self.assertEqual(x.qsize(), 1)
-        self.assertTrue(x.get_nowait(), "The quick brown fox")
+        self.assertEqual(x.get_nowait(), "The quick brown fox")
 
 
 class TestRateLimitString(unittest.TestCase):
 
     @skip_if_disabled
     def test_conversion(self):
-        self.assertEquals(buckets.parse_ratelimit_string(999), 999)
-        self.assertEquals(buckets.parse_ratelimit_string("1456/s"), 1456)
-        self.assertEquals(buckets.parse_ratelimit_string("100/m"),
+        self.assertEqual(timeutils.rate(999), 999)
+        self.assertEqual(timeutils.rate("1456/s"), 1456)
+        self.assertEqual(timeutils.rate("100/m"),
                           100 / 60.0)
-        self.assertEquals(buckets.parse_ratelimit_string("10/h"),
+        self.assertEqual(timeutils.rate("10/h"),
                           10 / 60.0 / 60.0)
-        self.assertEquals(buckets.parse_ratelimit_string("0xffec/s"), 0xffec)
-        self.assertEquals(buckets.parse_ratelimit_string("0xcda/m"),
-                          0xcda / 60.0)
-        self.assertEquals(buckets.parse_ratelimit_string("0xF/h"),
-                          0xf / 60.0 / 60.0)
 
-        for zero in ("0x0", "0b0", "0o0", 0, None, "0/m", "0/h", "0/s"):
-            self.assertEquals(buckets.parse_ratelimit_string(zero), 0)
+        for zero in (0, None, "0", "0/m", "0/h", "0/s"):
+            self.assertEqual(timeutils.rate(zero), 0)
 
 
 class TaskA(Task):
@@ -139,17 +137,17 @@ class TestTaskBuckets(unittest.TestCase):
     def test_auto_add_on_missing(self):
         b = buckets.TaskBucket(task_registry=self.registry)
         for task_cls in self.task_classes:
-            self.assertTrue(task_cls.name in b.buckets.keys())
+            self.assertIn(task_cls.name, b.buckets.keys())
         self.registry.register(TaskD)
         self.assertTrue(b.get_bucket_for_type(TaskD.name))
-        self.assertTrue(TaskD.name in b.buckets.keys())
+        self.assertIn(TaskD.name, b.buckets.keys())
         self.registry.unregister(TaskD)
 
     @skip_if_disabled
     def test_has_rate_limits(self):
         b = buckets.TaskBucket(task_registry=self.registry)
         self.assertEqual(b.buckets[TaskA.name].fill_rate, 10)
-        self.assertTrue(isinstance(b.buckets[TaskB.name], buckets.Queue))
+        self.assertIsInstance(b.buckets[TaskB.name], buckets.Queue)
         self.assertEqual(b.buckets[TaskC.name].fill_rate, 1)
         self.registry.register(TaskD)
         b.init_with_registry()
@@ -169,7 +167,7 @@ class TestTaskBuckets(unittest.TestCase):
         b = buckets.TaskBucket(task_registry=self.registry)
         job = MockJob(gen_unique_id(), TaskA.name, ["theqbf"], {"foo": "bar"})
         b.put(job)
-        self.assertEquals(b.get(), job)
+        self.assertEqual(b.get(), job)
 
     @skip_if_disabled
     def test_fill_rate(self):
@@ -186,7 +184,7 @@ class TestTaskBuckets(unittest.TestCase):
         for i, job in enumerate(jobs):
             sys.stderr.write("i")
             self.assertEqual(b.get(), job)
-        self.assertTrue(time.time() - time_start > 1.5)
+        self.assertGreater(time.time() - time_start, 1.5)
 
     @skip_if_disabled
     def test__very_busy_queue_doesnt_block_others(self):
@@ -203,7 +201,7 @@ class TestTaskBuckets(unittest.TestCase):
             if job.task_name == TaskA.name:
                 got_ajobs += 1
 
-        self.assertTrue(got_ajobs > 2)
+        self.assertGreater(got_ajobs, 2)
 
     @skip_if_disabled
     def test_thorough__multiple_types(self):

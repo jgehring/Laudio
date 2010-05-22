@@ -1,11 +1,66 @@
-from __future__ import with_statement
+from __future__ import generators
 
 import os
 import sys
 import __builtin__
 from StringIO import StringIO
-from functools import wraps
-from contextlib import contextmanager
+
+from billiard.utils.functional import wraps
+
+
+class GeneratorContextManager(object):
+    def __init__(self, gen):
+        self.gen = gen
+
+    def __enter__(self):
+        try:
+            return self.gen.next()
+        except StopIteration:
+            raise RuntimeError("generator didn't yield")
+
+    def __exit__(self, type, value, traceback):
+        if type is None:
+            try:
+                self.gen.next()
+            except StopIteration:
+                return
+            else:
+                raise RuntimeError("generator didn't stop")
+        else:
+            try:
+                self.gen.throw(type, value, traceback)
+                raise RuntimeError("generator didn't stop after throw()")
+            except StopIteration:
+                return True
+            except AttributeError:
+                raise value
+            except:
+                if sys.exc_info()[1] is not value:
+                    raise
+
+
+def fallback_contextmanager(fun):
+    def helper(*args, **kwds):
+        return GeneratorContextManager(fun(*args, **kwds))
+    return helper
+
+
+def execute_context(context, fun):
+    val = context.__enter__()
+    exc_info = (None, None, None)
+    retval = None
+    try:
+        retval = fun(val)
+    except:
+        exc_info = sys.exc_info()
+    context.__exit__(*exc_info)
+    return retval
+
+
+try:
+    from contextlib import contextmanager
+except ImportError:
+    contextmanager = fallback_contextmanager
 
 from celery.utils import noop
 
@@ -17,7 +72,7 @@ def eager_tasks():
     prev = conf.ALWAYS_EAGER
     conf.ALWAYS_EAGER = True
 
-    yield
+    yield True
 
     conf.ALWAYS_EAGER = prev
 
@@ -142,7 +197,7 @@ def mask_modules(*modnames):
             return realimport(name, *args, **kwargs)
 
     __builtin__.__import__ = myimp
-    yield
+    yield True
     __builtin__.__import__ = realimport
 
 

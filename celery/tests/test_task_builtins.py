@@ -1,4 +1,4 @@
-import unittest
+import unittest2 as unittest
 
 from billiard.serialization import pickle
 
@@ -13,13 +13,13 @@ def some_func(i):
 class TestPingTask(unittest.TestCase):
 
     def test_ping(self):
-        self.assertEquals(PingTask.apply().get(), 'pong')
+        self.assertEqual(PingTask.apply().get(), 'pong')
 
 
 class TestRemoteExecuteTask(unittest.TestCase):
 
     def test_execute_remote(self):
-        self.assertEquals(ExecuteRemoteTask.apply(
+        self.assertEqual(ExecuteRemoteTask.apply(
                             args=[pickle.dumps(some_func), [10], {}]).get(),
                           100)
 

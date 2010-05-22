@@ -1,7 +1,8 @@
-import unittest
+import sys
 import types
+import unittest2 as unittest
 
-from django.db.models.base import subclass_exception
+from billiard.serialization import subclass_exception
 from billiard.serialization import find_nearest_pickleable_exception as fnpe
 from billiard.serialization import UnpickleableExceptionWrapper
 from billiard.serialization import get_pickleable_exception as gpe
@@ -53,40 +54,43 @@ class TestBaseBackendInterface(unittest.TestCase):
 class TestPickleException(unittest.TestCase):
 
     def test_oldstyle(self):
-        self.assertTrue(fnpe(Oldstyle()) is None)
+        self.assertIsNone(fnpe(Oldstyle()))
 
     def test_BaseException(self):
-        self.assertTrue(fnpe(Exception()) is None)
+        self.assertIsNone(fnpe(Exception()))
 
     def test_get_pickleable_exception(self):
         exc = Exception("foo")
-        self.assertEquals(gpe(exc), exc)
+        self.assertEqual(gpe(exc), exc)
 
     def test_unpickleable(self):
-        self.assertTrue(isinstance(fnpe(Unpickleable()), KeyError))
-        self.assertEquals(fnpe(Impossible()), None)
+        self.assertIsInstance(fnpe(Unpickleable()), KeyError)
+        self.assertIsNone(fnpe(Impossible()))
 
 
 class TestPrepareException(unittest.TestCase):
 
     def test_unpickleable(self):
         x = b.prepare_exception(Unpickleable(1, 2, "foo"))
-        self.assertTrue(isinstance(x, KeyError))
+        self.assertIsInstance(x, KeyError)
         y = b.exception_to_python(x)
-        self.assertTrue(isinstance(y, KeyError))
+        self.assertIsInstance(y, KeyError)
 
     def test_impossible(self):
         x = b.prepare_exception(Impossible())
-        self.assertTrue(isinstance(x, UnpickleableExceptionWrapper))
+        self.assertIsInstance(x, UnpickleableExceptionWrapper)
         y = b.exception_to_python(x)
-        self.assertEquals(y.__class__.__name__, "Impossible")
-        self.assertEquals(y.__class__.__module__, "foo.module")
+        self.assertEqual(y.__class__.__name__, "Impossible")
+        if sys.version_info < (2, 5):
+            self.assertTrue(y.__class__.__module__)
+        else:
+            self.assertEqual(y.__class__.__module__, "foo.module")
 
     def test_regular(self):
         x = b.prepare_exception(KeyError("baz"))
-        self.assertTrue(isinstance(x, KeyError))
+        self.assertIsInstance(x, KeyError)
         y = b.exception_to_python(x)
-        self.assertTrue(isinstance(y, KeyError))
+        self.assertIsInstance(y, KeyError)
 
 
 class TestKeyValueStoreBackendInterface(unittest.TestCase):

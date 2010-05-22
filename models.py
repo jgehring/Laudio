@@ -21,7 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 """
 
+from django.contrib.auth.models import User
+
 from django.db import models
+from django import forms
 
 class Song(models.Model):
     title = models.CharField(max_length=250)
@@ -47,3 +50,14 @@ class Playlist(models.Model):
 class PlaylistEntry(models.Model):
     playlist = models.ForeignKey(Playlist)
     song = models.ForeignKey(Song)
+
+
+class Settings(models.Model):
+    collection = models.CharField("Path to collection", max_length=500)
+    requireLogin = models.BooleanField("Require Login")
+
+class UserProfile(models.Model):
+    user = models.ForeignKey(User, unique=True)
+    lastFMName = models.CharField("Last FM username", max_length=100, blank=True)
+    lastFMPass = models.CharField("Last FM password", max_length=100, blank=True)
+    lastFMSubmit = models.BooleanField("Submit tracks")

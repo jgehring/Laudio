@@ -38,6 +38,9 @@ celeryd at %%(hostname)s.
 """ % {"EMAIL_SIGNATURE_SEP": EMAIL_SIGNATURE_SEP}
 
 
+WANTED_DELIVERY_INFO = ("exchange", "routing_key", "consumer_tag", )
+
+
 class InvalidTaskError(Exception):
     """The task has invalid data or is not properly constructed."""
 
@@ -97,6 +100,8 @@ class WorkerTaskTrace(TaskTrace):
         """Execute, trace and store the result of the task."""
         self.loader.on_task_init(self.task_id, self.task)
         self.task.backend.process_cleanup()
+        if self.task.track_started:
+            self.task.backend.mark_as_started(self.task_id)
         return super(WorkerTaskTrace, self).execute()
 
     def handle_success(self, retval, *args):
@@ -163,8 +168,12 @@ class TaskWrapper(object):
 
     .. attribute executed
 
-    Set if the task has been executed. A task should only be executed
-    once.
+        Set to ``True`` if the task has been executed.
+        A task should only be executed once.
+
+    .. attribute acknowledged
+
+        Set to ``True`` if the task has been acknowledged.
 
     """
     success_msg = "Task %(name)s[%(id)s] processed: %(return_value)s"
@@ -176,16 +185,18 @@ class TaskWrapper(object):
     """
     fail_email_body = TASK_FAIL_EMAIL_BODY
     executed = False
+    acknowledged = False
     time_start = None
 
     def __init__(self, task_name, task_id, args, kwargs,
-            on_ack=noop, retries=0, **opts):
+            on_ack=noop, retries=0, delivery_info=None, **opts):
         self.task_name = task_name
         self.task_id = task_id
         self.retries = retries
         self.args = args
         self.kwargs = kwargs
         self.on_ack = on_ack
+        self.delivery_info = delivery_info or {}
         self.task = tasks[self.task_name]
 
         for opt in ("success_msg", "fail_msg", "fail_email_subject",
@@ -217,6 +228,11 @@ class TaskWrapper(object):
         kwargs = message_data["kwargs"]
         retries = message_data.get("retries", 0)
 
+        _delivery_info = getattr(message, "delivery_info", {})
+        delivery_info = dict((key, _delivery_info.get(key))
+                                for key in WANTED_DELIVERY_INFO)
+
+
         if not hasattr(kwargs, "items"):
             raise InvalidTaskError("Task kwargs must be a dictionary.")
 
@@ -226,23 +242,26 @@ class TaskWrapper(object):
 
         return cls(task_name, task_id, args, kwargs,
                     retries=retries, on_ack=message.ack,
+                    delivery_info=delivery_info,
                     logger=logger, eventer=eventer)
 
     def extend_with_default_kwargs(self, loglevel, logfile):
         """Extend the tasks keyword arguments with standard task arguments.
 
         Currently these are ``logfile``, ``loglevel``, ``task_id``,
-        ``task_name`` and ``task_retries``.
+        ``task_name``, ``task_retries``, and ``delivery_info``.
 
         See :meth:`celery.task.base.Task.run` for more information.
 
         """
         kwargs = dict(self.kwargs)
         default_kwargs = {"logfile": logfile,
-                            "loglevel": loglevel,
-                            "task_id": self.task_id,
-                            "task_name": self.task_name,
-                            "task_retries": self.retries}
+                          "loglevel": loglevel,
+                          "task_id": self.task_id,
+                          "task_name": self.task_name,
+                          "task_retries": self.retries,
+                          "task_is_eager": False,
+                          "delivery_info": self.delivery_info}
         fun = self.task.run
         supported_keys = fun_takes_kwargs(fun, default_kwargs)
         extend_with = dict((key, val) for key, val in default_kwargs.items()
@@ -299,21 +318,35 @@ class TaskWrapper(object):
         # Make sure task has not already been executed.
         self._set_executed_bit()
 
-        self.send_event("task-accepted", uuid=self.task_id)
-
         args = self._get_tracer_args(loglevel, logfile)
         self.time_start = time.time()
-        return pool.apply_async(execute_and_trace, args=args,
-                callbacks=[self.on_success], errbacks=[self.on_failure],
-                on_ack=self.on_ack)
+        result = pool.apply_async(execute_and_trace, args=args,
+                    accept_callback=self.on_accepted,
+                    callbacks=[self.on_success], errbacks=[self.on_failure])
+        return result
+
+    def on_accepted(self):
+        if not self.task.acks_late:
+            self.acknowledge()
+        self.send_event("task-accepted", uuid=self.task_id)
+        self.logger.debug("Task accepted: %s[%s]" % (
+            self.task_name, self.task_id))
+
+    def acknowledge(self):
+        if not self.acknowledged:
+            self.on_ack()
+            self.acknowledged = True
 
     def on_success(self, ret_value):
         """The handler used if the task was successfully processed (
         without raising an exception)."""
 
+        if self.task.acks_late:
+            self.acknowledge()
+
         runtime = time.time() - self.time_start
         self.send_event("task-succeeded", uuid=self.task_id,
-                        result=ret_value, runtime=runtime)
+                        result=repr(ret_value), runtime=runtime)
 
         msg = self.success_msg.strip() % {
                 "id": self.task_id,
@@ -324,16 +357,19 @@ class TaskWrapper(object):
     def on_failure(self, exc_info):
         """The handler used if the task raised an exception."""
 
+        if self.task.acks_late:
+            self.acknowledge()
+
         self.send_event("task-failed", uuid=self.task_id,
-                                       exception=exc_info.exception,
+                                       exception=repr(exc_info.exception),
                                        traceback=exc_info.traceback)
 
         context = {
             "hostname": socket.gethostname(),
             "id": self.task_id,
             "name": self.task_name,
-            "exc": exc_info.exception,
-            "traceback": exc_info.traceback,
+            "exc": repr(exc_info.exception),
+            "traceback": unicode(exc_info.traceback, 'utf-8'),
             "args": self.args,
             "kwargs": self.kwargs,
         }

@@ -1,5 +1,5 @@
 import socket
-import unittest
+import unittest2 as unittest
 
 from celery.task.builtins import PingTask
 from celery.utils import gen_unique_id
@@ -9,10 +9,14 @@ from celery.registry import tasks
 
 hostname = socket.gethostname()
 
+
 class TestControlPanel(unittest.TestCase):
 
     def setUp(self):
-        self.panel = control.ControlDispatch(hostname=hostname)
+        self.panel = self.create_panel(listener=object())
+
+    def create_panel(self, **kwargs):
+        return control.ControlDispatch(hostname=hostname, **kwargs)
 
     def test_shutdown(self):
         self.assertRaises(SystemExit, self.panel.execute, "shutdown")
@@ -21,17 +25,33 @@ class TestControlPanel(unittest.TestCase):
         self.panel.execute("dump_tasks")
 
     def test_rate_limit(self):
+
+        class Listener(object):
+
+            class ReadyQueue(object):
+                fresh = False
+
+                def refresh(self):
+                    self.fresh = True
+
+            def __init__(self):
+                self.ready_queue = self.ReadyQueue()
+
+        listener = Listener()
+        panel = self.create_panel(listener=listener)
+
         task = tasks[PingTask.name]
         old_rate_limit = task.rate_limit
         try:
-            self.panel.execute("rate_limit", kwargs=dict(
-                                                task_name=task.name,
-                                                rate_limit="100/m"))
-            self.assertEquals(task.rate_limit, "100/m")
-            self.panel.execute("rate_limit", kwargs=dict(
-                                                task_name=task.name,
-                                                rate_limit=0))
-            self.assertEquals(task.rate_limit, 0)
+            panel.execute("rate_limit", kwargs=dict(task_name=task.name,
+                                                    rate_limit="100/m"))
+            self.assertEqual(task.rate_limit, "100/m")
+            self.assertTrue(listener.ready_queue.fresh)
+            listener.ready_queue.fresh = False
+            panel.execute("rate_limit", kwargs=dict(task_name=task.name,
+                                                    rate_limit=0))
+            self.assertEqual(task.rate_limit, 0)
+            self.assertTrue(listener.ready_queue.fresh)
         finally:
             task.rate_limit = old_rate_limit
 
@@ -49,10 +69,10 @@ class TestControlPanel(unittest.TestCase):
              "destination": hostname,
              "task_id": uuid}
         self.panel.dispatch_from_message(m)
-        self.assertTrue(uuid in revoked)
+        self.assertIn(uuid, revoked)
 
         m = {"command": "revoke",
              "destination": "does.not.exist",
              "task_id": uuid + "xxx"}
         self.panel.dispatch_from_message(m)
-        self.assertTrue(uuid + "xxx" not in revoked)
+        self.assertNotIn(uuid + "xxx", revoked)

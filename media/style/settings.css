@@ -1,7 +1,23 @@
 #settings {
-    width: 960px;
+    width: 1180px;
     margin: auto;
 }
+
+#popup {
+    width: 800px;
+    height: 600px;
+    border: 1px solid #666666;
+    background-color: #ccc;
+    text-align: left;
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    top: 50%;
+    margin-top: -300px;
+    margin-left: -400px;
+    display: none;
+}
+
 
 #settings h1 {
     font-size: 14pt;
@@ -9,7 +25,7 @@
 }
 
 #settings form table {
-    width: 900px;
+    width: 1100px;
     margin: auto;
 }
 
@@ -28,15 +44,15 @@
     padding-right: 20px;
 }
 
-#settings form input.text {
-    width: 500px;
+#settings form input {
+    width: 400px;
     border: 1px solid #aaa;
     background-color: #fafafa;
     height: 18px;
     padding: 2px;
 }
 
-#settings form input.text:focus {
+#settings form input:focus {
     background-color: #fefefe;
 }
 
@@ -47,4 +63,21 @@
 
 #settings form p {
     text-align: center;
+}
+
+td.errors {
+    background-color: #D24A4A !important;
+}
+
+.errorlist li {
+    list-style-type: none;
+    color: #fefefe;    
+}
+
+#settings #users th {
+    background-color: #ccc;
+    font-weight: normal;
+    text-align: center;
+    width: 280px;
+    padding: 5px;
 }

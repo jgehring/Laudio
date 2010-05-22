@@ -1,3 +1,5 @@
+from __future__ import generators
+
 import socket
 import warnings
 from datetime import datetime
@@ -6,8 +8,7 @@ from dateutil.parser import parse as parse_iso8601
 from carrot.connection import AMQPConnectionException
 
 from celery import conf
-from celery import signals
-from celery.utils import retry_over_time
+from celery.utils import noop, retry_over_time
 from celery.worker.job import TaskWrapper, InvalidTaskError
 from celery.worker.revoke import revoked
 from celery.worker.control import ControlDispatch
@@ -45,16 +46,19 @@ class CarrotListener(object):
     """
 
     def __init__(self, ready_queue, eta_schedule, logger,
-            send_events=False, hostname=None, initial_prefetch_count=2):
+            init_callback=noop, send_events=False, hostname=None,
+            initial_prefetch_count=2):
         self.connection = None
         self.task_consumer = None
         self.ready_queue = ready_queue
         self.eta_schedule = eta_schedule
         self.send_events = send_events
+        self.init_callback = init_callback
         self.logger = logger
         self.hostname = hostname or socket.gethostname()
         self.control_dispatch = ControlDispatch(logger=logger,
-                                                hostname=self.hostname)
+                                                hostname=self.hostname,
+                                                listener=self)
         self.prefetch_count = SharedCounter(initial_prefetch_count)
         self.event_dispatcher = None
         self.heart = None
@@ -68,7 +72,7 @@ class CarrotListener(object):
 
         """
 
-        signals.worker_ready.send(sender=self)
+        self.init_callback(self)
 
         while 1:
             self.reset_connection()
@@ -109,8 +113,8 @@ class CarrotListener(object):
             return task.on_ack()
 
         self.event_dispatcher.send("task-received", uuid=task.task_id,
-                name=task.task_name, args=task.args, kwargs=task.kwargs,
-                retries=task.retries, eta=eta)
+                name=task.task_name, args=repr(task.args),
+                kwargs=repr(task.kwargs), retries=task.retries, eta=eta)
 
         if eta:
             if not isinstance(eta, datetime):
@@ -158,6 +162,11 @@ class CarrotListener(object):
         message.ack()
 
     def close_connection(self):
+        self.logger.debug("CarrotListener: "
+                          "Closing connection to broker...")
+        self.connection = self.connection and self.connection.close()
+
+    def stop_consumers(self, close=True):
         if not self._state == RUN:
             return
         self._state = CLOSE
@@ -173,17 +182,35 @@ class CarrotListener(object):
             self.logger.debug("EventDispatcher: Shutting down...")
             self.event_dispatcher = self.event_dispatcher.close()
 
-        self.logger.debug("CarrotListener: "
-                          "Closing connection to broker...")
-        self.connection = self.connection and self.connection.close()
+        if close:
+            self.close_connection()
+
+    def on_decode_error(self, message, exc):
+        """Callback called if the message had decoding errors.
+
+        :param message: The message with errors.
+        :param exc: The original exception instance.
+
+        """
+        self.logger.critical("Message decoding error: %s "
+                             "(type:%s encoding:%s raw:'%s')" % (
+                                exc, message.content_type,
+                                message.content_encoding, message.body))
+        message.ack()
 
     def reset_connection(self):
         self.logger.debug(
                 "CarrotListener: Re-establishing connection to the broker...")
-        self.close_connection()
+        self.stop_consumers()
+
+        # Clear internal queues.
+        self.ready_queue.clear()
+        self.eta_schedule.clear()
+
         self.connection = self._open_connection()
         self.logger.debug("CarrotListener: Connection Established.")
         self.task_consumer = get_consumer_set(connection=self.connection)
+        self.task_consumer.on_decode_error = self.on_decode_error
         self.broadcast_consumer = BroadcastConsumer(self.connection,
                                                     hostname=self.hostname)
         self.task_consumer.register_callback(self.receive_message)
@@ -196,7 +223,7 @@ class CarrotListener(object):
 
     def _mainloop(self, **kwargs):
         while 1:
-            yield self.connection.connection.drain_events()
+            yield self.connection.drain_events()
 
     def _detect_wait_method(self):
         if hasattr(self.connection.connection, "drain_events"):
@@ -217,11 +244,11 @@ class CarrotListener(object):
 
         def _connection_error_handler(exc, interval):
             """Callback handler for connection errors."""
-            self.logger.error("AMQP Listener: Connection Error: %s. " % exc
+            self.logger.error("CarrotListener: Connection Error: %s. " % exc
                      + "Trying again in %d seconds..." % interval)
 
         def _establish_connection():
-            """Establish a connection to the AMQP broker."""
+            """Establish a connection to the broker."""
             conn = establish_connection()
             conn.connect() # Connection is established lazily, so connect.
             return conn
@@ -235,4 +262,5 @@ class CarrotListener(object):
         return conn
 
     def stop(self):
-        self.close_connection()
+        self.logger.debug("CarrotListener: Stopping consumers...")
+        self.stop_consumers(close=False)

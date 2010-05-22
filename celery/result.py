@@ -1,3 +1,4 @@
+from __future__ import generators
 """
 
 Asynchronous result types.
@@ -5,6 +6,7 @@ Asynchronous result types.
 """
 import time
 from itertools import imap
+from copy import copy
 
 from celery import states
 from celery.utils import any, all
@@ -67,8 +69,8 @@ class BaseAsyncResult(object):
 
     def ready(self):
         """Returns ``True`` if the task executed successfully, or raised
-        an exception. If the task is still pending, or is waiting for retry
-        then ``False`` is returned.
+        an exception. If the task is still running, pending, or is waiting
+        for retry then ``False`` is returned.
 
         :rtype: bool
 
@@ -97,7 +99,10 @@ class BaseAsyncResult(object):
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return self.task_id == other.task_id
-        return self == other
+        return other == self.task_id
+
+    def __copy__(self):
+        return self.__class__(self.task_id, backend=self.backend)
 
     @property
     def result(self):
@@ -122,6 +127,10 @@ class BaseAsyncResult(object):
             *PENDING*
 
                 The task is waiting for execution.
+
+            *STARTED*
+
+                The task has been started.
 
             *RETRY*
 
@@ -158,8 +167,9 @@ class AsyncResult(BaseAsyncResult):
 
     """
 
-    def __init__(self, task_id):
-        super(AsyncResult, self).__init__(task_id, backend=default_backend)
+    def __init__(self, task_id, backend=None):
+        backend = backend or default_backend
+        super(AsyncResult, self).__init__(task_id, backend)
 
 
 class TaskSetResult(object):
@@ -261,15 +271,20 @@ class TaskSetResult(object):
         :raises: The exception if any of the tasks raised an exception.
 
         """
-        results = dict((subtask.task_id, subtask.__class__(subtask.task_id))
+        pending = list(self.subtasks)
+        results = dict((subtask.task_id, copy(subtask))
                             for subtask in self.subtasks)
-        while results:
-            for task_id, pending_result in results.items():
-                if pending_result.status == states.SUCCESS:
-                    results.pop(task_id, None)
-                    yield pending_result.result
-                elif pending_result.status == states.FAILURE:
-                    raise pending_result.result
+        while pending:
+            for task_id in pending:
+                result = results[task_id]
+                if result.status == states.SUCCESS:
+                    try:
+                        pending.remove(task_id)
+                    except ValueError:
+                        pass
+                    yield result.result
+                elif result.status == states.FAILURE:
+                    raise result.result
 
     def join(self, timeout=None):
         """Gather the results for all of the tasks in the taskset,

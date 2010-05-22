@@ -1,7 +1,8 @@
 import sys
-import unittest
+import unittest2 as unittest
 
 from billiard.serialization import pickle
+from django.core.cache.backends.base import InvalidCacheBackendError
 
 from celery import result
 from celery import states
@@ -24,14 +25,13 @@ class TestCacheBackend(unittest.TestCase):
         tid = gen_unique_id()
 
         self.assertFalse(cb.is_successful(tid))
-        self.assertEquals(cb.get_status(tid), states.PENDING)
-        self.assertEquals(cb.get_result(tid), None)
+        self.assertEqual(cb.get_status(tid), states.PENDING)
+        self.assertIsNone(cb.get_result(tid))
 
         cb.mark_as_done(tid, 42)
         self.assertTrue(cb.is_successful(tid))
-        self.assertEquals(cb.get_status(tid), states.SUCCESS)
-        self.assertEquals(cb.get_result(tid), 42)
-        self.assertTrue(cb._cache.get(tid))
+        self.assertEqual(cb.get_status(tid), states.SUCCESS)
+        self.assertEqual(cb.get_result(tid), 42)
         self.assertTrue(cb.get_result(tid), 42)
 
     def test_save_restore_taskset(self):
@@ -42,8 +42,8 @@ class TestCacheBackend(unittest.TestCase):
         res = result.TaskSetResult(taskset_id, subtasks)
         res.save(backend=backend)
         saved = result.TaskSetResult.restore(taskset_id, backend=backend)
-        self.assertEquals(saved.subtasks, subtasks)
-        self.assertEquals(saved.taskset_id, taskset_id)
+        self.assertListEqual(saved.subtasks, subtasks)
+        self.assertEqual(saved.taskset_id, taskset_id)
 
     def test_is_pickled(self):
         cb = CacheBackend()
@@ -53,8 +53,8 @@ class TestCacheBackend(unittest.TestCase):
         cb.mark_as_done(tid2, result)
         # is serialized properly.
         rindb = cb.get_result(tid2)
-        self.assertEquals(rindb.get("foo"), "baz")
-        self.assertEquals(rindb.get("bar").data, 12345)
+        self.assertEqual(rindb.get("foo"), "baz")
+        self.assertEqual(rindb.get("bar").data, 12345)
 
     def test_mark_as_failure(self):
         cb = CacheBackend()
@@ -68,13 +68,12 @@ class TestCacheBackend(unittest.TestCase):
             pass
         cb.mark_as_failure(tid3, exception, traceback=einfo.traceback)
         self.assertFalse(cb.is_successful(tid3))
-        self.assertEquals(cb.get_status(tid3), states.FAILURE)
-        self.assertTrue(isinstance(cb.get_result(tid3), KeyError))
-        self.assertEquals(cb.get_traceback(tid3), einfo.traceback)
+        self.assertEqual(cb.get_status(tid3), states.FAILURE)
+        self.assertIsInstance(cb.get_result(tid3), KeyError)
+        self.assertEqual(cb.get_traceback(tid3), einfo.traceback)
 
     def test_process_cleanup(self):
         cb = CacheBackend()
-
         cb.process_cleanup()
 
 
@@ -89,9 +88,9 @@ class TestCustomCacheBackend(unittest.TestCase):
         try:
             from celery.backends.cache import cache
             from django.core.cache import cache as django_cache
-            self.assertEquals(cache.__class__.__module__,
+            self.assertEqual(cache.__class__.__module__,
                               "django.core.cache.backends.dummy")
-            self.assertTrue(cache is not django_cache)
+            self.assertIsNot(cache, django_cache)
         finally:
             conf.CELERY_CACHE_BACKEND = prev_backend
             sys.modules["celery.backends.cache"] = prev_module
@@ -101,22 +100,27 @@ class TestMemcacheWrapper(unittest.TestCase):
 
     def test_memcache_wrapper(self):
 
-        from django.core.cache.backends import memcached
-        from django.core.cache.backends import locmem
+        try:
+            from django.core.cache.backends import memcached
+            from django.core.cache.backends import locmem
+        except InvalidCacheBackendError:
+            sys.stderr.write(
+                "\n* Memcache library is not installed. Skipping test.\n")
+            return
         prev_cache_cls = memcached.CacheClass
         memcached.CacheClass = locmem.CacheClass
         prev_backend_module = sys.modules.pop("celery.backends.cache")
         try:
             from celery.backends.cache import cache, DjangoMemcacheWrapper
-            self.assertTrue(isinstance(cache, DjangoMemcacheWrapper))
+            self.assertIsInstance(cache, DjangoMemcacheWrapper)
 
             key = "cu.test_memcache_wrapper"
             val = "The quick brown fox."
             default = "The lazy dog."
 
-            self.assertEquals(cache.get(key, default=default), default)
+            self.assertEqual(cache.get(key, default=default), default)
             cache.set(key, val)
-            self.assertEquals(pickle.loads(cache.get(key, default=default)),
+            self.assertEqual(pickle.loads(cache.get(key, default=default)),
                               val)
         finally:
             memcached.CacheClass = prev_cache_cls

@@ -39,6 +39,11 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     # (r'^admin/', include(admin.site.urls)),
     (r'^settings/$', laudio_settings),
+    (r'^settings/resetdb/$', ajax_drop_collection_db),
+    (r'^settings/scan/$', ajax_scan_collection),
+    (r'^settings/newuser/$', laudio_settings_new_user),
+    (r'^settings/deleteuser/(?P<userid>.*)/$', laudio_settings_delete_user),
+    (r'^settings/edituser/(?P<userid>.*)/$', laudio_settings_edit_user),
     (r'^about/$', about),
 
     #collection

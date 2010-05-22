@@ -30,6 +30,7 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
+AUTH_PROFILE_MODULE = 'laudio.UserProfile'
 
 MANAGERS = ADMINS
 

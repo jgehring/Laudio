@@ -1,13 +1,13 @@
 import sys
 import warnings
-from datetime import datetime, timedelta
-from Queue import Queue
+from datetime import timedelta
 
 from billiard.serialization import pickle
 
 from celery import conf
-from celery.log import setup_logger
-from celery.utils import gen_unique_id, padlist, timedelta_seconds
+from celery.log import setup_task_logger
+from celery.utils import gen_unique_id, padlist
+from celery.utils.timeutils import timedelta_seconds
 from celery.result import BaseAsyncResult, TaskSetResult, EagerResult
 from celery.execute import apply_async, apply
 from celery.registry import tasks
@@ -15,6 +15,8 @@ from celery.backends import default_backend
 from celery.messaging import TaskPublisher, TaskConsumer
 from celery.messaging import establish_connection as _establish_connection
 from celery.exceptions import MaxRetriesExceededError, RetryTaskError
+
+from celery.task.schedules import schedule
 
 
 class TaskType(type):
@@ -64,6 +66,9 @@ class Task(object):
     The :meth:`run` method can take use of the default keyword arguments,
     as listed in the :meth:`run` documentation.
 
+    The resulting class is callable, which if called will apply the
+    :meth:`run` method.
+
     .. attribute:: name
         Name of the task.
 
@@ -84,6 +89,17 @@ class Task(object):
 
         Override the global default ``exchange`` for this task.
 
+    .. attribute:: exchange_type
+
+        Override the global default exchange type for this task.
+
+    .. attribute:: delivery_mode
+
+        Override the global default delivery mode for this task.
+        By default this is set to ``2`` (persistent). You can change this
+        to ``1`` to get non-persistent behavior, which means the messages
+        are lost if the broker is restarted.
+
     .. attribute:: mandatory
 
         Mandatory message routing. An exception will be raised if the task
@@ -101,6 +117,7 @@ class Task(object):
     .. attribute:: max_retries
 
         Maximum number of retries before giving up.
+        If set to ``None``, it will never stop retrying.
 
     .. attribute:: default_retry_delay
 
@@ -112,12 +129,6 @@ class Task(object):
         Set the rate limit for this task type, Examples: ``None`` (no rate
         limit), ``"100/s"`` (hundred tasks a second), ``"100/m"`` (hundred
         tasks a minute), ``"100/h"`` (hundred tasks an hour)
-
-    .. attribute:: rate_limit_queue_type
-
-        Type of queue used by the rate limiter for this kind of tasks.
-        Default is a :class:`Queue.Queue`, but you can change this to
-        a :class:`Queue.LifoQueue` or an invention of your own.
 
     .. attribute:: ignore_result
 
@@ -141,9 +152,31 @@ class Task(object):
         If ``True`` the task is automatically registered in the task
         registry, which is the default behaviour.
 
+    .. attribute:: track_started
 
-    The resulting class is callable, which if called will apply the
-    :meth:`run` method.
+        If ``True`` the task will report its status as "started"
+        when the task is executed by a worker.
+        The default value is ``False`` as the normal behaviour is to not
+        report that level of granularity. Tasks are either pending, finished,
+        or waiting to be retried. Having a "started" status can be useful for
+        when there are long running tasks and there is a need to report which
+        task is currently running.
+
+        The global default can be overridden by the ``CELERY_TRACK_STARTED``
+        setting.
+
+    .. attribute:: acks_late
+
+        If set to ``True`` messages for this task will be acknowledged
+        **after** the task has been executed, not *just before*, which is
+        the default behavior.
+
+        Note that this means the task may be executed twice if the worker
+        crashes in the middle of execution, which may be acceptable for some
+        applications.
+
+        The global default can be overriden by the ``CELERY_ACKS_LATE``
+        setting.
 
     """
     __metaclass__ = TaskType
@@ -163,8 +196,11 @@ class Task(object):
     default_retry_delay = 3 * 60
     serializer = conf.TASK_SERIALIZER
     rate_limit = conf.DEFAULT_RATE_LIMIT
-    rate_limit_queue_type = Queue
     backend = default_backend
+    exchange_type = conf.DEFAULT_EXCHANGE_TYPE
+    delivery_mode = conf.DEFAULT_DELIVERY_MODE
+    track_started = conf.TRACK_STARTED
+    acks_late = conf.ACKS_LATE
 
     MaxRetriesExceededError = MaxRetriesExceededError
 
@@ -180,8 +216,10 @@ class Task(object):
             * task_id
             * task_name
             * task_retries
+            * task_is_eager
             * logfile
             * loglevel
+            * delivery_info
 
         Additional standard keyword arguments may be added in the future.
         To take these default arguments, the task can either list the ones
@@ -193,12 +231,13 @@ class Task(object):
 
     @classmethod
     def get_logger(self, loglevel=None, logfile=None, **kwargs):
-        """Get process-aware logger object.
+        """Get task-aware logger object.
 
-        See :func:`celery.log.setup_logger`.
+        See :func:`celery.log.setup_task_logger`.
 
         """
-        return setup_logger(loglevel=loglevel, logfile=logfile)
+        return setup_task_logger(loglevel=loglevel, logfile=logfile,
+                                 task_kwargs=kwargs)
 
     @classmethod
     def establish_connection(self,
@@ -208,7 +247,8 @@ class Task(object):
 
     @classmethod
     def get_publisher(self, connection=None, exchange=None,
-            connect_timeout=conf.BROKER_CONNECTION_TIMEOUT):
+            connect_timeout=conf.BROKER_CONNECTION_TIMEOUT,
+            exchange_type=None):
         """Get a celery task message publisher.
 
         :rtype: :class:`celery.messaging.TaskPublisher`.
@@ -223,9 +263,12 @@ class Task(object):
         """
         if exchange is None:
             exchange = self.exchange
+        if exchange_type is None:
+            exchange_type = self.exchange_type
         connection = connection or self.establish_connection(connect_timeout)
         return TaskPublisher(connection=connection,
                              exchange=exchange,
+                             exchange_type=exchange_type,
                              routing_key=self.routing_key)
 
     @classmethod
@@ -289,16 +332,19 @@ class Task(object):
         :keyword countdown: Time in seconds to delay the retry for.
         :keyword eta: Explicit time and date to run the retry at (must be a
             :class:`datetime.datetime` instance).
-        :keyword throw: If this is ``False``, do not raise the
-            :exc:`celery.exceptions.RetryTaskError` exception,
-            that tells the worker that the task is to be retried.
         :keyword \*\*options: Any extra options to pass on to
             meth:`apply_async`. See :func:`celery.execute.apply_async`.
+        :keyword throw: If this is ``False``, do not raise the
+            :exc:`celery.exceptions.RetryTaskError` exception,
+            that tells the worker to mark the task as being retried.
+            Note that this means the task will be marked as failed
+            if the task raises an exception, or successful if it
+            returns.
 
         :raises celery.exceptions.RetryTaskError: To tell the worker that the
-            task has been re-sent for retry. This always happens except if
+            task has been re-sent for retry. This always happens, unless
             the ``throw`` keyword argument has been explicitly set
-            to ``False``.
+            to ``False``, and is considered normal operation.
 
         Example
 
@@ -314,6 +360,10 @@ class Task(object):
             ...                        countdown=60 * 5, exc=exc)
 
         """
+        delivery_info = kwargs.pop("delivery_info", {})
+        options.setdefault("exchange", delivery_info.get("exchange"))
+        options.setdefault("routing_key", delivery_info.get("routing_key"))
+
         options["retries"] = kwargs.pop("task_retries", 0) + 1
         options["task_id"] = kwargs.pop("task_id", None)
         options["countdown"] = options.get("countdown",
@@ -321,7 +371,8 @@ class Task(object):
         max_exc = exc or self.MaxRetriesExceededError(
                 "Can't retry %s[%s] args:%s kwargs:%s" % (
                     self.name, options["task_id"], args, kwargs))
-        if options["retries"] > self.max_retries:
+        max_retries = self.max_retries
+        if max_retries is not None and options["retries"] > max_retries:
             raise max_exc
 
         # If task was executed eagerly using apply(),
@@ -354,6 +405,11 @@ class Task(object):
 
     @classmethod
     def AsyncResult(self, task_id):
+        """Get AsyncResult instance for this kind of task.
+
+        :param task_id: Task id to get result for.
+
+        """
         return BaseAsyncResult(task_id, backend=self.backend)
 
     def on_retry(self, exc, task_id, args, kwargs):
@@ -413,6 +469,7 @@ class Task(object):
         wrapper.execute_using_pool(pool, loglevel, logfile)
 
     def __repr__(self):
+        """repr(task)"""
         try:
             kind = self.__class__.mro()[1].__name__
         except (AttributeError, IndexError):
@@ -554,19 +611,22 @@ class TaskSet(object):
         finally:
             publisher.close()
             conn.close()
-        result = TaskSetResult(taskset_id, subtasks)
 
-        return result
+        return TaskSetResult(taskset_id, subtasks)
 
     def apply_part(self, arglist, taskset_id, publisher):
+        """Apply a single part of the taskset."""
         args, kwargs, opts = padlist(arglist, 3, default={})
         return apply_async(self.task, args, kwargs,
                            taskset_id=taskset_id, publisher=publisher, **opts)
 
     def apply(self):
+        """Applies the taskset locally."""
         taskset_id = gen_unique_id()
         subtasks = [apply(self.task, args, kwargs)
                         for args, kwargs in self.arguments]
+
+        # This will be filled with EagerResults.
         return TaskSetResult(taskset_id, subtasks)
 
     @classmethod
@@ -574,7 +634,7 @@ class TaskSet(object):
         """Apply ``args`` to function by distributing the args to the
         celery server(s)."""
         pickled = pickle.dumps(func)
-        arguments = [[[pickled, arg, {}], {}] for arg in args]
+        arguments = [((pickled, arg, {}), {}) for arg in args]
         return cls(ExecuteRemoteTask, arguments)
 
     @classmethod
@@ -603,8 +663,8 @@ class PeriodicTask(Task):
     .. attribute:: run_every
 
         *REQUIRED* Defines how often the task is run (its interval),
-        it can be either a :class:`datetime.timedelta` object or an
-        integer specifying the time in seconds.
+        it can be a :class:`datetime.timedelta` object, a :class:`crontab`
+        object or an integer specifying the time in seconds.
 
     .. attribute:: relative
 
@@ -619,12 +679,36 @@ class PeriodicTask(Task):
 
         >>> from celery.task import tasks, PeriodicTask
         >>> from datetime import timedelta
-        >>> class MyPeriodicTask(PeriodicTask):
+        >>> class EveryThirtySecondsTask(PeriodicTask):
         ...     run_every = timedelta(seconds=30)
         ...
         ...     def run(self, **kwargs):
         ...         logger = self.get_logger(**kwargs)
-        ...         logger.info("Running MyPeriodicTask")
+        ...         logger.info("Execute every 30 seconds")
+
+        >>> from celery.task import PeriodicTask
+        >>> from celery.task.schedules import crontab
+
+        >>> class EveryMondayMorningTask(PeriodicTask):
+        ...     run_every = crontab(hour=7, minute=30, day_of_week=1)
+        ...
+        ...     def run(self, **kwargs):
+        ...         logger = self.get_logger(**kwargs)
+        ...         logger.info("Execute every Monday at 7:30AM.")
+
+        >>> class EveryMorningTask(PeriodicTask):
+        ...     run_every = crontab(hours=7, minute=30)
+        ...
+        ...     def run(self, **kwargs):
+        ...         logger = self.get_logger(**kwargs)
+        ...         logger.info("Execute every day at 7:30AM.")
+
+        >>> class EveryQuarterPastTheHourTask(PeriodicTask):
+        ...     run_every = crontab(minute=15)
+        ...
+        ...     def run(self, **kwargs):
+        ...         logger = self.get_logger(**kwargs)
+        ...         logger.info("Execute every 0:15 past the hour every day.")
 
     """
     abstract = True
@@ -643,14 +727,12 @@ class PeriodicTask(Task):
         if isinstance(self.__class__.run_every, int):
             self.__class__.run_every = timedelta(seconds=self.run_every)
 
-        super(PeriodicTask, self).__init__()
+        # Convert timedelta to instance of schedule.
+        if isinstance(self.__class__.run_every, timedelta):
+            self.__class__.run_every = schedule(self.__class__.run_every,
+                                                self.relative)
 
-    def remaining_estimate(self, last_run_at):
-        """Returns when the periodic task should run next as a timedelta."""
-        next_run_at = last_run_at + self.run_every
-        if not self.relative:
-            next_run_at = self.delta_resolution(next_run_at, self.run_every)
-        return next_run_at - datetime.now()
+        super(PeriodicTask, self).__init__()
 
     def timedelta_seconds(self, delta):
         """Convert :class:`datetime.timedelta` to seconds.
@@ -681,19 +763,8 @@ class PeriodicTask(Task):
         responsiveness if of importance to you.
 
         """
-        rem_delta = self.remaining_estimate(last_run_at)
-        rem = self.timedelta_seconds(rem_delta)
-        if rem == 0:
-            return True, self.timedelta_seconds(self.run_every)
-        return False, rem
+        return self.run_every.is_due(last_run_at)
 
-    def delta_resolution(self, dt, delta):
-        resolution = {3: lambda x: x / 86400,
-                      4: lambda x: x / 3600,
-                      5: lambda x: x / 60}
-        args = dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second
-        r = None
-        for res, calc in resolution.items():
-            if calc(self.timedelta_seconds(delta)):
-                r = res
-        return datetime(*args[:r])
+    def remaining_estimate(self, last_run_at):
+        """Returns when the periodic task should run next as a timedelta."""
+        return self.run_every.remaining_estimate(last_run_at)

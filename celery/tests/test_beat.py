@@ -1,5 +1,5 @@
-import unittest
 import logging
+import unittest2 as unittest
 from datetime import datetime, timedelta
 
 from celery import log
@@ -86,22 +86,22 @@ class TestScheduleEntry(unittest.TestCase):
 
     def test_constructor(self):
         s = beat.ScheduleEntry(DuePeriodicTask.name)
-        self.assertEquals(s.name, DuePeriodicTask.name)
-        self.assertTrue(isinstance(s.last_run_at, datetime))
-        self.assertEquals(s.total_run_count, 0)
+        self.assertEqual(s.name, DuePeriodicTask.name)
+        self.assertIsInstance(s.last_run_at, datetime)
+        self.assertEqual(s.total_run_count, 0)
 
         now = datetime.now()
         s = beat.ScheduleEntry(DuePeriodicTask.name, now, 300)
-        self.assertEquals(s.name, DuePeriodicTask.name)
-        self.assertEquals(s.last_run_at, now)
-        self.assertEquals(s.total_run_count, 300)
+        self.assertEqual(s.name, DuePeriodicTask.name)
+        self.assertEqual(s.last_run_at, now)
+        self.assertEqual(s.total_run_count, 300)
 
     def test_next(self):
         s = beat.ScheduleEntry(DuePeriodicTask.name, None, 300)
         n = s.next()
-        self.assertEquals(n.name, s.name)
-        self.assertEquals(n.total_run_count, 301)
-        self.assertTrue(n.last_run_at > s.last_run_at)
+        self.assertEqual(n.name, s.name)
+        self.assertEqual(n.total_run_count, 301)
+        self.assertGreater(n.last_run_at, s.last_run_at)
 
     def test_is_due(self):
         due = beat.ScheduleEntry(DuePeriodicTask.name)
@@ -123,20 +123,20 @@ class TestScheduler(unittest.TestCase):
 
     def test_constructor(self):
         s = beat.Scheduler()
-        self.assertTrue(isinstance(s.registry, TaskRegistry))
-        self.assertTrue(isinstance(s.schedule, dict))
-        self.assertTrue(isinstance(s.logger, logging.Logger))
-        self.assertEquals(s.max_interval, conf.CELERYBEAT_MAX_LOOP_INTERVAL)
+        self.assertIsInstance(s.registry, TaskRegistry)
+        self.assertIsInstance(s.schedule, dict)
+        self.assertIsInstance(s.logger, logging.Logger)
+        self.assertEqual(s.max_interval, conf.CELERYBEAT_MAX_LOOP_INTERVAL)
 
     def test_cleanup(self):
         self.scheduler.schedule["fbz"] = beat.ScheduleEntry("fbz")
         self.scheduler.cleanup()
-        self.assertTrue("fbz" not in self.scheduler.schedule)
+        self.assertNotIn("fbz", self.scheduler.schedule)
 
     def test_schedule_registry(self):
         self.registry.register(AdditionalTask)
         self.scheduler.schedule_registry()
-        self.assertTrue(AdditionalTask.name in self.scheduler.schedule)
+        self.assertIn(AdditionalTask.name, self.scheduler.schedule)
 
     def test_apply_async(self):
         due_task = self.registry[DuePeriodicTask.name]
@@ -161,13 +161,13 @@ class TestScheduler(unittest.TestCase):
     def test_tick(self):
         self.scheduler.schedule.pop(DuePeriodicTaskRaising.name, None)
         self.registry.pop(DuePeriodicTaskRaising.name, None)
-        self.assertEquals(self.scheduler.tick(),
+        self.assertEqual(self.scheduler.tick(),
                             self.scheduler.max_interval)
 
     def test_quick_schedulingerror(self):
         self.registry.register(DuePeriodicTaskRaising)
         self.scheduler.schedule_registry()
-        self.assertEquals(self.scheduler.tick(),
+        self.assertEqual(self.scheduler.tick(),
                             self.scheduler.max_interval)
 
 
@@ -178,13 +178,13 @@ class TestClockService(unittest.TestCase):
         sh = MockShelve()
         s.open_schedule = lambda *a, **kw: sh
 
-        self.assertTrue(isinstance(s.schedule, dict))
-        self.assertTrue(isinstance(s.schedule, dict))
-        self.assertTrue(isinstance(s.scheduler, beat.Scheduler))
-        self.assertTrue(isinstance(s.scheduler, beat.Scheduler))
+        self.assertIsInstance(s.schedule, dict)
+        self.assertIsInstance(s.schedule, dict)
+        self.assertIsInstance(s.scheduler, beat.Scheduler)
+        self.assertIsInstance(s.scheduler, beat.Scheduler)
 
-        self.assertTrue(s.schedule is sh)
-        self.assertTrue(s._schedule is sh)
+        self.assertIs(s.schedule, sh)
+        self.assertIs(s._schedule, sh)
 
         s._in_sync = False
         s.sync()
@@ -204,21 +204,29 @@ class TestEmbeddedClockService(unittest.TestCase):
     def test_start_stop_process(self):
         s = beat.EmbeddedClockService()
         from multiprocessing import Process
-        self.assertTrue(isinstance(s, Process))
-        self.assertTrue(isinstance(s.clockservice, beat.ClockService))
+        self.assertIsInstance(s, Process)
+        self.assertIsInstance(s.clockservice, beat.ClockService)
         s.clockservice = MockClockService()
+
+        class _Popen(object):
+            terminated = False
+
+            def terminate(self):
+                self.terminated = True
 
         s.run()
         self.assertTrue(s.clockservice.started)
 
+        s._popen = _Popen()
         s.stop()
         self.assertTrue(s.clockservice.stopped)
+        self.assertTrue(s._popen.terminated)
 
     def test_start_stop_threaded(self):
         s = beat.EmbeddedClockService(thread=True)
         from threading import Thread
-        self.assertTrue(isinstance(s, Thread))
-        self.assertTrue(isinstance(s.clockservice, beat.ClockService))
+        self.assertIsInstance(s, Thread)
+        self.assertIsInstance(s.clockservice, beat.ClockService)
         s.clockservice = MockClockService()
 
         s.run()

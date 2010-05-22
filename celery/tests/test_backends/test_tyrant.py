@@ -1,9 +1,8 @@
 import sys
-import errno
 import socket
-import unittest
+import unittest2 as unittest
 
-from django.core.exceptions import ImproperlyConfigured
+from celery.exceptions import ImproperlyConfigured
 
 from celery import states
 from celery.utils import gen_unique_id
@@ -34,11 +33,8 @@ def get_tyrant_or_None():
         tb = TyrantBackend()
         try:
             tb.open()
-        except socket.error, exc:
-            if exc.errno == errno.ECONNREFUSED:
-                return emit_no_tyrant_msg("not running")
-            else:
-                raise
+        except socket.error:
+            return emit_no_tyrant_msg("not running")
         return tb
     except ImproperlyConfigured, exc:
         if "need to install" in str(exc):
@@ -53,11 +49,11 @@ class TestTyrantBackend(unittest.TestCase):
         if not tb:
             return # Skip test
 
-        self.assertTrue(tb._connection is not None)
+        self.assertIsNotNone(tb._connection)
         tb.close()
-        self.assertTrue(tb._connection is None)
+        self.assertIsNone(tb._connection)
         tb.open()
-        self.assertTrue(tb._connection is not None)
+        self.assertIsNone(tb._connection)
 
     def test_mark_as_done(self):
         tb = get_tyrant_or_None()
@@ -67,15 +63,13 @@ class TestTyrantBackend(unittest.TestCase):
         tid = gen_unique_id()
 
         self.assertFalse(tb.is_successful(tid))
-        self.assertEquals(tb.get_status(tid), states.PENDING)
-        self.assertEquals(tb.get_result(tid), None)
+        self.assertEqual(tb.get_status(tid), states.PENDING)
+        self.assertIsNone(tb.get_result(tid), None)
 
         tb.mark_as_done(tid, 42)
         self.assertTrue(tb.is_successful(tid))
-        self.assertEquals(tb.get_status(tid), states.SUCCESS)
-        self.assertEquals(tb.get_result(tid), 42)
-        self.assertTrue(tb._cache.get(tid))
-        self.assertTrue(tb.get_result(tid), 42)
+        self.assertEqual(tb.get_status(tid), states.SUCCESS)
+        self.assertEqual(tb.get_result(tid), 42)
 
     def test_is_pickled(self):
         tb = get_tyrant_or_None()
@@ -87,8 +81,8 @@ class TestTyrantBackend(unittest.TestCase):
         tb.mark_as_done(tid2, result)
         # is serialized properly.
         rindb = tb.get_result(tid2)
-        self.assertEquals(rindb.get("foo"), "baz")
-        self.assertEquals(rindb.get("bar").data, 12345)
+        self.assertEqual(rindb.get("foo"), "baz")
+        self.assertEqual(rindb.get("bar").data, 12345)
 
     def test_mark_as_failure(self):
         tb = get_tyrant_or_None()
@@ -102,8 +96,8 @@ class TestTyrantBackend(unittest.TestCase):
             pass
         tb.mark_as_failure(tid3, exception)
         self.assertFalse(tb.is_successful(tid3))
-        self.assertEquals(tb.get_status(tid3), states.FAILURE)
-        self.assertTrue(isinstance(tb.get_result(tid3), KeyError))
+        self.assertEqual(tb.get_status(tid3), states.FAILURE)
+        self.assertIsInstance(tb.get_result(tid3), KeyError)
 
     def test_process_cleanup(self):
         tb = get_tyrant_or_None()
@@ -112,4 +106,4 @@ class TestTyrantBackend(unittest.TestCase):
 
         tb.process_cleanup()
 
-        self.assertTrue(tb._connection is None)
+        self.assertIsNone(tb._connection)

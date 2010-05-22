@@ -13,6 +13,8 @@ from UserDict import UserDict
 from celery import log
 from celery import conf
 from celery import registry as _registry
+from celery import platform
+from celery.messaging import establish_connection
 from celery.utils.info import humanize_seconds
 
 
@@ -87,7 +89,9 @@ class Scheduler(UserDict):
     def __init__(self, registry=None, schedule=None, logger=None,
             max_interval=None):
         self.registry = registry or _registry.TaskRegistry()
-        self.data = schedule or {}
+        self.data = schedule
+        if self.data is None:
+            self.data = {}
         self.logger = logger or log.get_default_logger()
         self.max_interval = max_interval or conf.CELERYBEAT_MAX_LOOP_INTERVAL
 
@@ -101,18 +105,22 @@ class Scheduler(UserDict):
         error = self.logger.error
 
         remaining_times = []
-        for entry in self.schedule.values():
-            is_due, next_time_to_run = self.is_due(entry)
-            if is_due:
-                debug("Scheduler: Sending due task %s" % entry.name)
-                try:
-                    result = self.apply_async(entry)
-                except SchedulingError, exc:
-                    error("Scheduler: %s" % exc)
-                else:
-                    debug("%s sent. id->%s" % (entry.name, result.task_id))
-            if next_time_to_run:
-                remaining_times.append(next_time_to_run)
+        connection = establish_connection()
+        try:
+            for entry in self.schedule.values():
+                is_due, next_time_to_run = self.is_due(entry)
+                if is_due:
+                    debug("Scheduler: Sending due task %s" % entry.name)
+                    try:
+                        result = self.apply_async(entry, connection=connection)
+                    except SchedulingError, exc:
+                        error("Scheduler: %s" % exc)
+                    else:
+                        debug("%s sent. id->%s" % (entry.name, result.task_id))
+                if next_time_to_run:
+                    remaining_times.append(next_time_to_run)
+        finally:
+            connection.close()
 
         return min(remaining_times + [self.max_interval])
 
@@ -122,7 +130,7 @@ class Scheduler(UserDict):
     def is_due(self, entry):
         return entry.is_due(self.get_task(entry.name))
 
-    def apply_async(self, entry):
+    def apply_async(self, entry, **kwargs):
 
         # Update timestamps and run counts before we actually execute,
         # so we have that done if an exception is raised (doesn't schedule
@@ -131,7 +139,7 @@ class Scheduler(UserDict):
         task = self.get_task(entry.name)
 
         try:
-            result = task.apply_async()
+            result = task.apply_async(**kwargs)
         except Exception, exc:
             raise SchedulingError("Couldn't apply scheduled task %s: %s" % (
                     task.name, exc))
@@ -175,23 +183,27 @@ class ClockService(object):
         self.debug = log.SilenceRepeated(self.logger.debug,
                                          max_iterations=silence)
 
-    def start(self):
+    def start(self, embedded_process=False):
         self.logger.info("ClockService: Starting...")
         self.logger.debug("ClockService: "
             "Ticking with max interval->%s, schedule->%s" % (
                     humanize_seconds(self.max_interval),
                     self.schedule_filename))
 
+        if embedded_process:
+            platform.set_process_title("celerybeat")
+
         try:
-            while True:
-                if self._shutdown.isSet():
-                    break
-                interval = self.scheduler.tick()
-                self.debug("ClockService: Waking up %s." % (
-                        humanize_seconds(interval, prefix="in ")))
-                time.sleep(interval)
-        except (KeyboardInterrupt, SystemExit):
-            self.sync()
+            try:
+                while True:
+                    if self._shutdown.isSet():
+                        break
+                    interval = self.scheduler.tick()
+                    self.debug("ClockService: Waking up %s." % (
+                            humanize_seconds(interval, prefix="in ")))
+                    time.sleep(interval)
+            except (KeyboardInterrupt, SystemExit):
+                self.sync()
         finally:
             self.sync()
 
@@ -225,6 +237,37 @@ class ClockService(object):
         return self._scheduler
 
 
+class _Threaded(threading.Thread):
+    """Embedded clock service using threading."""
+
+    def __init__(self, *args, **kwargs):
+        super(_Threaded, self).__init__()
+        self.clockservice = ClockService(*args, **kwargs)
+        self.setDaemon(True)
+
+    def run(self):
+        self.clockservice.start()
+
+    def stop(self):
+        self.clockservice.stop(wait=True)
+
+
+class _Process(multiprocessing.Process):
+    """Embedded clock service using multiprocessing."""
+
+    def __init__(self, *args, **kwargs):
+        super(_Process, self).__init__()
+        self.clockservice = ClockService(*args, **kwargs)
+
+    def run(self):
+        platform.reset_signal("SIGTERM")
+        self.clockservice.start(embedded_process=True)
+
+    def stop(self):
+        self.clockservice.stop()
+        self.terminate()
+
+
 def EmbeddedClockService(*args, **kwargs):
     """Return embedded clock service.
 
@@ -232,35 +275,6 @@ def EmbeddedClockService(*args, **kwargs):
         Default is ``False``.
 
     """
-
-    class _Threaded(threading.Thread):
-        """Embedded clock service using threading."""
-
-        def __init__(self, *args, **kwargs):
-            super(_Threaded, self).__init__()
-            self.clockservice = ClockService(*args, **kwargs)
-            self.setDaemon(True)
-
-        def run(self):
-            self.clockservice.start()
-
-        def stop(self):
-            self.clockservice.stop(wait=True)
-
-    class _Process(multiprocessing.Process):
-        """Embedded clock service using multiprocessing."""
-
-        def __init__(self, *args, **kwargs):
-            super(_Process, self).__init__()
-            self.clockservice = ClockService(*args, **kwargs)
-            self.daemon = True
-
-        def run(self):
-            self.clockservice.start()
-
-        def stop(self):
-            self.clockservice.stop()
-
     if kwargs.pop("thread", False):
         # Need short max interval to be able to stop thread
         # in reasonable time.

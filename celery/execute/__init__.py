@@ -1,17 +1,18 @@
-from datetime import datetime, timedelta
-
 from celery import conf
 from celery.utils import gen_unique_id, fun_takes_kwargs, mattrgetter
-from celery.result import EagerResult
+from celery.result import AsyncResult, EagerResult
 from celery.execute.trace import TaskTrace
 from celery.registry import tasks
 from celery.messaging import with_connection
+from celery.messaging import TaskPublisher
 
 extract_exec_options = mattrgetter("routing_key", "exchange",
                                    "immediate", "mandatory",
-                                   "priority", "serializer")
+                                   "priority", "serializer",
+                                   "delivery_mode")
 
 
+@with_connection
 def apply_async(task, args=None, kwargs=None, countdown=None, eta=None,
         task_id=None, publisher=None, connection=None, connect_timeout=None,
         **options):
@@ -40,6 +41,10 @@ def apply_async(task, args=None, kwargs=None, countdown=None, eta=None,
     :keyword exchange: The named exchange to send the task to. Defaults to
         :attr:`celery.task.base.Task.exchange`.
 
+    :keyword exchange_type: The exchange type to initalize the exchange as
+        if not already declared.
+        Defaults to :attr:`celery.task.base.Task.exchange_type`.
+
     :keyword immediate: Request immediate delivery. Will raise an exception
         if the task cannot be routed to a worker immediately.
         (Do not confuse this parameter with the ``countdown`` and ``eta``
@@ -67,35 +72,41 @@ def apply_async(task, args=None, kwargs=None, countdown=None, eta=None,
 
     """
     if conf.ALWAYS_EAGER:
-        return apply(task, args, kwargs)
-    return _apply_async(task, args=args, kwargs=kwargs, countdown=countdown,
-                        eta=eta, task_id=task_id, publisher=publisher,
-                        connection=connection,
-                        connect_timeout=connect_timeout, **options)
+        return apply(task, args, kwargs, task_id=task_id)
 
-
-@with_connection
-def _apply_async(task, args=None, kwargs=None, countdown=None, eta=None,
-        task_id=None, publisher=None, connection=None, connect_timeout=None,
-        **options):
-
-    task = tasks[task.name] # Get instance.
-    exchange = options.get("exchange")
+    task = tasks[task.name] # get instance from registry
     options = dict(extract_exec_options(task), **options)
+    exchange = options.get("exchange")
+    exchange_type = options.get("exchange_type")
 
-    if countdown: # Convert countdown to ETA.
-        eta = datetime.now() + timedelta(seconds=countdown)
-
-    publish = publisher or task.get_publisher(connection, exchange=exchange)
+    publish = publisher or task.get_publisher(connection, exchange=exchange,
+                                              exchange_type=exchange_type)
     try:
-        task_id = publish.delay_task(task.name, args or [], kwargs or {},
-                                     task_id=task_id,
-                                     eta=eta,
-                                     **options)
+        task_id = publish.delay_task(task.name, args, kwargs, task_id=task_id,
+                                     countdown=countdown, eta=eta, **options)
     finally:
         publisher or publish.close()
 
     return task.AsyncResult(task_id)
+
+
+@with_connection
+def send_task(name, args=None, kwargs=None, countdown=None, eta=None,
+        task_id=None, publisher=None, connection=None, connect_timeout=None,
+        result_cls=AsyncResult, **options):
+
+    exchange = options.get("exchange")
+    exchange_type = options.get("exchange_type")
+
+    publish = publisher or TaskPublisher(connection, exchange=exchange,
+                                         exchange_type=exchange_type)
+    try:
+        task_id = publish.delay_task(name, args, kwargs, task_id=task_id,
+                                     countdown=countdown, eta=eta, **options)
+    finally:
+        publisher or publish.close()
+
+    return result_cls(task_id)
 
 
 def delay_task(task_name, *args, **kwargs):
@@ -131,7 +142,7 @@ def apply(task, args, kwargs, **options):
     """
     args = args or []
     kwargs = kwargs or {}
-    task_id = gen_unique_id()
+    task_id = options.get("task_id", gen_unique_id())
     retries = options.get("retries", 0)
 
     task = tasks[task.name] # Make sure we get the instance, not class.
@@ -141,6 +152,7 @@ def apply(task, args, kwargs, **options):
                       "task_retries": retries,
                       "task_is_eager": True,
                       "logfile": None,
+                      "delivery_info": {"is_eager": True},
                       "loglevel": 0}
     supported_keys = fun_takes_kwargs(task.run, default_kwargs)
     extend_with = dict((key, val) for key, val in default_kwargs.items()

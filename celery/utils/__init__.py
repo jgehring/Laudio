@@ -1,3 +1,4 @@
+from __future__ import generators
 """
 
 Utility functions
@@ -9,13 +10,16 @@ try:
     import ctypes
 except ImportError:
     ctypes = None
+import importlib
 from uuid import UUID, uuid4, _uuid_generate_random
 from inspect import getargspec
-from itertools import repeat, islice
+from itertools import islice
 
+from carrot.utils import rpartition
 from billiard.utils.functional import curry
 
 from celery.utils.compat import all, any, defaultdict
+from celery.utils.timeutils import timedelta_seconds # was here before
 
 
 def noop(*args, **kwargs):
@@ -25,6 +29,14 @@ def noop(*args, **kwargs):
 
     """
     pass
+
+
+def first(predicate, iterable):
+    """Returns the first element in ``iterable`` that ``predicate`` returns a
+    ``True`` value for."""
+    for item in iterable:
+        if predicate(item):
+            return item
 
 
 def chunks(it, n):
@@ -75,7 +87,7 @@ def padlist(container, size, default=None):
         ("George", "Constanza", "NYC", "Earth")
 
     """
-    return container[:size] + [default] * (size - len(container))
+    return list(container)[:size] + [default] * (size - len(container))
 
 
 def mitemgetter(*items):
@@ -178,12 +190,50 @@ def fun_takes_kwargs(fun, kwlist=[]):
     return filter(curry(operator.contains, args), kwlist)
 
 
-def timedelta_seconds(delta):
-    """Convert :class:`datetime.timedelta` to seconds.
+def get_cls_by_name(name, aliases={}):
+    """Get class by name.
 
-    Doesn't account for negative values.
+    The name should be the full dot-separated path to the class::
+
+        modulename.ClassName
+
+    Example::
+
+        celery.worker.pool.TaskPool
+                           ^- class name
+
+    If ``aliases`` is provided, a dict containing short name/long name
+    mappings, the name is looked up in the aliases first.
+
+    Examples:
+
+        >>> get_cls_by_name("celery.worker.pool.TaskPool")
+        <class 'celery.worker.pool.TaskPool'>
+
+        >>> get_cls_by_name("default", {
+        ...     "default": "celery.worker.pool.TaskPool"})
+        <class 'celery.worker.pool.TaskPool'>
+
+        # Does not try to look up non-string names.
+        >>> from celery.worker.pool import TaskPool
+        >>> get_cls_by_name(TaskPool) is TaskPool
+        True
 
     """
-    if delta.days < 0:
-        return 0
-    return delta.days * 86400 + delta.seconds + (delta.microseconds / 10e5)
+
+    if not isinstance(name, basestring):
+        return name # already a class
+
+    name = aliases.get(name) or name
+    module_name, _, cls_name = rpartition(name, ".")
+    module = importlib.import_module(module_name)
+    return getattr(module, cls_name)
+
+
+def instantiate(name, *args, **kwargs):
+    """Instantiate class by name.
+
+    See :func:`get_cls_by_name`.
+
+    """
+    return get_cls_by_name(name)(*args, **kwargs)

@@ -1,6 +1,5 @@
 import django
 from django.db import models
-from django.forms.models import model_to_dict
 from django.utils.translation import ugettext_lazy as _
 
 from picklefield.fields import PickledObjectField
@@ -17,7 +16,7 @@ class TaskMeta(models.Model):
     task_id = models.CharField(_(u"task id"), max_length=255, unique=True)
     status = models.CharField(_(u"task status"), max_length=50,
             default=states.PENDING, choices=TASK_STATUSES_CHOICES)
-    result = PickledObjectField()
+    result = PickledObjectField(null=True, default=None)
     date_done = models.DateTimeField(_(u"done at"), auto_now=True)
     traceback = models.TextField(_(u"traceback"), blank=True, null=True)
 
@@ -36,7 +35,7 @@ class TaskMeta(models.Model):
                 "traceback": self.traceback}
 
     def __unicode__(self):
-        return u"<Task: %s successful: %s>" % (self.task_id, self.status)
+        return u"<Task: %s state->%s>" % (self.task_id, self.status)
 
 
 class TaskSetMeta(models.Model):
@@ -63,6 +62,6 @@ class TaskSetMeta(models.Model):
 if (django.VERSION[0], django.VERSION[1]) >= (1, 1):
     # keep models away from syncdb/reset if database backend is not
     # being used.
-    if conf.CELERY_BACKEND != 'database':
+    if conf.RESULT_BACKEND != 'database':
         TaskMeta._meta.managed = False
         TaskSetMeta._meta.managed = False

@@ -1,14 +1,20 @@
-import unittest
+import unittest2 as unittest
 from StringIO import StringIO
 from datetime import datetime, timedelta
 
+from billiard.utils.functional import wraps
+
 from celery import task
 from celery import messaging
+from celery.task.schedules import crontab
+from celery.utils import timeutils
+from celery.utils import gen_unique_id
 from celery.result import EagerResult
+from celery.execute import send_task
 from celery.backends import default_backend
 from celery.decorators import task as task_dec
-from celery.worker.listener import parse_iso8601
 from celery.exceptions import RetryTaskError
+from celery.worker.listener import parse_iso8601
 
 def return_True(*args, **kwargs):
     # Task run functions can't be closures/lambdas, as they're pickled.
@@ -127,15 +133,15 @@ class TestTaskRetries(unittest.TestCase):
         RetryTask.max_retries = 3
         RetryTask.iterations = 0
         result = RetryTask.apply([0xFF, 0xFFFF])
-        self.assertEquals(result.get(), 0xFF)
-        self.assertEquals(RetryTask.iterations, 4)
+        self.assertEqual(result.get(), 0xFF)
+        self.assertEqual(RetryTask.iterations, 4)
 
     def test_retry_no_args(self):
         RetryTaskNoArgs.max_retries = 3
         RetryTaskNoArgs.iterations = 0
         result = RetryTaskNoArgs.apply()
-        self.assertEquals(result.get(), 42)
-        self.assertEquals(RetryTaskNoArgs.iterations, 4)
+        self.assertEqual(result.get(), 42)
+        self.assertEqual(RetryTaskNoArgs.iterations, 4)
 
     def test_retry_not_eager(self):
         exc = Exception("baz")
@@ -157,8 +163,8 @@ class TestTaskRetries(unittest.TestCase):
         RetryTaskCustomExc.max_retries = 3
         RetryTaskCustomExc.iterations = 0
         result = RetryTaskCustomExc.apply([0xFF, 0xFFFF], {"kwarg": 0xF})
-        self.assertEquals(result.get(), 0xFF + 0xF)
-        self.assertEquals(RetryTaskCustomExc.iterations, 4)
+        self.assertEqual(result.get(), 0xFF + 0xF)
+        self.assertEqual(RetryTaskCustomExc.iterations, 4)
 
     def test_retry_with_custom_exception(self):
         RetryTaskCustomExc.max_retries = 2
@@ -166,7 +172,7 @@ class TestTaskRetries(unittest.TestCase):
         result = RetryTaskCustomExc.apply([0xFF, 0xFFFF], {"kwarg": 0xF})
         self.assertRaises(MyCustomException,
                           result.get)
-        self.assertEquals(RetryTaskCustomExc.iterations, 3)
+        self.assertEqual(RetryTaskCustomExc.iterations, 3)
 
     def test_max_retries_exceeded(self):
         RetryTask.max_retries = 2
@@ -174,14 +180,14 @@ class TestTaskRetries(unittest.TestCase):
         result = RetryTask.apply([0xFF, 0xFFFF])
         self.assertRaises(RetryTask.MaxRetriesExceededError,
                           result.get)
-        self.assertEquals(RetryTask.iterations, 3)
+        self.assertEqual(RetryTask.iterations, 3)
 
         RetryTask.max_retries = 1
         RetryTask.iterations = 0
         result = RetryTask.apply([0xFF, 0xFFFF])
         self.assertRaises(RetryTask.MaxRetriesExceededError,
                           result.get)
-        self.assertEquals(RetryTask.iterations, 2)
+        self.assertEqual(RetryTask.iterations, 2)
 
 
 class MockPublisher(object):
@@ -201,16 +207,22 @@ class TestCeleryTasks(unittest.TestCase):
         cls.run = return_True
         return cls
 
+    def test_AsyncResult(self):
+        task_id = gen_unique_id()
+        result = RetryTask.AsyncResult(task_id)
+        self.assertEqual(result.backend, RetryTask.backend)
+        self.assertEqual(result.task_id, task_id)
+
     def test_ping(self):
         from celery import conf
         conf.ALWAYS_EAGER = True
-        self.assertEquals(task.ping(), 'pong')
+        self.assertEqual(task.ping(), 'pong')
         conf.ALWAYS_EAGER = False
 
     def test_execute_remote(self):
         from celery import conf
         conf.ALWAYS_EAGER = True
-        self.assertEquals(task.execute_remote(return_True, ["foo"]).get(),
+        self.assertEqual(task.execute_remote(return_True, ["foo"]).get(),
                           True)
         conf.ALWAYS_EAGER = False
 
@@ -219,8 +231,8 @@ class TestCeleryTasks(unittest.TestCase):
         import operator
         conf.ALWAYS_EAGER = True
         res = task.dmap(operator.add, zip(xrange(10), xrange(10)))
-        self.assertTrue(res, sum([operator.add(x, x)
-                                    for x in xrange(10)]))
+        self.assertEqual(sum(res), sum(operator.add(x, x)
+                                        for x in xrange(10)))
         conf.ALWAYS_EAGER = False
 
     def test_dmap_async(self):
@@ -228,23 +240,23 @@ class TestCeleryTasks(unittest.TestCase):
         import operator
         conf.ALWAYS_EAGER = True
         res = task.dmap_async(operator.add, zip(xrange(10), xrange(10)))
-        self.assertTrue(res.get(), sum([operator.add(x, x)
-                                            for x in xrange(10)]))
+        self.assertEqual(sum(res.get()), sum(operator.add(x, x)
+                                                for x in xrange(10)))
         conf.ALWAYS_EAGER = False
 
-    def assertNextTaskDataEquals(self, consumer, presult, task_name,
+    def assertNextTaskDataEqual(self, consumer, presult, task_name,
             test_eta=False, **kwargs):
         next_task = consumer.fetch()
         task_data = next_task.decode()
-        self.assertEquals(task_data["id"], presult.task_id)
-        self.assertEquals(task_data["task"], task_name)
+        self.assertEqual(task_data["id"], presult.task_id)
+        self.assertEqual(task_data["task"], task_name)
         task_kwargs = task_data.get("kwargs", {})
         if test_eta:
-            self.assertTrue(isinstance(task_data.get("eta"), basestring))
+            self.assertIsInstance(task_data.get("eta"), basestring)
             to_datetime = parse_iso8601(task_data.get("eta"))
-            self.assertTrue(isinstance(to_datetime, datetime))
+            self.assertIsInstance(to_datetime, datetime)
         for arg_name, arg_value in kwargs.items():
-            self.assertEquals(task_kwargs.get(arg_name), arg_value)
+            self.assertEqual(task_kwargs.get(arg_name), arg_value)
 
     def test_incomplete_task_cls(self):
 
@@ -253,9 +265,17 @@ class TestCeleryTasks(unittest.TestCase):
 
         self.assertRaises(NotImplementedError, IncompleteTask().run)
 
+    def test_task_kwargs_must_be_dictionary(self):
+        self.assertRaises(ValueError, IncrementCounterTask.apply_async,
+                          [], "str")
+
+    def test_task_args_must_be_list(self):
+        self.assertRaises(ValueError, IncrementCounterTask.apply_async,
+                          "str", {})
+
     def test_regular_task(self):
         T1 = self.createTaskCls("T1", "c.unittest.t.t1")
-        self.assertTrue(isinstance(T1(), T1))
+        self.assertIsInstance(T1(), T1)
         self.assertTrue(T1().run())
         self.assertTrue(callable(T1()),
                 "Task class is callable()")
@@ -264,47 +284,52 @@ class TestCeleryTasks(unittest.TestCase):
 
         # task name generated out of class module + name.
         T2 = self.createTaskCls("T2")
-        self.assertEquals(T2().name, "celery.tests.test_task.T2")
+        self.assertTrue(T2().name.endswith("test_task.T2"))
 
         t1 = T1()
         consumer = t1.get_consumer()
         self.assertRaises(NotImplementedError, consumer.receive, "foo", "foo")
         consumer.discard_all()
-        self.assertTrue(consumer.fetch() is None)
+        self.assertIsNone(consumer.fetch())
 
         # Without arguments.
         presult = t1.delay()
-        self.assertNextTaskDataEquals(consumer, presult, t1.name)
+        self.assertNextTaskDataEqual(consumer, presult, t1.name)
 
         # With arguments.
         presult2 = t1.apply_async(kwargs=dict(name="George Constanza"))
-        self.assertNextTaskDataEquals(consumer, presult2, t1.name,
+        self.assertNextTaskDataEqual(consumer, presult2, t1.name,
                 name="George Constanza")
+
+        # send_task
+        sresult = send_task(t1.name, kwargs=dict(name="Elaine M. Benes"))
+        self.assertNextTaskDataEqual(consumer, sresult, t1.name,
+                name="Elaine M. Benes")
 
         # With eta.
         presult2 = task.apply_async(t1, kwargs=dict(name="George Constanza"),
                                     eta=datetime.now() + timedelta(days=1))
-        self.assertNextTaskDataEquals(consumer, presult2, t1.name,
+        self.assertNextTaskDataEqual(consumer, presult2, t1.name,
                 name="George Constanza", test_eta=True)
 
         # With countdown.
         presult2 = task.apply_async(t1, kwargs=dict(name="George Constanza"),
                                     countdown=10)
-        self.assertNextTaskDataEquals(consumer, presult2, t1.name,
+        self.assertNextTaskDataEqual(consumer, presult2, t1.name,
                 name="George Constanza", test_eta=True)
 
         # Discarding all tasks.
         consumer.discard_all()
         task.apply_async(t1)
-        self.assertEquals(consumer.discard_all(), 1)
-        self.assertTrue(consumer.fetch() is None)
+        self.assertEqual(consumer.discard_all(), 1)
+        self.assertIsNone(consumer.fetch())
 
         self.assertFalse(presult.successful())
         default_backend.mark_as_done(presult.task_id, result=None)
         self.assertTrue(presult.successful())
 
         publisher = t1.get_publisher()
-        self.assertTrue(isinstance(publisher, messaging.TaskPublisher))
+        self.assertIsInstance(publisher, messaging.TaskPublisher)
 
     def test_get_publisher(self):
         from celery.task import base
@@ -313,7 +338,7 @@ class TestCeleryTasks(unittest.TestCase):
         try:
             p = IncrementCounterTask.get_publisher(exchange="foo",
                                                    connection="bar")
-            self.assertEquals(p.kwargs["exchange"], "foo")
+            self.assertEqual(p.kwargs["exchange"], "foo")
         finally:
             base.TaskPublisher = old_pub
 
@@ -331,27 +356,27 @@ class TestTaskSet(unittest.TestCase):
         from celery import conf
         conf.ALWAYS_EAGER = True
         ts = task.TaskSet(return_True_task.name, [
-            [[1], {}], [[2], {}], [[3], {}], [[4], {}], [[5], {}]])
+            ([1], {}), [[2], {}], [[3], {}], [[4], {}], [[5], {}]])
         res = ts.apply_async()
-        self.assertEquals(res.join(), [True, True, True, True, True])
+        self.assertListEqual(res.join(), [True, True, True, True, True])
 
         conf.ALWAYS_EAGER = False
 
     def test_counter_taskset(self):
         IncrementCounterTask.count = 0
         ts = task.TaskSet(IncrementCounterTask, [
-            [[], {}],
-            [[], {"increment_by": 2}],
-            [[], {"increment_by": 3}],
-            [[], {"increment_by": 4}],
-            [[], {"increment_by": 5}],
-            [[], {"increment_by": 6}],
-            [[], {"increment_by": 7}],
-            [[], {"increment_by": 8}],
-            [[], {"increment_by": 9}],
+            ([], {}),
+            ([], {"increment_by": 2}),
+            ([], {"increment_by": 3}),
+            ([], {"increment_by": 4}),
+            ([], {"increment_by": 5}),
+            ([], {"increment_by": 6}),
+            ([], {"increment_by": 7}),
+            ([], {"increment_by": 8}),
+            ([], {"increment_by": 9}),
         ])
-        self.assertEquals(ts.task_name, IncrementCounterTask.name)
-        self.assertEquals(ts.total, 9)
+        self.assertEqual(ts.task_name, IncrementCounterTask.name)
+        self.assertEqual(ts.total, 9)
 
 
         consumer = IncrementCounterTask().get_consumer()
@@ -361,12 +386,12 @@ class TestTaskSet(unittest.TestCase):
         taskset_id = taskset_res.taskset_id
         for subtask in subtasks:
             m = consumer.fetch().payload
-            self.assertEquals(m.get("taskset"), taskset_id)
-            self.assertEquals(m.get("task"), IncrementCounterTask.name)
-            self.assertEquals(m.get("id"), subtask.task_id)
+            self.assertDictContainsSubset({"taskset": taskset_id,
+                                           "task": IncrementCounterTask.name,
+                                           "id": subtask.task_id}, m)
             IncrementCounterTask().run(
                     increment_by=m.get("kwargs", {}).get("increment_by"))
-        self.assertEquals(IncrementCounterTask.count, sum(xrange(1, 10)))
+        self.assertEqual(IncrementCounterTask.count, sum(xrange(1, 10)))
 
 
 class TestTaskApply(unittest.TestCase):
@@ -375,14 +400,14 @@ class TestTaskApply(unittest.TestCase):
         IncrementCounterTask.count = 0
 
         e = IncrementCounterTask.apply()
-        self.assertTrue(isinstance(e, EagerResult))
-        self.assertEquals(e.get(), 1)
+        self.assertIsInstance(e, EagerResult)
+        self.assertEqual(e.get(), 1)
 
         e = IncrementCounterTask.apply(args=[1])
-        self.assertEquals(e.get(), 2)
+        self.assertEqual(e.get(), 2)
 
         e = IncrementCounterTask.apply(kwargs={"increment_by": 4})
-        self.assertEquals(e.get(), 6)
+        self.assertEqual(e.get(), 6)
 
         self.assertTrue(e.successful())
         self.assertTrue(e.ready())
@@ -406,13 +431,13 @@ class TestPeriodicTask(unittest.TestCase):
             (task.PeriodicTask, ), {"__module__": __name__})
 
     def test_remaining_estimate(self):
-        self.assertTrue(isinstance(
+        self.assertIsInstance(
             MyPeriodic().remaining_estimate(datetime.now()),
-            timedelta))
+            timedelta)
 
     def test_timedelta_seconds_returns_0_on_negative_time(self):
         delta = timedelta(days=-2)
-        self.assertEquals(MyPeriodic().timedelta_seconds(delta), 0)
+        self.assertEqual(MyPeriodic().timedelta_seconds(delta), 0)
 
     def test_timedelta_seconds(self):
         deltamap = ((timedelta(seconds=1), 1),
@@ -421,15 +446,112 @@ class TestPeriodicTask(unittest.TestCase):
                     (timedelta(hours=4), 4 * 60 * 60),
                     (timedelta(days=3), 3 * 86400))
         for delta, seconds in deltamap:
-            self.assertEquals(MyPeriodic().timedelta_seconds(delta), seconds)
+            self.assertEqual(MyPeriodic().timedelta_seconds(delta), seconds)
+
+    def test_delta_resolution(self):
+        D = timeutils.delta_resolution
+
+        dt = datetime(2010, 3, 30, 11, 50, 58, 41065)
+        deltamap = ((timedelta(days=2), datetime(2010, 3, 30, 0, 0)),
+                    (timedelta(hours=2), datetime(2010, 3, 30, 11, 0)),
+                    (timedelta(minutes=2), datetime(2010, 3, 30, 11, 50)),
+                    (timedelta(seconds=2), dt))
+        for delta, shoulda in deltamap:
+            self.assertEqual(D(dt, delta), shoulda)
 
     def test_is_due_not_due(self):
         due, remaining = MyPeriodic().is_due(datetime.now())
         self.assertFalse(due)
-        self.assertTrue(remaining > 60)
+        self.assertGreater(remaining, 60)
 
     def test_is_due(self):
         p = MyPeriodic()
-        due, remaining = p.is_due(datetime.now() - p.run_every)
+        due, remaining = p.is_due(datetime.now() - p.run_every.run_every)
         self.assertTrue(due)
-        self.assertEquals(remaining, p.timedelta_seconds(p.run_every))
+        self.assertEqual(remaining,
+                         p.timedelta_seconds(p.run_every.run_every))
+
+
+class EveryMinutePeriodic(task.PeriodicTask):
+    run_every = crontab()
+
+
+class HourlyPeriodic(task.PeriodicTask):
+    run_every = crontab(minute=30)
+
+
+class DailyPeriodic(task.PeriodicTask):
+    run_every = crontab(hour=7, minute=30)
+
+
+class WeeklyPeriodic(task.PeriodicTask):
+    run_every = crontab(hour=7, minute=30, day_of_week="thursday")
+
+
+def patch_crontab_nowfun(cls, retval):
+
+    def create_patcher(fun):
+
+        @wraps(fun)
+        def __inner(*args, **kwargs):
+            prev_nowfun = cls.run_every.nowfun
+            cls.run_every.nowfun = lambda: retval
+            try:
+                return fun(*args, **kwargs)
+            finally:
+                cls.run_every.nowfun = prev_nowfun
+
+        return __inner
+
+    return create_patcher
+
+
+class test_crontab(unittest.TestCase):
+
+    def test_every_minute_execution_is_due(self):
+        last_ran = datetime.now() - timedelta(seconds=61)
+        due, remaining = EveryMinutePeriodic().is_due(last_ran)
+        self.assertTrue(due)
+        self.assertEquals(remaining, 1)
+
+    def test_every_minute_execution_is_not_due(self):
+        last_ran = datetime.now() - timedelta(seconds=30)
+        due, remaining = EveryMinutePeriodic().is_due(last_ran)
+        self.assertFalse(due)
+        self.assertEquals(remaining, 1)
+
+    @patch_crontab_nowfun(HourlyPeriodic, datetime(2010, 5, 10, 10, 30))
+    def test_every_hour_execution_is_due(self):
+        due, remaining = HourlyPeriodic().is_due(datetime(2010, 5, 10, 6, 30))
+        self.assertTrue(due)
+        self.assertEquals(remaining, 1)
+
+    @patch_crontab_nowfun(HourlyPeriodic, datetime(2010, 5, 10, 10, 29))
+    def test_every_hour_execution_is_not_due(self):
+        due, remaining = HourlyPeriodic().is_due(datetime(2010, 5, 10, 6, 30))
+        self.assertFalse(due)
+        self.assertEquals(remaining, 1)
+
+    @patch_crontab_nowfun(DailyPeriodic, datetime(2010, 5, 10, 7, 30))
+    def test_daily_execution_is_due(self):
+        due, remaining = DailyPeriodic().is_due(datetime(2010, 5, 9, 7, 30))
+        self.assertTrue(due)
+        self.assertEquals(remaining, 1)
+
+    @patch_crontab_nowfun(DailyPeriodic, datetime(2010, 5, 10, 10, 30))
+    def test_daily_execution_is_not_due(self):
+        due, remaining = DailyPeriodic().is_due(datetime(2010, 5, 10, 6, 29))
+        self.assertFalse(due)
+        self.assertEquals(remaining, 1)
+
+    @patch_crontab_nowfun(WeeklyPeriodic, datetime(2010, 5, 6, 7, 30))
+    def test_weekly_execution_is_due(self):
+        due, remaining = WeeklyPeriodic().is_due(datetime(2010, 4, 30, 7, 30))
+        self.assertTrue(due)
+        self.assertEquals(remaining, 1)
+
+    @patch_crontab_nowfun(WeeklyPeriodic, datetime(2010, 5, 7, 10, 30))
+    def test_weekly_execution_is_not_due(self):
+        due, remaining = WeeklyPeriodic().is_due(datetime(2010, 4, 30, 6, 29))
+        self.assertFalse(due)
+        self.assertEquals(remaining, 1)
