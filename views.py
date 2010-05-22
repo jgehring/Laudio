@@ -63,7 +63,8 @@ def laudio_index(request):
 
 def laudio_about(request):
     """A plain about site"""
-    return render_to_response('about.html', {})
+    return render_to_response('about.html', {}, 
+                                context_instance=RequestContext(request))
 
 
 def laudio_login(request):

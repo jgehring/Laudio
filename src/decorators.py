@@ -27,6 +27,7 @@ from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.contrib.auth.models import User
+from django.template import RequestContext
 
 def check_login(authLevel):
     """This decorator checks if the user has to be authenticated and checks
@@ -67,7 +68,8 @@ def check_login(authLevel):
                     if authorized: 
                         return view(*args, **kwargs)
                     else:
-                        return render_to_response( '403.html', {} )
+                        return render_to_response( '403.html', {}, 
+                                context_instance=RequestContext(request) )
                 else:
                     return HttpResponseRedirect( settings.URL_PREFIX + "login/" )
                 
