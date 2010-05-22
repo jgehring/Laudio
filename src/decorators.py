@@ -47,7 +47,9 @@ def check_login(authLevel):
             """get the first argument which is always the request object
             and check if the user is authenticated"""
             config = Settings.objects.get(pk=1)
-            if config.requireLogin:
+            """Sites marked with admin are required to log in regardless
+            if requireLogin is set"""
+            if config.requireLogin or authLevel == "admin":
                 request = args[0]
                 user = request.user
                 """Check if the user is admin or normal user and is 
