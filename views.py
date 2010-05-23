@@ -187,16 +187,12 @@ def laudio_settings_edit_user(request, userid):
             # profile
             profile = UserProfile.objects.get(user=user)
             profile.user = user
-            profile.lastFMName = profileform.cleaned_data['lastFMName']
-            profile.lastFMPass = profileform.cleaned_data['lastFMPass']
-            profile.lastFMSubmit = profileform.cleaned_data['lastFMSubmit']
-            profile.libreFMName = profileform.cleaned_data['libreFMName']
-            profile.libreFMPass = profileform.cleaned_data['libreFMPass']
-            profile.libreFMSubmit = profileform.cleaned_data['libreFMSubmit']
+            for key in ("lastFMName", "lastFMPass", "lastFMSubmit", 
+                         "libreFMName", "libreFMPass", "libreFMSubmit"):
+                setattr(profile, key, profileform.cleaned_data[key])
             profile.save()
             return HttpResponseRedirect(settings.URL_PREFIX + 'settings/')
     else:
-        
         user = User.objects.get(pk=userid)
         userform = UserEditForm(instance=user)
         profile = UserProfile.objects.get(user=user)
@@ -236,12 +232,9 @@ def laudio_profile(request):
             # profile
             profile = UserProfile.objects.get(user=user)
             profile.user = user
-            profile.lastFMName = profileform.cleaned_data['lastFMName']
-            profile.lastFMPass = profileform.cleaned_data['lastFMPass']
-            profile.lastFMSubmit = profileform.cleaned_data['lastFMSubmit']
-            profile.libreFMName = profileform.cleaned_data['libreFMName']
-            profile.libreFMPass = profileform.cleaned_data['libreFMPass']
-            profile.libreFMSubmit = profileform.cleaned_data['libreFMSubmit']
+            for key in ("lastFMName", "lastFMPass", "lastFMSubmit", 
+                         "libreFMName", "libreFMPass", "libreFMSubmit"):
+                setattr(profile, key, profileform.cleaned_data[key])
             profile.save()
             return HttpResponseRedirect(settings.URL_PREFIX + 'profile/')
     else:
