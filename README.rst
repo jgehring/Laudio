@@ -2,10 +2,10 @@
  LAudio - A webbased audioplayer for your LAN
 ==============================================
 
-.. image::  http://188.40.255.20/media/style/img/tiny_screenshot1.png
+.. image::  http://github.com/downloads/Raydiation/Laudio/screenshot04.png
 
-:Version: 0.2.3-r3
-:Keywords: python, jquery, django, web, html5, audio, player, javascript
+:Version: 0.4-alpha2
+:Keywords: python, jquery, django, web, html5, audio, player, javascript, last.fm, libre.fm, json
 
 Laudio is a webbased player which takes advantage of the HTML5 audio
 element to play its music.
@@ -16,11 +16,6 @@ Laudio is based on the Python Framework Django and uses Apache as server.
 Installed on the machine where your music collection resides, it can be accessed
 in the whole network. By forwarding Port 80 on your router,
 even your friends can listen to it over the Internet.
-
-Future versions will include `Celery`_ for visual feedback when scanning the music
-director and will implement an authorization framework for listeners.
-
-To get it working without browser the `Ampache`_ API will be implemented
 
 Getting LAudio
 ==============
@@ -72,6 +67,7 @@ Now to finish the installation we install the program to /opt/laudio::
 
     $ sudo mkdir /opt/laudio
     $ sudo mv * /opt/laudio
+    $ sudo python /opt/laudio/manage.py syncdb --noinput
     $ sudo chown -R www-data:www-data /opt/laudio # if you update remove the symlink first!!
     $ sudo chmod -R 0755 /opt/laudio
 
@@ -101,6 +97,7 @@ Now to finish the installation we install the program to /opt/laudio::
 
     # mkdir /opt/laudio
     # mv * /opt/laudio
+    # python /opt/laudio/manage.py syncdb --noinput
     # chown -R www-data:www-data /opt/laudio # if you update remove the symlink first!!
     # chmod -R 0755 /opt/laudio
 
@@ -139,6 +136,7 @@ Now to finish the installation we install the program to /opt/laudio::
 
     # mkdir /opt/laudio
     # mv * /opt/laudio
+    # python /opt/laudio/manage.py syncdb --noinput
     # chown -R http:http /opt/laudio # if you update remove the symlink first!!
     # chmod -R 0755 /opt/laudio
 
@@ -154,6 +152,27 @@ boot process: Add httpd to your DAEMONS in the /etc/rc.conf
 .. _`Download Page`: http://github.com/Raydiation/Laudio/downloads
 .. _`Celery`: http://github.com/ask/celery
 .. _`Ampache`: http://ampache.org/
+
+Changing the URL prefix
+=======================
+If you want to let Laudio run under a different URL then localhost/laudio, like
+localhost/audio for instance, you can now easily adjust these settings.
+
+Open settings.py in the Laudio installation folder and and change the 
+variable URL_PREFIX to your desired prefix. For an URL like localhost/audio
+it would be:
+
+    ULR_PREFIX="/audio/"
+
+Then you have to tell your server to link the URL to Laudio. Open the
+laudio_apache.conf in the Apache config folder and change the two lines to
+
+    Alias /audio/media/ /opt/laudio/media/
+    WSGIScriptAlias /audio /opt/laudio/media/django.wsgi
+
+Finally restart your Apache webserver.
+
+
 
 Getting Help
 ============
