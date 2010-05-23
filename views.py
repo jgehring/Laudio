@@ -147,13 +147,10 @@ def laudio_settings_new_user(request):
             user.set_password( request.POST.get('password') )
             user.save()
             # profile
-            profile = UserProfile(user=user,
-                                  lastFMName=profileform.cleaned_data['lastFMName'],
-                                  lastFMPass=profileform.cleaned_data['lastFMPass'],
-                                  lastFMSubmit=profileform.cleaned_data['lastFMSubmit'],
-                                  libreFMName=profileform.cleaned_data['libreFMName'],
-                                  libreFMPass=profileform.cleaned_data['libreFMPass'],
-                                  libreFMSubmit=profileform.cleaned_data['libreFMSubmit'])
+            profile = UserProfile(user=user)
+            for key in ("lastFMName", "lastFMPass", "lastFMSubmit", 
+                         "libreFMName", "libreFMPass", "libreFMSubmit"):
+                setattr(profile, key, profileform.cleaned_data[key])
             profile.save()
             return HttpResponseRedirect(settings.URL_PREFIX + 'settings/')
     else:
