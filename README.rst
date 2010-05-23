@@ -160,12 +160,12 @@ localhost/audio for instance, you can now easily adjust these settings.
 
 Open settings.py in the Laudio installation folder and and change the 
 variable URL_PREFIX to your desired prefix. For an URL like localhost/audio
-it would be:
+it would be::
 
     ULR_PREFIX="/audio/"
 
 Then you have to tell your server to link the URL to Laudio. Open the
-laudio_apache.conf in the Apache config folder and change the two lines to
+laudio_apache.conf in the Apache config folder and change the two lines to::
 
     Alias /audio/media/ /opt/laudio/media/
     WSGIScriptAlias /audio /opt/laudio/media/django.wsgi
