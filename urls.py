@@ -54,6 +54,7 @@ urlpatterns = patterns('',
     (r'^searchall/(?P<search>.*)/$', ajax_search_collection),
     (r'^advsearch/$', ajax_adv_search_collection),
     (r'^song_data/(?P<id>.*)/$', ajax_song_metadata),
+    (r'^scrobble/(?P<id>.*)/$', ajax_scrobble_song),
     (r'^cover/(?P<id>.*)/$', ajax_cover_fetch),
     
     # other sites

@@ -47,19 +47,29 @@ def check_login(authLevel):
         def wrapper(*args, **kwargs):
             """get the first argument which is always the request object
             and check if the user is authenticated"""
-            config = Settings.objects.get(pk=1)
+            try:
+                config = Settings.objects.get(pk=1)
+                requireLogin = config.requireLogin
+            except Settings.DoesNotExist:
+                requireLogin = False
             """Sites marked with admin are required to log in regardless
             if requireLogin is set"""
-            if config.requireLogin or authLevel == "admin":
+            if requireLogin or authLevel == "admin":
                 request = args[0]
                 user = request.user
-                """Check if the user is admin or normal user and is 
+                """Check if the user is admin or normal user and
                 is authorized"""
                 if authLevel == "admin":
                     if user.is_superuser:
                         authorized = True
                     else: 
-                        authorized = False
+                        """Check if there is any superuser at all, if not
+                        allow everyone to access the admin settings"""
+                        superusers = User.objects.filter(is_superuser=1).count()
+                        if superusers == 0:
+                            return view(*args, **kwargs)
+                        else:
+                            authorized = False
                 elif authLevel == "user":
                         authorized = True
                 

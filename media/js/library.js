@@ -228,6 +228,8 @@ function playSong(id){
         // store the id for later use
         $("body").data("playing", id);
         $("#row" + id).addClass("playing");
+        // scrobble song
+        $.get(URL_PREFIX + "scrobble/" + id + "/");
         // get album data
         $.getJSON( URL_PREFIX + "cover/" + id + "/", function(json){
             $("#cover img").attr("src", json.coverpath);

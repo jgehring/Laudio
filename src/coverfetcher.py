@@ -98,9 +98,13 @@ class CoverFetcher(object):
             response = urllib2.urlopen(full_url)
             elements = etree.fromstring(response.read())
             if elements.get("status") == "ok":
-                return elements.xpath('/lfm/album/image[@size="extralarge"]/text()')[0]
+                try:
+                    cover = elements.xpath('/lfm/album/image[@size="extralarge"]/text()')[0]
+                    return cover
+                except IndexError:
+                    return None
             else:
-                return None;
+                return None
 
         except (URLError, HTTPError, UnicodeEncodeError):
             return None

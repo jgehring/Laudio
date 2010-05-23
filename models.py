@@ -60,4 +60,7 @@ class UserProfile(models.Model):
     user = models.ForeignKey(User, unique=True)
     lastFMName = models.CharField("Last FM username", max_length=100, blank=True)
     lastFMPass = models.CharField("Last FM password", max_length=100, blank=True)
-    lastFMSubmit = models.BooleanField("Submit tracks")
+    lastFMSubmit = models.BooleanField("Submit tracks to Last FM")
+    libreFMName = models.CharField("Libre FM username", max_length=100, blank=True)
+    libreFMPass = models.CharField("Libre FM password", max_length=100, blank=True)
+    libreFMSubmit = models.BooleanField("Submit tracks to Libre FM")

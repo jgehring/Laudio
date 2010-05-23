@@ -33,7 +33,7 @@ class ProtocolError(Exception):
    "Raised on general Protocol errors"
    pass
 
-def login( user, password, client=('tst', '1.0') ):
+def login( user, password, client=('ark', '2.3'), service="lastfm" ):
    """Authencitate with AS (The Handshake)
 
    @param user:     The username
@@ -52,7 +52,10 @@ def login( user, password, client=('tst', '1.0') ):
    LAST_HS = datetime.now()
 
    tstamp = int(mktime(datetime.now().timetuple()))
-   url    = "http://post.audioscrobbler.com/"
+   if service == "lastfm":
+      url = "http://post.audioscrobbler.com/"
+   elif service == "librefm":
+      url = "http://turtle.libre.fm/"
    pwhash = md5(password).hexdigest()
    token  = md5( "%s%d" % (pwhash, int(tstamp))).hexdigest()
    values = {
@@ -277,30 +280,3 @@ def flush():
       # some hard error
       handle_hard_error()
       return False
-
-
-if __name__ == "__main__":
-   login( 'user', 'password' )
-   submit(
-         'De/Vision',
-         'Scars',
-         1192374052,
-         source='P',
-         length=3*60+44
-         )
-   submit(
-         'Spineshank',
-         'Beginning of the End',
-         1192374052+(5*60),
-         source='P',
-         length=3*60+32
-         )
-   submit(
-         'Dry Cell',
-         'Body Crumbles',
-         1192374052+(10*60),
-         source='P',
-         length=3*60+3
-         )
-   print flush()
-

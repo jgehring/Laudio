@@ -122,7 +122,7 @@ def laudio_settings(request):
             settings = Settings.objects.get(pk=1)
             settingsForm = SettingsForm(instance=settings)
         except Settings.DoesNotExist:
-            settingsForm = SettingsForm(settings)
+            settingsForm = SettingsForm()
     return render_to_response( 'settings/settings.html', { 
                                 "collection": config.collectionPath,  
                                 "settingsForm": settingsForm,
@@ -150,7 +150,10 @@ def laudio_settings_new_user(request):
             profile = UserProfile(user=user,
                                   lastFMName=profileform.cleaned_data['lastFMName'],
                                   lastFMPass=profileform.cleaned_data['lastFMPass'],
-                                  lastFMSubmit=profileform.cleaned_data['lastFMSubmit'])
+                                  lastFMSubmit=profileform.cleaned_data['lastFMSubmit'],
+                                  libreFMName=profileform.cleaned_data['libreFMName'],
+                                  libreFMPass=profileform.cleaned_data['libreFMPass'],
+                                  libreFMSubmit=profileform.cleaned_data['libreFMSubmit'])
             profile.save()
             return HttpResponseRedirect(settings.URL_PREFIX + 'settings/')
     else:
@@ -187,6 +190,9 @@ def laudio_settings_edit_user(request, userid):
             profile.lastFMName = profileform.cleaned_data['lastFMName']
             profile.lastFMPass = profileform.cleaned_data['lastFMPass']
             profile.lastFMSubmit = profileform.cleaned_data['lastFMSubmit']
+            profile.libreFMName = profileform.cleaned_data['libreFMName']
+            profile.libreFMPass = profileform.cleaned_data['libreFMPass']
+            profile.libreFMSubmit = profileform.cleaned_data['libreFMSubmit']
             profile.save()
             return HttpResponseRedirect(settings.URL_PREFIX + 'settings/')
     else:
@@ -233,6 +239,9 @@ def laudio_profile(request):
             profile.lastFMName = profileform.cleaned_data['lastFMName']
             profile.lastFMPass = profileform.cleaned_data['lastFMPass']
             profile.lastFMSubmit = profileform.cleaned_data['lastFMSubmit']
+            profile.libreFMName = profileform.cleaned_data['libreFMName']
+            profile.libreFMPass = profileform.cleaned_data['libreFMPass']
+            profile.libreFMSubmit = profileform.cleaned_data['libreFMSubmit']
             profile.save()
             return HttpResponseRedirect(settings.URL_PREFIX + 'profile/')
     else:
@@ -278,27 +287,61 @@ def ajax_song_metadata(request, id):
     
     """
     song = Song.objects.get(id=id)
+    return render_to_response('requests/song_data.html', {"song": song})
+
+
+@check_login("user")
+def ajax_scrobble_song(request, id):
+    """Scrobbles a song to last.fm and/or libre.fm
+    
+    Keyword arguments:
+    id -- the id of the song we want to scrobble
+    
+    """
+    song = Song.objects.get(id=id)
+    msg = ""
     
     # if user is logged in submit stats
     if request.user.is_authenticated():
-        if request.user.get_profile().lastFMSubmit:
-            userprofile = request.user.get_profile()
-            if userprofile.lastFMName != "" and userprofile.lastFMPass != "":
-                try:
-                    
-                    now = int(time.mktime(time.gmtime()))
-                    scrobbler.login(userprofile.lastFMName, userprofile.lastFMPass)
+        now = int(time.mktime(time.gmtime()))
+        userprofile = request.user.get_profile()
+        # check for last.fm scrobbling
+        try:
+            if request.user.get_profile().lastFMSubmit:
+                if userprofile.lastFMName != "" and userprofile.lastFMPass != "":
+                    scrobbler.login(userprofile.lastFMName,
+                                    userprofile.lastFMPass,
+                                    service="lastfm"
+                                    )
                     scrobbler.submit(song.artist, song.title, now, source='P',
-                                   length=song.length)
+                                    length=song.length)
                     scrobbler.flush()
-                # if something bad happens, just ignore it
-                except (scrobbler.BackendError, scrobbler.AuthError,
-                        scrobbler.PostError, scrobbler.SessionError,
-                        scrobbler.ProtocolError):
-                    pass
+                    msg = msg + "Scroblled song to lastfm!<br />"
+            # if something bad happens, just ignore it
+        except (scrobbler.BackendError, scrobbler.AuthError,
+                scrobbler.PostError, scrobbler.SessionError,
+                scrobbler.ProtocolError):
+            pass
+            
+        # check for libre.fm scrobbling
+        try:
+            if request.user.get_profile().libreFMSubmit:
+                if userprofile.libreFMName != "" and userprofile.libreFMPass != "":
+                    scrobbler.login(userprofile.libreFMName, 
+                                    userprofile.libreFMPass,
+                                    service="librefm" 
+                                    )
+                    scrobbler.submit(song.artist, song.title, now, source='P',
+                                    length=song.length)
+                    scrobbler.flush()
+                    msg = msg + "Scroblled song to librefm!<br />"
+            # if something bad happens, just ignore it
+        except (scrobbler.BackendError, scrobbler.AuthError,
+                scrobbler.PostError, scrobbler.SessionError,
+                scrobbler.ProtocolError):
+            pass
 
-    
-    return render_to_response('requests/song_data.html', {"song": song})
+    return render_to_response('requests/scrobble.html', {"msg": msg})
 
 
 @check_login("user")
