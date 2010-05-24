@@ -30,7 +30,13 @@ class JavaScript(object):
     
     def __init__(self, view):
         """First we set the functions and files we have to include for
-        the view we serve"""
+        the view we serve
+        
+        Keyword arguments:
+        view -- can be: "library", "settings" or "playlist"; sets javascript
+                according to those views
+        
+        """
         self.view = view
         
         # get the javascript from the file
@@ -39,6 +45,7 @@ class JavaScript(object):
         text = file.read()
         file.close()
         
+        # TODO: make this prettier
         # we dont have access to django 1.2 tags so we have check for the 
         # view here
         if view == "library":
@@ -70,6 +77,7 @@ class JavaScript(object):
         )
     
         self.javascript = tpl.render(context)
+
 
     def __str__(self):
         return self.javascript
