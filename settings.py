@@ -66,7 +66,7 @@ MEDIA_ROOT = os.path.join(os.path.dirname(__file__), '/media/').replace('\\', '/
 URL_PREFIX = '/laudio/'
 AUDIO_DIR = os.path.join( os.path.dirname(__file__),
                                     'media/audio').replace('\\', '/' )
-                                    
+INSTALL_DIR = os.path.dirname(__file__)
 LAST_FM_API_KEY = "a1d1111ab0b08262e6d7484cc5dc949a"
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a

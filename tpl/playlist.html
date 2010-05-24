@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}LAudio - Local Music Collection{% endblock %}
+{% block title %}LAudio - Playlist{% endblock %}
 
 {% block search %}
     {% include "inc/search.html" %}
@@ -9,6 +9,7 @@
 {% block content %}
 <div id="contentHeader">
     <div class="spacer">Information</div>
+    <div class="playlistHeader">Playlist</div>
     <div class="header">
         <table cellpadding="0" cellspacing="0">
             <tr>
@@ -68,6 +69,8 @@
         </table>
     </div>
 </div>
+
+<div id="playlist"></div>
 
 <div id="library">
     <div style="display: none;" class="loading"></div>

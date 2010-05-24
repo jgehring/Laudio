@@ -21,6 +21,15 @@
     overflow: auto;
 }
 
+#playlist {
+    min-width: 396px;
+    height: 100%;
+    float: left;
+    padding-right: 3px;
+    background-color: #eee;
+    border-right: 1px solid #aaa;
+}
+
 .loading {
     width: 100%;
     height: 100%;

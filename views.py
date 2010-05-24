@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 # laudio modules
 from laudio.src.coverfetcher import CoverFetcher
 from laudio.src.laudiosettings import LaudioSettings
+from laudio.src.javascript import JavaScript
 from laudio.src.decorators import check_login
 import laudio.src.scrobbler as scrobbler
 from laudio.models import *
@@ -58,9 +59,29 @@ def laudio_index(request):
         firstsong = song[0].path
     else:
         firstsong = ""
-    return render_to_response('index.html', { 'firstsong': firstsong }, 
+    # get javascript
+    js = JavaScript("library")
+    return render_to_response('index.html', { 'firstsong': firstsong, 
+                                              'js': js }, 
                                 context_instance=RequestContext(request))
 
+
+@check_login("user")
+def laudio_playlist(request):
+    """The collection view which is displayed as index by default
+    Returns one song which we have to set for the audio element in order
+    to work properly"""
+    song = Song.objects.all()[:1]
+    if song:
+        firstsong = song[0].path
+    else:
+        firstsong = ""
+    # get javascript
+    js = JavaScript("playlist")
+    return render_to_response('index.html', { 'firstsong': firstsong, 
+                                              'js': js }, 
+                                context_instance=RequestContext(request))
+                                
 
 def laudio_about(request):
     """A plain about site"""
@@ -123,10 +144,14 @@ def laudio_settings(request):
             settingsForm = SettingsForm(instance=settings)
         except Settings.DoesNotExist:
             settingsForm = SettingsForm()
+            
+    # get javascript
+    js = JavaScript("settings")
     return render_to_response( 'settings/settings.html', { 
                                 "collection": config.collectionPath,  
                                 "settingsForm": settingsForm,
-                                "users": users 
+                                "users": users,
+                                "js": js, 
                                 }, 
                                 context_instance=RequestContext(request)
                             )
@@ -263,7 +288,7 @@ def ajax_scan_collection(request):
     config = LaudioSettings()
     try:
         config.scan()
-    except OSError as e:
+    except OSError, e:
         return render_to_response( 'settings.html', {"msg": e } )
     return render_to_response('requests/dropscan.html', { "msg": config })
 
@@ -307,7 +332,7 @@ def ajax_scrobble_song(request, id):
                                     length=song.length)
                     scrobbler.flush()
                     msg = msg + "Scroblled song to lastfm!<br />"
-            # if something bad happens, just ignore it
+        # if something bad happens, just ignore it
         except (scrobbler.BackendError, scrobbler.AuthError,
                 scrobbler.PostError, scrobbler.SessionError,
                 scrobbler.ProtocolError):
@@ -325,7 +350,7 @@ def ajax_scrobble_song(request, id):
                                     length=song.length)
                     scrobbler.flush()
                     msg = msg + "Scroblled song to librefm!<br />"
-            # if something bad happens, just ignore it
+        # if something bad happens, just ignore it
         except (scrobbler.BackendError, scrobbler.AuthError,
                 scrobbler.PostError, scrobbler.SessionError,
                 scrobbler.ProtocolError):

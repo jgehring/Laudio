@@ -5,10 +5,10 @@
     <head>
         <title>{% block title %}{% endblock %}</title>
         <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-        <meta name="urlprefix" content="{{ URL_PREFIX }}" />
         <link rel="stylesheet" href="{{ URL_PREFIX }}media/style/style.css" type="text/css" media="all" charset="utf-8" />
         <script src="{{ URL_PREFIX }}media/js/jquery-1.4.2.min.js" type="text/javascript" charset="utf-8"></script>
-        {% block script%}{% endblock %}
+        <script src="{{ URL_PREFIX }}media/js/jquery.tablesorter.min.js" type="text/javascript" charset="utf-8"></script>
+        <script type="text/javascript" charset="utf-8">{{ js|safe }}</script>
         <link rel="icon" type="image/png" href="{{ URL_PREFIX }}media/style/img/favicon.png" />
     </head>
 
