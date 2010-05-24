@@ -26,10 +26,7 @@ $(document).ready(function() {
  * DEFAULTS AND VARS                                                   *
  ***********************************************************************
  */
-{% if library or player %}
-
-    var $col = $("#collection tbody");
-    var $loading =  $(".loading");
+{% if library or playlist %}
     
     $("body").data("playing", 0);
     $("body").data("select", 1);
@@ -53,7 +50,7 @@ $(document).ready(function() {
  * TABLE SORTING                                                       *
  ***********************************************************************
  */
-{% if library or player %}
+{% if library or playlist %}
 
     $(".collNr a").live("click", function() {
         if($("#collection tbody tr").length){
@@ -168,7 +165,7 @@ $(document).ready(function() {
  * INTERFACE specific                                                  *
  ***********************************************************************
  */ 
-{% if library or player %}
+{% if library or playlist %}
 
     /**
      * loads the artist according to the letter which was clicked
@@ -176,14 +173,14 @@ $(document).ready(function() {
     $('#characters a').click(function() {
         $("#contentHeader th a").removeClass("sortup");
         $("#contentHeader th a").removeClass("sortdown");
-        $col.fadeOut('fast');
+        $("#collection tbody").fadeOut('fast');
         $('#characters').fadeOut("slow");
-        $loading.fadeIn("fast");
+        $(".loading").fadeIn("fast");
         var content_show = $(this).html();
         if (content_show == "All"){
-            $col.load("{{ URL_PREFIX }}collection/", function (){ 
-                $loading.fadeOut('fast', function(){
-                    $col.fadeIn('fast');
+            $("#collection tbody").load("{{ URL_PREFIX }}collection/", function (){ 
+                $(".loading").fadeOut('fast', function(){
+                    $("#collection tbody").fadeIn('fast');
                     // set color to just playing song
                     var lastSong = $("body").data("playing");
                     if (lastSong !== 0){
@@ -194,9 +191,9 @@ $(document).ready(function() {
                 });
             });            
         } else {
-            $col.load("{{ URL_PREFIX }}artist/" + content_show + "/", function (){ 
-                $loading.fadeOut('fast', function(){
-                    $col.fadeIn('fast');
+            $("#collection tbody").load("{{ URL_PREFIX }}artist/" + content_show + "/", function (){ 
+                $(".loading").fadeOut('fast', function(){
+                    $("#collection tbody").fadeIn('fast');
                     // set color to just playing song
                     var lastSong = $("body").data("playing");
                     if (lastSong !== 0){
@@ -320,7 +317,7 @@ $(document).ready(function() {
  ***********************************************************************
  */
 
-{% if library or player %}
+{% if library or playlist %}
 
 function updateLineColors(){
     $("#collection tbody tr").each(function(index) {
@@ -354,16 +351,16 @@ function search(simple) {
     
     // check if advanced search contains input
     if((title || artist || album || genre) && !simple){
-        $col.fadeOut('fast');
-        $loading.fadeIn("slow");
+        $("#collection tbody").fadeOut('fast');
+        $(".loading").fadeIn("slow");
         var url =  "{{ URL_PREFIX }}advsearch/";
         // FIXME: maybe set this as data instead of url, wouldnt be much
         // shorter though
         var query = "?artist=" + artist + "&amp;title=" + title +
                     "&amp;genre=" + genre + "&amp;album=" + album;
-        $col.load(url + query, function (){
-            $loading.fadeOut('fast', function(){
-                $col.fadeIn('slow');
+        $("#collection tbody").load(url + query, function (){
+            $(".loading").fadeOut('fast', function(){
+                $("#collection tbody").fadeIn('slow');
                 // set color to just playing song
                 var lastSong = $("body").data("playing");
                 if (lastSong !== 0){
@@ -376,12 +373,12 @@ function search(simple) {
            
            
     } else if (all) {
-        $col.fadeOut('fast');
-        $loading.fadeIn("slow");
+        $("#collection tbody").fadeOut('fast');
+        $(".loading").fadeIn("slow");
         var searchValue = encodeURIComponent($('.search').attr("value"));
-        $col.load( "{{ URL_PREFIX }}searchall/" + searchValue + "/", function() {
-            $loading.fadeOut('fast');
-            $col.fadeIn('slow');
+        $("#collection tbody").load( "{{ URL_PREFIX }}searchall/" + searchValue + "/", function() {
+            $(".loading").fadeOut('fast');
+            $("#collection tbody").fadeIn('slow');
             // set color to just playing song
             var lastSong = $("body").data("playing");
             if (lastSong !== 0){
@@ -707,6 +704,40 @@ function prevSong(){
             return false;
         }
     }
+}
+
+{% endif %}
+
+
+/***********************************************************************
+ * PLAYLIST SPECIFIC FUNCTIONS                                          *
+ ***********************************************************************
+ */
+{% if playlist %}
+/**
+ * Plays a Song which matches the id
+ * @param id = id of the line (without row, like 143)
+ *
+ */
+function playSong(id){
+    
+}
+
+
+/**
+ * Function to play the next song in line, checks for repeat and shuffle
+ * activated
+ */
+function nextSong(){
+
+}
+
+
+/**
+ * Function to play the previous song
+ */
+function prevSong(){
+
 }
 
 {% endif %}
