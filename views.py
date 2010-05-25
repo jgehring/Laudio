@@ -398,7 +398,15 @@ def ajax_whole_collection(request):
 
 @check_login("user")
 def ajax_adv_autocompletion(request, row): 
-    """Check if we get this via GET as an autocomplete request"""
+    """This is the advanced autocompletion. We got 4 fields where the 
+    can enter data. The data entered will be send as GET var term.
+    The remaining 3 fields will be available as GET vars, title, artist,
+    album or genre.
+    
+    Keyword arguments:
+    row -- the field where the search is being entered
+    
+    """
     if request.method == "GET":
         if row == "title":
             songs = Song.objects.filter(

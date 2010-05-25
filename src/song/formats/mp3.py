@@ -45,4 +45,4 @@ class MP3Song (Song):
         self.length = int(self.song.info.length)
         # check if tracknumber is numeric
         if not self.tracknumber.isdigit():
-            this.tracknumber = 0
+            self.tracknumber = 0
