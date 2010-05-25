@@ -397,6 +397,26 @@ def ajax_whole_collection(request):
 
 
 @check_login("user")
+def ajax_adv_autocompletion(request, row): 
+    """Check if we get this via GET as an autocomplete request"""
+    if request.method == "GET":
+        if row == "title":
+            songs = Song.objects.filter(title__contains=request.GET.get("term", "")).values("title").distinct()
+            return render_to_response('requests/advautocomplete/title.html', {'songs': songs, })
+        elif row == "artist":
+            songs = Song.objects.filter(artist__contains=request.GET.get("term", "")).values("artist").distinct()
+            return render_to_response('requests/advautocomplete/artist.html', {'songs': songs, })
+        elif row == "album":
+            songs = Song.objects.filter(album__contains=request.GET.get("term", "")).values("album").distinct()
+            return render_to_response('requests/advautocomplete/album.html', {'songs': songs, })
+        elif row == "genre":
+            songs = Song.objects.filter(genre__contains=request.GET.get("term", "")).values("genre").distinct()
+            return render_to_response('requests/advautocomplete/genre.html', {'songs': songs, })
+    
+        
+
+
+@check_login("user")
 def ajax_search_collection(request, search):
     """Get song where any field matches the search
     
@@ -408,6 +428,8 @@ def ajax_search_collection(request, search):
     #           current setup only retrieves a result when one row matches the search
     #           the search should also match if the parts of the search var appear
     #           in different rows
+    
+    """Check if we get this via GET as an autocomplete request"""
     songs = Song.objects.filter(
         Q(title__contains=search)|
         Q(artist__contains=search)|
@@ -422,10 +444,10 @@ def ajax_search_collection(request, search):
 @check_login("user")
 def ajax_adv_search_collection(request):
     """Get songs where the fields contain the search params"""
-    title = request.GET["title"]
-    artist = request.GET["artist"]
-    album = request.GET["album"]
-    genre = request.GET["genre"]
+    title = request.GET.get("title", "")
+    artist = request.GET.get("artist", "")
+    album = request.GET.get("album", "")
+    genre = request.GET.get("genre", "")
     songs = Song.objects.filter(title__contains=title,
                                 artist__contains=artist,
                                 album__contains=album,

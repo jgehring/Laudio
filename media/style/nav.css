@@ -39,6 +39,50 @@
 /**********
  * Search
  */
+
+.ui-autocomplete { position: absolute; cursor: default; }	
+.ui-autocomplete-loading { background: white url('images/ui-anim_basic_16x16.gif') right center no-repeat; }
+.ui-corner-bottom { -moz-border-radius-bottomleft: 4px/*{cornerRadius}*/; -webkit-border-bottom-left-radius: 4px/*{cornerRadius}*/; border-bottom-left-radius: 4px/*{cornerRadius}*/; -moz-border-radius-bottomright: 4px/*{cornerRadius}*/; -webkit-border-bottom-right-radius: 4px/*{cornerRadius}*/; border-bottom-right-radius: 4px/*{cornerRadius}*/; }
+.ui-corner-right {  -moz-border-radius-topright: 4px/*{cornerRadius}*/; -webkit-border-top-right-radius: 4px/*{cornerRadius}*/; border-top-right-radius: 4px/*{cornerRadius}*/; -moz-border-radius-bottomright: 4px/*{cornerRadius}*/; -webkit-border-bottom-right-radius: 4px/*{cornerRadius}*/; border-bottom-right-radius: 4px/*{cornerRadius}*/; }
+.ui-corner-left { -moz-border-radius-topleft: 4px/*{cornerRadius}*/; -webkit-border-top-left-radius: 4px/*{cornerRadius}*/; border-top-left-radius: 4px/*{cornerRadius}*/; -moz-border-radius-bottomleft: 4px/*{cornerRadius}*/; -webkit-border-bottom-left-radius: 4px/*{cornerRadius}*/; border-bottom-left-radius: 4px/*{cornerRadius}*/; }
+.ui-corner-all { -moz-border-radius: 4px/*{cornerRadius}*/; -webkit-border-radius: 4px/*{cornerRadius}*/; border-radius: 4px/*{cornerRadius}*/; }
+.ui-widget { font-family: Verdana,Arial,sans-serif/*{ffDefault}*/; font-size: 1.1em/*{fsDefault}*/; }
+.ui-widget .ui-widget { font-size: 1em; }
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { font-family: Verdana,Arial,sans-serif/*{ffDefault}*/; font-size: 1em; }
+.ui-widget-content { border: 1px solid #aaaaaa/*{borderColorContent}*/; background: #ffffff/*{bgColorContent}*/ url(images/ui-bg_flat_75_ffffff_40x100.png)/*{bgImgUrlContent}*/ 50%/*{bgContentXPos}*/ 50%/*{bgContentYPos}*/ repeat-x/*{bgContentRepeat}*/; color: #222222/*{fcContent}*/; }
+.ui-widget-content a { color: #222222/*{fcContent}*/; }
+
+.ui-menu {
+	list-style:none;
+	padding: 2px;
+	margin: 0;
+	display:block;
+}
+.ui-menu .ui-menu {
+	margin-top: -3px;
+}
+.ui-menu .ui-menu-item {
+	margin:0;
+	padding: 0;
+	zoom: 1;
+	float: left;
+	clear: left;
+	width: 100%;
+}
+.ui-menu .ui-menu-item a {
+	text-decoration:none;
+	display:block;
+	padding:.2em .4em;
+	line-height:1.5;
+	zoom:1;
+}
+.ui-menu .ui-menu-item a.ui-state-hover,
+.ui-menu .ui-menu-item a.ui-state-active {
+	font-weight: normal;
+	margin: -1px;
+}
+
+
 #alphab {
     position: absolute;
     top: 0px;

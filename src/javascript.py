@@ -27,6 +27,8 @@ from django.conf import settings
 import os
 
 class JavaScript(object):
+    """This class is for enabling django template vars and template syntax
+    in javascript files and manipulating the js for different views"""
     
     def __init__(self, view):
         """First we set the functions and files we have to include for

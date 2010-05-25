@@ -1,0 +1,7 @@
+[
+{% for song in songs %}
+    {
+      "value": "{{ song.artist|escape }}",
+    },
+{% endfor %}
+]
