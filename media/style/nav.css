@@ -78,8 +78,7 @@
 }
 .ui-menu .ui-menu-item a.ui-state-hover,
 .ui-menu .ui-menu-item a.ui-state-active {
-	font-weight: normal;
-	margin: -1px;
+    background-color: #ccc;
 }
 
 
@@ -157,7 +156,7 @@
 #search {
     position: absolute;
     top: 0px;
-    right: 90px;
+    right: 30px;
     min-height: 30px;
     z-index: 2;
     text-align: left;
@@ -200,7 +199,7 @@
     top: 2px;
     right: 0;
     position: absolute;
-    width: 120px;
+    width: 60px;
 }
 
 

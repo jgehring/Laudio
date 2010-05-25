@@ -220,6 +220,7 @@ $(document).ready(function() {
     
     /**
      * If the mouse is released anywhere on the site, set clicking to false
+     * and slide up search stuff
      */
     $("#site").mouseup(function(){
         clicking = false;
@@ -260,12 +261,14 @@ $(document).ready(function() {
         $("#characters").slideToggle();
     });
     
-    // call search at one of these events
-    $(".search").keyup(function(e) {
-        if(e.keyCode == 13) {
-            search(true);
+    // call search after when the user entered 3 or more letters
+    $("#search .search").keyup(function(e) {
+        if($(this).attr("value").length >= 3){
+            clearTimeout($("body").data("timer"));
+            $("body").data("timer", setTimeout("search(true)", 500) )
         }
     });
+    
     $("#advSearch input").keyup(function(e) {
         if(e.keyCode == 13) {
             search(false);
@@ -396,6 +399,7 @@ function search(simple) {
     // check if advanced search contains input
     if((title || artist || album || genre) && !simple){
         $("#collection tbody").fadeOut('fast');
+        $("#advSearch").fadeOut('fast');
         $(".loading").fadeIn("slow");
         var url =  "{{ URL_PREFIX }}advsearch/";
         // FIXME: maybe set this as data instead of url, wouldnt be much
@@ -411,13 +415,20 @@ function search(simple) {
                     $("#row" + lastSong).addClass("playing");
                 }
                 // update table sorting
-                    $("#collection").trigger("update");
+                $("#collection").trigger("update");
+                
+                // reset input fields
+                $("#advSearch tr:eq(0) input").attr("value", "");
+                $("#advSearch tr:eq(1) input").attr("value", "");
+                $("#advSearch tr:eq(2) input").attr("value", "");
+                $("#advSearch tr:eq(3) input").attr("value", "");
             });
         });
            
            
     } else if (all) {
         $("#collection tbody").fadeOut('fast');
+        $("#advSearch").fadeOut('fast');
         $(".loading").fadeIn("slow");
         var searchValue = encodeURIComponent($('.search').attr("value"));
         $("#collection tbody").load( "{{ URL_PREFIX }}searchall/" + searchValue + "/", function() {
@@ -430,9 +441,14 @@ function search(simple) {
             }
             // update table sorting
             $("#collection").trigger("update");
+            // reset input fields
+                $("#advSearch tr:eq(0) input").attr("value", "");
+                $("#advSearch tr:eq(1) input").attr("value", "");
+                $("#advSearch tr:eq(2) input").attr("value", "");
+                $("#advSearch tr:eq(3) input").attr("value", "");
         });
     } else {
-        return false
+        return false;
     }
 };
 
