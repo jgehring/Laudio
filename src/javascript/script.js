@@ -278,50 +278,139 @@ $(document).ready(function() {
         search(false);
     });
     
+    
+    /***
+     * TODO:
+     * write the 4 functions into 1
+     */
     $("#searchtitle").autocomplete(
         {
-			source: "{{ URL_PREFIX }}advautocomplete/title/",
-			minLength: 5,
-			select: function(event, ui) {
+            source: function(request, response){
+                // get other variables
+                var title = encodeURIComponent($("#advSearch tr:eq(0) input").attr("value"));
+                var artist = encodeURIComponent($("#advSearch tr:eq(1) input").attr("value"));
+                var album = encodeURIComponent($("#advSearch tr:eq(2) input").attr("value"));
+                var genre = encodeURIComponent($("#advSearch tr:eq(3) input").attr("value"));
+
+                url = "{{ URL_PREFIX }}advautocomplete/title/";
+                url += "?title=" + title;
+                url += "&artist=" + artist;
+                url += "&album=" + album;
+                url += "&genre=" + genre;
+                
+                $.getJSON(url, function(data) {
+                    response($.map(data.results, function(item) {
+                            return {
+                                value: item.value
+                            }
+                    }))
+                });
+
+            },
+            minLength: 3,
+            select: function(event, ui) {
                 if (ui.item){
-                    $(this).attr("value", ui.item.title);
+                    $(this).attr("value", ui.item.value);
                 }
         }
     });
     
     $("#searchartist").autocomplete(
         {
-			source: "{{ URL_PREFIX }}advautocomplete/artist/",
-			minLength: 3,
-			select: function(event, ui) {
+            source: function(request, response){
+                // get other variables
+                var title = encodeURIComponent($("#advSearch tr:eq(0) input").attr("value"));
+                var artist = encodeURIComponent($("#advSearch tr:eq(1) input").attr("value"));
+                var album = encodeURIComponent($("#advSearch tr:eq(2) input").attr("value"));
+                var genre = encodeURIComponent($("#advSearch tr:eq(3) input").attr("value"));
+
+                url = "{{ URL_PREFIX }}advautocomplete/artist/";
+                url += "?title=" + title;
+                url += "&artist=" + artist;
+                url += "&album=" + album;
+                url += "&genre=" + genre;
+                
+                $.getJSON(url, function(data) {
+                    response($.map(data.results, function(item) {
+                            return {
+                                value: item.value
+                            }
+                    }))
+                });
+
+            },
+            minLength: 3,
+            select: function(event, ui) {
                 if (ui.item){
-                    $(this).attr("value", ui.item.artist);
+                    $(this).attr("value", ui.item.value);
                 }
         }
     });
     
     $("#searchalbum").autocomplete(
         {
-			source: "{{ URL_PREFIX }}advautocomplete/album/",
-			minLength: 3,
-			select: function(event, ui) {
+            source: function(request, response){
+                // get other variables
+                var title = encodeURIComponent($("#advSearch tr:eq(0) input").attr("value"));
+                var artist = encodeURIComponent($("#advSearch tr:eq(1) input").attr("value"));
+                var album = encodeURIComponent($("#advSearch tr:eq(2) input").attr("value"));
+                var genre = encodeURIComponent($("#advSearch tr:eq(3) input").attr("value"));
+
+                url = "{{ URL_PREFIX }}advautocomplete/album/";
+                url += "?title=" + title;
+                url += "&artist=" + artist;
+                url += "&album=" + album;
+                url += "&genre=" + genre;
+                
+                $.getJSON(url, function(data) {
+                    response($.map(data.results, function(item) {
+                            return {
+                                value: item.value
+                            }
+                    }))
+                });
+
+            },
+            minLength: 3,
+            select: function(event, ui) {
                 if (ui.item){
-                    $(this).attr("value", ui.item.album);
+                    $(this).attr("value", ui.item.value);
                 }
         }
     });
     
     $("#searchgenre").autocomplete(
         {
-			source: "{{ URL_PREFIX }}advautocomplete/genre/",
-			minLength: 3,
-			select: function(event, ui) {
+            source: function(request, response){
+                // get other variables
+                var title = encodeURIComponent($("#advSearch tr:eq(0) input").attr("value"));
+                var artist = encodeURIComponent($("#advSearch tr:eq(1) input").attr("value"));
+                var album = encodeURIComponent($("#advSearch tr:eq(2) input").attr("value"));
+                var genre = encodeURIComponent($("#advSearch tr:eq(3) input").attr("value"));
+
+                url = "{{ URL_PREFIX }}advautocomplete/genre/";
+                url += "?title=" + title;
+                url += "&artist=" + artist;
+                url += "&album=" + album;
+                url += "&genre=" + genre;
+                
+                $.getJSON(url, function(data) {
+                    response($.map(data.results, function(item) {
+                            return {
+                                value: item.value
+                            }
+                    }))
+                });
+
+            },
+            minLength: 3,
+            select: function(event, ui) {
                 if (ui.item){
-                    $(this).attr("value", ui.item.genre);
+                    $(this).attr("value", ui.item.value);
                 }
         }
     });
-    
+
 {% endif %}
 /***********************************************************************
  * SETTINGS specific                                                   *

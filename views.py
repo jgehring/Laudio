@@ -408,39 +408,14 @@ def ajax_adv_autocompletion(request, row):
     
     """
     if request.method == "GET":
-        if row == "title":
-            songs = Song.objects.filter(
-                title__contains=request.GET.get("term", ""),
-                artist__contains=request.GET.get("artist", ""),
-                album__contains=request.GET.get("album", ""),
-                genre__contains=request.GET.get("genre", ""),
-            ).values("title").distinct()
-            return render_to_response('requests/advautocomplete/title.html', {'songs': songs, })
-        elif row == "artist":
-            songs = Song.objects.filter(
-                title__contains=request.GET.get("title", ""),
-                artist__contains=request.GET.get("term", ""),
-                album__contains=request.GET.get("album", ""),
-                genre__contains=request.GET.get("genre", ""),
-            ).values("artist").distinct()
-            return render_to_response('requests/advautocomplete/artist.html', {'songs': songs, })
-        elif row == "album":
-            songs = Song.objects.filter(
-                title__contains=request.GET.get("title", ""),
-                artist__contains=request.GET.get("artist", ""),
-                album__contains=request.GET.get("term", ""),
-                genre__contains=request.GET.get("genre", ""),
-            ).values("album").distinct()
-            return render_to_response('requests/advautocomplete/album.html', {'songs': songs, })
-        elif row == "genre":
-            songs = Song.objects.filter(
+        songs = Song.objects.filter(
                 title__contains=request.GET.get("title", ""),
                 artist__contains=request.GET.get("artist", ""),
                 album__contains=request.GET.get("album", ""),
-                genre__contains=request.GET.get("term", ""),
-            ).values("genre").distinct()
-            return render_to_response('requests/advautocomplete/genre.html', {'songs': songs, })
-            
+                genre__contains=request.GET.get("genre", ""),
+        ).values(row).distinct()
+        return render_to_response('requests/autocomplete.html', {'songs': songs, 'row': row})
+    #'values': songs.get(row)
 
 @check_login("user")
 def ajax_search_collection(request, search):
