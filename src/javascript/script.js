@@ -236,8 +236,9 @@ $(document).ready(function() {
         ctx.clearRect(0,0, 80 ,24);
         ctx.fillStyle = "#333";
         ctx.fillRect(0,0, width ,24);
-        var vol = width / 80;
-        $("#player").attr("volume", vol); 
+        var volume = width / 80;
+        $("#player").attr("volume", volume); 
+        $("body").data("volume", volume);
         clicking = true;
         $(this).mousemove(function(e){
             if(clicking === false) return;
@@ -246,8 +247,9 @@ $(document).ready(function() {
             ctx.clearRect(0,0, 80 ,24);
             ctx.fillStyle = "#333";
             ctx.fillRect(0,0, width ,24);
-            var vol = width / 80;
-            $("#player").attr("volume", vol);  
+            var volume = width / 80;
+            $("#player").attr("volume", volume);
+            $("body").data("volume", volume);
         });
     })
 
@@ -287,12 +289,12 @@ $(document).ready(function() {
         {
             source: function(request, response){
                 // get other variables
-                var title = encodeURIComponent($("#advSearch tr:eq(0) input").attr("value"));
-                var artist = encodeURIComponent($("#advSearch tr:eq(1) input").attr("value"));
-                var album = encodeURIComponent($("#advSearch tr:eq(2) input").attr("value"));
-                var genre = encodeURIComponent($("#advSearch tr:eq(3) input").attr("value"));
+                var title = encodeURIComponent($("#advSearch tr:eq(0) input").val());
+                var artist = encodeURIComponent($("#advSearch tr:eq(1) input").val());
+                var album = encodeURIComponent($("#advSearch tr:eq(2) input").val());
+                var genre = encodeURIComponent($("#advSearch tr:eq(3) input").val());
 
-                url = "{{ URL_PREFIX }}advautocomplete/title/";
+                var url = "{{ URL_PREFIX }}advautocomplete/title/";
                 url += "?title=" + title;
                 url += "&artist=" + artist;
                 url += "&album=" + album;
@@ -302,8 +304,8 @@ $(document).ready(function() {
                     response($.map(data.results, function(item) {
                             return {
                                 value: item.value
-                            }
-                    }))
+                            };
+                    }));
                 });
 
             },
@@ -319,12 +321,12 @@ $(document).ready(function() {
         {
             source: function(request, response){
                 // get other variables
-                var title = encodeURIComponent($("#advSearch tr:eq(0) input").attr("value"));
-                var artist = encodeURIComponent($("#advSearch tr:eq(1) input").attr("value"));
-                var album = encodeURIComponent($("#advSearch tr:eq(2) input").attr("value"));
-                var genre = encodeURIComponent($("#advSearch tr:eq(3) input").attr("value"));
+                var title = encodeURIComponent($("#advSearch tr:eq(0) input").val());
+                var artist = encodeURIComponent($("#advSearch tr:eq(1) input").val());
+                var album = encodeURIComponent($("#advSearch tr:eq(2) input").val());
+                var genre = encodeURIComponent($("#advSearch tr:eq(3) input").val());
 
-                url = "{{ URL_PREFIX }}advautocomplete/artist/";
+                var url = "{{ URL_PREFIX }}advautocomplete/artist/";
                 url += "?title=" + title;
                 url += "&artist=" + artist;
                 url += "&album=" + album;
@@ -334,8 +336,8 @@ $(document).ready(function() {
                     response($.map(data.results, function(item) {
                             return {
                                 value: item.value
-                            }
-                    }))
+                            };
+                    }));
                 });
 
             },
@@ -351,12 +353,12 @@ $(document).ready(function() {
         {
             source: function(request, response){
                 // get other variables
-                var title = encodeURIComponent($("#advSearch tr:eq(0) input").attr("value"));
-                var artist = encodeURIComponent($("#advSearch tr:eq(1) input").attr("value"));
-                var album = encodeURIComponent($("#advSearch tr:eq(2) input").attr("value"));
-                var genre = encodeURIComponent($("#advSearch tr:eq(3) input").attr("value"));
+                var title = encodeURIComponent($("#advSearch tr:eq(0) input").val());
+                var artist = encodeURIComponent($("#advSearch tr:eq(1) input").val());
+                var album = encodeURIComponent($("#advSearch tr:eq(2) input").val());
+                var genre = encodeURIComponent($("#advSearch tr:eq(3) input").val());
 
-                url = "{{ URL_PREFIX }}advautocomplete/album/";
+                var url = "{{ URL_PREFIX }}advautocomplete/album/";
                 url += "?title=" + title;
                 url += "&artist=" + artist;
                 url += "&album=" + album;
@@ -366,8 +368,8 @@ $(document).ready(function() {
                     response($.map(data.results, function(item) {
                             return {
                                 value: item.value
-                            }
-                    }))
+                            };
+                    }));
                 });
 
             },
@@ -383,12 +385,12 @@ $(document).ready(function() {
         {
             source: function(request, response){
                 // get other variables
-                var title = encodeURIComponent($("#advSearch tr:eq(0) input").attr("value"));
-                var artist = encodeURIComponent($("#advSearch tr:eq(1) input").attr("value"));
-                var album = encodeURIComponent($("#advSearch tr:eq(2) input").attr("value"));
-                var genre = encodeURIComponent($("#advSearch tr:eq(3) input").attr("value"));
+                var title = encodeURIComponent($("#advSearch tr:eq(0) input").val());
+                var artist = encodeURIComponent($("#advSearch tr:eq(1) input").val());
+                var album = encodeURIComponent($("#advSearch tr:eq(2) input").val());
+                var genre = encodeURIComponent($("#advSearch tr:eq(3) input").val());
 
-                url = "{{ URL_PREFIX }}advautocomplete/genre/";
+                var url = "{{ URL_PREFIX }}advautocomplete/genre/";
                 url += "?title=" + title;
                 url += "&artist=" + artist;
                 url += "&album=" + album;
@@ -398,8 +400,8 @@ $(document).ready(function() {
                     response($.map(data.results, function(item) {
                             return {
                                 value: item.value
-                            }
-                    }))
+                            };
+                    }));
                 });
 
             },
@@ -691,7 +693,6 @@ function mute(){
     if(volume === 0){
         $("#player").attr("volume", $("body").data("volume"));
     } else {
-        $("body").data("volume", volume);
         $("#player").attr("volume", "0");
     }
     updateVolume();
@@ -755,6 +756,9 @@ function playSong(id){
             // note: we direct playing to playWhenLoaded, which starts
             // playing when the song is being loaded
         }
+        // set volume back to selected value
+        $("#player").attr("volume", $("body").data("volume"));
+        updateVolume();
         // store the id for later use
         $("body").data("playing", id);
         $("#row" + id).addClass("playing");

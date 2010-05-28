@@ -33,7 +33,7 @@ class ProtocolError(Exception):
    "Raised on general Protocol errors"
    pass
 
-def login( user, password, client=('ark', '2.3'), service="lastfm" ):
+def login( user, password, client=('tst', '1.0'), service="lastfm" ):
    """Authencitate with AS (The Handshake)
 
    @param user:     The username
