@@ -5,12 +5,12 @@
     <head>
         <title>{% block title %}{% endblock %}</title>
         <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-        <link rel="stylesheet" href="{{ URL_PREFIX }}media/style/style.css" type="text/css" media="all" charset="utf-8" />
-        <script src="{{ URL_PREFIX }}media/js/jquery-1.4.2.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="{{ URL_PREFIX }}media/js/jquery-ui-1.8.1.custom.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="{{ URL_PREFIX }}media/js/jquery.tablesorter.min.js" type="text/javascript" charset="utf-8"></script>
+        <link rel="stylesheet" href="{% url laudio.views.laudio_index %}media/style/style.css" type="text/css" media="all" charset="utf-8" />
+        <script src="{% url laudio.views.laudio_index %}media/js/jquery-1.4.2.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="{% url laudio.views.laudio_index %}media/js/jquery-ui-1.8.1.custom.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="{% url laudio.views.laudio_index %}media/js/jquery.tablesorter.min.js" type="text/javascript" charset="utf-8"></script>
         <script type="text/javascript" charset="utf-8">{{ js|safe }}</script>
-        <link rel="icon" type="image/png" href="{{ URL_PREFIX }}media/style/img/favicon.png" />
+        <link rel="icon" type="image/png" href="{% url laudio.views.laudio_index %}media/style/img/favicon.png" />
     </head>
 
     <body>
@@ -18,16 +18,16 @@
     
         <div id="nav">
             <ul>
-                <li><a href="{{ URL_PREFIX }}">Collection</a></li>
-                <li><a href="{{ URL_PREFIX }}playlist">Playlist</a></li>
-                <li><a href="{{ URL_PREFIX }}settings">Settings</a></li>
+                <li><a href="{% url laudio.views.laudio_index %}">Collection</a></li>
+                <li><a href="">Playlist</a></li>
+                <li><a href="{% url laudio.views.laudio_settings %}">Settings</a></li>
                 {% if LOGGED_IN %}
-                    <li><a href="{{ URL_PREFIX }}profile">Profile</a></li>
-                    <li><a href="{{ URL_PREFIX }}logout">Logout</a></li>
+                    <li><a href="{% url laudio.views.laudio_profile %}">Profile</a></li>
+                    <li><a href="{% url laudio.views.laudio_logout %}">Logout</a></li>
                 {% else %}
-                    <li><a href="{{ URL_PREFIX }}login">Login</a></li>
+                    <li><a href="{% url laudio.views.laudio_login %}">Login</a></li>
                 {% endif %}
-                <li><a href="{{ URL_PREFIX }}about">About</a></li>
+                <li><a href="{% url laudio.views.laudio_about %}">About</a></li>
             </ul>
         </div>
 

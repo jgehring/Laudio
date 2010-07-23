@@ -3,7 +3,7 @@
 {% block title %}LAudio - Settings{% endblock %}
 
 {% block script %}
-    <script src="/laudio/media/js/settings.js" type="text/javascript" charset="utf-8"></script>
+    <script src="{% url laudio.views.laudio_index %}media/js/settings.js" type="text/javascript" charset="utf-8"></script>
 {% endblock %}
 
 {% block content %}
@@ -44,7 +44,7 @@
     <div id="users">
         <fieldset>
             <legend>Users</legend>
-            <a href="/laudio/settings/newuser/">Add a new user</a>
+            <a href="{% url laudio.views.laudio_settings_new_user %}">Add a new user</a>
             <table>
                 <tr>
                     <th>Username</th>
@@ -60,8 +60,8 @@
                     <td>{{ user.email }}</td>
                     <td>{{ user.is_superuser }}</td>
                     <td>{{ user.is_active }}</td>
-                    <td><a href="/laudio/settings/deleteuser/{{ user.id }}/">Delete</a></td>
-                    <td><a href="/laudio/settings/edituser/{{ user.id }}/">Edit</a></td>
+                    <td><a href="{% url laudio.views.laudio_delete_user user.id %}">Delete</a></td>
+                    <td><a href="{% url laudio.views.laudio_edit_user user.id %}/">Edit</a></td>
                 </tr>
                 {% endfor %}
             </table>
