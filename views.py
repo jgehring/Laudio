@@ -259,7 +259,7 @@ def laudio_profile(request):
                          "libreFMName", "libreFMPass", "libreFMSubmit"):
                 setattr(profile, key, profileform.cleaned_data[key])
             profile.save()
-            return HttpResponseRedirect( reverse ("laudio.views.laudio_profile") ')
+            return HttpResponseRedirect( reverse ("laudio.views.laudio_profile") )
     else:
         
         userform = UserEditProfileForm(instance=user)
