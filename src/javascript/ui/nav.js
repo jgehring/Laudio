@@ -51,9 +51,9 @@ $(document).ready(function() {
         $.getJSON("{% url laudio.views.laudio_index %}song_data/" + songId + "/", function(json){
             
             // then we start a search
-            var search = [];
-            search[field] = json[field];
-            search(search, "advanced");
+            var args = [];
+            args[field] = json[field];
+            search(args, "advanced");
             
         });
     });
