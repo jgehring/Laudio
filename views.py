@@ -456,7 +456,7 @@ def ajax_adv_search_collection(request):
     bitrate = request.GET.get("bitrate", "")
     songs = Song.objects.filter(title__contains=title,
                                 length__contains=length,
-                                tracknr__contains=tracknr,
+                                tracknumber__contains=tracknr,
                                 artist__contains=artist,
                                 album__contains=album,
                                 date__contains=date,
