@@ -1,17 +1,17 @@
 <div id="controls">
     <ul>
-        <li onclick="prevSong()"><img src="{% url laudio.views.laudio_index %}media/style/img/previous.png" alt="previous" title="previous"/></li>
+        <li id="previoussong"><img src="{% url laudio.views.laudio_index %}media/style/img/previous.png" alt="previous" title="previous"/></li>
         <li id="progressbar"><canvas height="24" width="300"></canvas></li>
-        <li onclick="nextSong()"><img src="{% url laudio.views.laudio_index %}media/style/img/next.png" alt="next" title="next"/></li>
-        <li id="playButton" onclick="play()"><img src="{% url laudio.views.laudio_index %}media/style/img/play.png" alt="play" title="play"/></li>
-        <li onclick="jumpTo()"><img src="{% url laudio.views.laudio_index %}media/style/img/jumpto.png" alt="jumpTo" title="jumpTo"/></li>
+        <li id="nextsong"><img src="{% url laudio.views.laudio_index %}media/style/img/next.png" alt="next" title="next"/></li>
+        <li id="play"><img src="{% url laudio.views.laudio_index %}media/style/img/play.png" alt="play" title="play"/></li>
+        <li id="jumpto"><img src="{% url laudio.views.laudio_index %}media/style/img/jumpto.png" alt="jumpTo" title="jumpTo"/></li>
     </ul>
 </div>
 <div id="extraControls">
     <ul>
-        <li id="repeatButton" onclick="setRepeat()"><img src="{% url laudio.views.laudio_index %}media/style/img/repeatoff.png" alt="repeat" title="repeat"/></li>
-        <li id="shuffleButton" onclick="setShuffle()"><img src="{% url laudio.views.laudio_index %}media/style/img/shuffleoff.png" alt="shuffle" title="shuffle"/></li>
-        <li id="mute" onclick="mute()"><img src="{% url laudio.views.laudio_index %}media/style/img/volume.png" alt="mute" title="mute"/></li>
-        <li id="volume" title="volume"><canvas height="24" width="80"></canvas></li>
+        <li id="repeat"><img src="{% url laudio.views.laudio_index %}media/style/img/repeatoff.png" alt="repeat" title="repeat"/></li>
+        <li id="shuffle"><img src="{% url laudio.views.laudio_index %}media/style/img/shuffleoff.png" alt="shuffle" title="shuffle"/></li>
+        <li id="mute"><img src="{% url laudio.views.laudio_index %}media/style/img/volume.png" alt="mute" title="mute"/></li>
+        <li id="volume"><canvas height="24" width="80"></canvas></li>
     </ul>
 </div>

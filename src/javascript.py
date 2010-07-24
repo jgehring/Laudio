@@ -41,43 +41,36 @@ class JavaScript(object):
         """
         self.view = view
         
-        # get the javascript from the file
-        self.javascriptFile = os.path.join(settings.INSTALL_DIR, "src/javascript/script.js")
-        file = open(self.javascriptFile, 'r')
-        text = file.read()
-        file.close()
-        
-        # TODO: make this prettier
-        # we dont have access to django 1.2 tags so we have check for the 
-        # view here
-        if view == "library":
-            library = True
-            playlist = False
-            conf = False
-        elif view == "settings":
-            conf = True
-            playlist = False
-            library = False
-        elif view == "playlist":
-            playlist = True
-            conf = False 
-            library = False
+        files = ()
+        """Depending on the view, different js files are being included. 
+        We specify the ones we want to load with a files tuple, path 
+        starting from src/javascript/"""
+        if self.view == "library":
+            files = ("inc/includes.js", "ui/collection.js", "ui/controls.js",
+                     "ui/tablesorting.js", "ui/nav.js", "player/player.js")
+                     
+        elif self.view == "settings":
+            files = ("ui/settings.js",)
+            
+        elif self.view == "playlist":
+            files = ()
+            
         else:
-            playlist = False 
-            conf = False
-            library = False
+            files = ()
+        
+        content = ""
+        # loop over files and build the content
+        for f in files:
+            # get the javascript from the file
+            fh = os.path.join(settings.INSTALL_DIR, "src/javascript/%s" % f )
+            file = open(fh, 'r')
+            content += file.read()
+            file.close()
+        
         
         # create template and parse context
-        tpl = Template(text)
-        context = Context( 
-            {
-                "URL_PREFIX": settings.URL_PREFIX,
-                "playlist": playlist,
-                "library": library,
-                "settings": conf
-            } 
-        )
-    
+        tpl = Template(content)
+        context = Context( {} )
         self.javascript = tpl.render(context)
 
 

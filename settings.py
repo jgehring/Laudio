@@ -62,8 +62,6 @@ USE_I18N = True
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = os.path.join(os.path.dirname(__file__), '/media/').replace('\\', '/')
 
-# Prefix for the laudio site
-URL_PREFIX = '/laudio/'
 AUDIO_DIR = os.path.join( os.path.dirname(__file__),
                                     'media/audio').replace('\\', '/' )
 INSTALL_DIR = os.path.dirname(__file__)

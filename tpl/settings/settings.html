@@ -40,7 +40,7 @@
     <div id="users">
         <fieldset>
             <legend>Users</legend>
-            <a href="{{ URL_PREFIX }}settings/newuser/">Add a new user</a>
+            <a href="{% url laudio.views.laudio_settings_new_user %}">Add a new user</a>
             <table>
                 <tr>
                     <th>Username</th>
@@ -56,8 +56,9 @@
                     <td>{{ user.email }}</td>
                     <td>{{ user.is_superuser }}</td>
                     <td>{{ user.is_active }}</td>
-                    <td><a href="{{ URL_PREFIX }}settings/deleteuser/{{ user.id }}/">Delete</a></td>
-                    <td><a href="{{ URL_PREFIX }}settings/edituser/{{ user.id }}/">Edit</a></td>
+                    {# FIXME: maybe the next links could be done nicer #}
+                    <td><a href="{% url laudio.views.laudio_settings %}deleteuser/{{ user.id }}/">Delete</a></td>
+                    <td><a href="{% url laudio.views.laudio_settings %}edituser/{{ user.id }}/">Edit</a></td>
                 </tr>
                 {% endfor %}
             </table>

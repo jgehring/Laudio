@@ -24,6 +24,5 @@ from django.conf import settings
 
 def template_defaults(request):
     return {
-            "URL_PREFIX": settings.URL_PREFIX,
             "LOGGED_IN": request.user.is_authenticated(),
         } 
