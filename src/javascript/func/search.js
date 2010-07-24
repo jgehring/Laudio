@@ -69,7 +69,7 @@ function search(search, depth){
         $(".loading").fadeOut('fast', function(){
             $("#collection tbody").fadeIn('slow');
                 // set color to just playing song
-                var lastSong = db("playing");
+                var lastSong = db("playing", false);
                 
                 // if we didnt just start it see if the currently played
                 // song is in the collection and highlight it
