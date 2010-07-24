@@ -4,7 +4,7 @@
 
 .. image::  http://github.com/downloads/Raydiation/Laudio/screenshot_large_v04.png
 
-:Version: 0.4-alpha2
+:Version: 0.4-alpha3
 :Keywords: python, jquery, django, web, html5, audio, player, javascript, last.fm, libre.fm, json
 
 Laudio is a webbased player which takes advantage of the HTML5 audio
@@ -54,7 +54,7 @@ Type the following commands in the terminal residing in the downloaded Folder.
 
 First get the dependencies::
 
-    $ sudo apt-get install python-lxml python-django python-mutagen apache2 sqlite3 libapache2-mod-wsgi python-pysqlite2 rabbitmq-server
+    $ sudo apt-get install python-lxml python-django python-mutagen apache2 sqlite3 libapache2-mod-wsgi python-pysqlite2
 
 To get django running on apache we need to put our config file in its config
 directory::
@@ -84,7 +84,7 @@ Type the following commands in the terminal residing in the downloaded Folder.
 
 First get the dependencies::
 
-    # emerge -av dev-python/django dev-python/lxml media-libs/mutagen dev-python/pysqlite dev-db/sqlite www-apache/mod_wsgi www-servers/apache net-misc/rabbitmq-server
+    # emerge -av dev-python/django dev-python/lxml media-libs/mutagen dev-python/pysqlite dev-db/sqlite www-apache/mod_wsgi www-servers/apache
 
 To get django running on apache we need to put our config file in its config
 directory::
@@ -121,8 +121,6 @@ Type the following commands in the terminal residing in the downloaded Folder.
 First get the dependencies::
 
     # pacman -S extra/django extra/python-lxml extra/mutagen extra/apache extra/python-pysqlite core/sqlite3 extra/mod_wsgi
-    # yaourt -S aur/rabbitmq
-
 
 To get django running on apache we need to put our config file in its config
 directory::

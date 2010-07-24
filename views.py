@@ -40,6 +40,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.contrib.auth import authenticate, login
 from django.template import RequestContext
+from django.core.urlresolvers import reverse
 
 # other python libs
 import time
@@ -98,7 +99,7 @@ def laudio_login(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                return HttpResponseRedirect(settings.URL_PREFIX)
+                return HttpResponseRedirect( reverse ("laudio.views.laudio_settings") )
             else:
                 success = "Your account has been disabled!"
                 return render_to_response( 'login.html', {"success": success}, 
@@ -115,7 +116,7 @@ def laudio_login(request):
 def laudio_logout(request):
     """Logs out a user"""
     logout(request)
-    return HttpResponseRedirect(settings.URL_PREFIX + 'login/')
+    return HttpResponseRedirect( reverse ("laudio.views.laudio_login") )
 
 
 @check_login("admin")
@@ -177,7 +178,7 @@ def laudio_settings_new_user(request):
                          "libreFMName", "libreFMPass", "libreFMSubmit"):
                 setattr(profile, key, profileform.cleaned_data[key])
             profile.save()
-            return HttpResponseRedirect(settings.URL_PREFIX + 'settings/')
+            return HttpResponseRedirect( reverse ("laudio.views.laudio_settings") )
     else:
         userform = UserForm()
         profileform = UserProfileForm()
@@ -213,7 +214,7 @@ def laudio_settings_edit_user(request, userid):
                          "libreFMName", "libreFMPass", "libreFMSubmit"):
                 setattr(profile, key, profileform.cleaned_data[key])
             profile.save()
-            return HttpResponseRedirect(settings.URL_PREFIX + 'settings/')
+            return HttpResponseRedirect( reverse ("laudio.views.laudio_settings") )
     else:
         user = User.objects.get(pk=userid)
         userform = UserEditForm(instance=user)
@@ -233,7 +234,7 @@ def laudio_settings_delete_user(request, userid):
     """Deletes a user by userid"""
     user = User.objects.get(pk=userid)
     user.delete()
-    return HttpResponseRedirect(settings.URL_PREFIX + 'settings/')
+    return HttpResponseRedirect( reverse ("laudio.views.laudio_settings") )
     
     
 @check_login("user")
@@ -258,7 +259,7 @@ def laudio_profile(request):
                          "libreFMName", "libreFMPass", "libreFMSubmit"):
                 setattr(profile, key, profileform.cleaned_data[key])
             profile.save()
-            return HttpResponseRedirect(settings.URL_PREFIX + 'profile/')
+            return HttpResponseRedirect( reverse ("laudio.views.laudio_profile") ')
     else:
         
         userform = UserEditProfileForm(instance=user)

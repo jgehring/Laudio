@@ -47,7 +47,8 @@ class JavaScript(object):
         starting from src/javascript/"""
         if self.view == "library":
             files = ("inc/includes.js", "ui/collection.js", "ui/controls.js",
-                     "ui/tablesorting.js", "ui/nav.js", "player/player.js")
+                     "ui/tablesorting.js", "ui/nav.js", "func/player.js",
+                     "func/search.js")
                      
         elif self.view == "settings":
             files = ("ui/settings.js",)
