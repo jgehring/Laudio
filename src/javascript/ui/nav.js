@@ -82,7 +82,7 @@ $(document).ready(function() {
     $("#search .search").keyup(function(e) {
         if($(this).attr("value").length >= 3){
             clearTimeout( db("timer", false) );
-            var value = $(this).attr("value");
+            var value = escape( $(this).attr("value") );
             db("timer", setTimeout("search('" + value + "', 'simple')", 500) );
         }
     });
