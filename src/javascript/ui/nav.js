@@ -21,6 +21,39 @@
 
 $(document).ready(function() { 
     
+    $("#title_info").click(function(){
+        $("#advSearch tr:eq(0) input").attr("value", $("#title_info td").html());
+        $("#advSearch tr:eq(1) input").attr("value", "");
+        $("#advSearch tr:eq(2) input").attr("value", "");
+        $("#advSearch tr:eq(3) input").attr("value", ""); 
+        search(false);
+    });
+    
+    
+    $("#artist_info").click(function(){
+        $("#advSearch tr:eq(0) input").attr("value", "");
+        $("#advSearch tr:eq(1) input").attr("value", $("#artist_info td").html());
+        $("#advSearch tr:eq(2) input").attr("value", "");
+        $("#advSearch tr:eq(3) input").attr("value", ""); 
+        search(false);
+    });
+    
+    $("#album_info").click(function(){
+        $("#advSearch tr:eq(0) input").attr("value", "");
+        $("#advSearch tr:eq(1) input").attr("value", "");
+        $("#advSearch tr:eq(2) input").attr("value", $("#album_info td").html());
+        $("#advSearch tr:eq(3) input").attr("value", ""); 
+        search(false);
+    });
+    
+    $("#genre_info").click(function(){
+        $("#advSearch tr:eq(0) input").attr("value", "");
+        $("#advSearch tr:eq(1) input").attr("value", "");
+        $("#advSearch tr:eq(2) input").attr("value", "");
+        $("#advSearch tr:eq(3) input").attr("value", $("#genre_info td").html()); 
+        search(false);
+    });
+    
     /**
      * loads the artist according to the letter which was clicked
      */
@@ -36,7 +69,7 @@ $(document).ready(function() {
                 $(".loading").fadeOut('fast', function(){
                     $("#collection tbody").fadeIn('fast');
                     // set color to just playing song
-                    var lastSong = $("body").data("playing");
+                    var lastSong = db("playing", false);
                     if (lastSong !== 0){
                         $("#row" + lastSong).addClass("playing");
                     }
