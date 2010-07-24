@@ -21,114 +21,96 @@
 
 $(document).ready(function() { 
     
-    $("#title_info").click(function(){
-        $("#advSearch tr:eq(0) input").attr("value", $("#title_info td").html());
-        $("#advSearch tr:eq(1) input").attr("value", "");
-        $("#advSearch tr:eq(2) input").attr("value", "");
-        $("#advSearch tr:eq(3) input").attr("value", ""); 
-        search(false);
-    });
-    
-    
-    $("#artist_info").click(function(){
-        $("#advSearch tr:eq(0) input").attr("value", "");
-        $("#advSearch tr:eq(1) input").attr("value", $("#artist_info td").html());
-        $("#advSearch tr:eq(2) input").attr("value", "");
-        $("#advSearch tr:eq(3) input").attr("value", ""); 
-        search(false);
-    });
-    
-    $("#album_info").click(function(){
-        $("#advSearch tr:eq(0) input").attr("value", "");
-        $("#advSearch tr:eq(1) input").attr("value", "");
-        $("#advSearch tr:eq(2) input").attr("value", $("#album_info td").html());
-        $("#advSearch tr:eq(3) input").attr("value", ""); 
-        search(false);
-    });
-    
-    $("#genre_info").click(function(){
-        $("#advSearch tr:eq(0) input").attr("value", "");
-        $("#advSearch tr:eq(1) input").attr("value", "");
-        $("#advSearch tr:eq(2) input").attr("value", "");
-        $("#advSearch tr:eq(3) input").attr("value", $("#genre_info td").html()); 
-        search(false);
-    });
     
     /**
-     * loads the artist according to the letter which was clicked
+     * toggle advanced search fields
      */
-    $('#characters a').click(function() {
-        $("#contentHeader th a").removeClass("sortup");
-        $("#contentHeader th a").removeClass("sortdown");
-        $("#collection tbody").fadeOut('fast');
-        $('#characters').fadeOut("slow");
-        $(".loading").fadeIn("fast");
-        var content_show = $(this).html();
-        if (content_show == "All"){
-            $("#collection tbody").load("{{ URL_PREFIX }}collection/", function (){ 
-                $(".loading").fadeOut('fast', function(){
-                    $("#collection tbody").fadeIn('fast');
-                    // set color to just playing song
-                    var lastSong = db("playing", false);
-                    if (lastSong !== 0){
-                        $("#row" + lastSong).addClass("playing");
-                    }
-                    // update table sorting
-                    $("#collection").trigger("update");
-                });
-            });            
-        } else {
-            $("#collection tbody").load("{{ URL_PREFIX }}artist/" + content_show + "/", function (){ 
-                $(".loading").fadeOut('fast', function(){
-                    $("#collection tbody").fadeIn('fast');
-                    // set color to just playing song
-                    var lastSong = $("body").data("playing");
-                    if (lastSong !== 0){
-                        $("#row" + lastSong).addClass("playing");
-                    }
-                    // update table sorting
-                    $("#collection").trigger("update");
-                });
-            });
-        }
-        
-    });
-
-    /**
-     * click on the progressbar to change the part
-     */
-
-    // toggle advanced search
     $("#moreButton").click(function() {
         $("#advSearch").slideToggle();
     });
     
-    // toggle alphabet search
+    
+    /**
+     * toggle alphabet search
+     */
     $("#alphab li a").click(function() {
         $("#characters").slideToggle();
     });
     
-    // call search after when the user entered 3 or more letters
+    
+    /**
+     * When you click on a value on the sidebar it loads songs with the
+     * same data you clicked on
+     */
+    $("#sidebar table tr").click(function(){
+        var field = $(this).attr("id");
+        var songId = db("playing", false);
+        
+        // first we get the data via db because some data is not written
+        // in the sidebar how its written in the db
+        $.getJSON("{% url laudio.views.laudio_index %}song_data/" + songId + "/", function(json){
+            
+            // then we start a search
+            var search = [];
+            search[field] = json[field];
+            search(search, "advanced");
+            
+        });
+    });
+
+
+    /**
+     * loads the artist according to the letter which was clicked
+     */
+    $('#characters a').click(function() {
+        var select = $(this).html();
+        
+        if (select == "All"){
+            search("", "all");
+        } else {
+            search(select, "char");
+        }
+        
+        $("#characters").slideToggle();
+    });
+
+
+
+    /**
+     * call search after when the user entered 3 or more letters
+     */
     $("#search .search").keyup(function(e) {
         if($(this).attr("value").length >= 3){
-            clearTimeout($("body").data("timer"));
-            $("body").data("timer", setTimeout("search(true)", 500) )
+            clearTimeout( db("timer", false) );
+            var value = $(this).attr("value");
+            db("timer", setTimeout("search('" + value + "', 'simple')", 500) );
         }
     });
     
+    
+    /**
+     * Hits an advanced search if the cursor is in an input field and
+     * enter is being pressed
+     */
     $("#advSearch input").keyup(function(e) {
         if(e.keyCode == 13) {
-            search(false);
+            var query = get_advsearch_values()
+            search(query, "advanced");
         }
     });
+    
+    /**
+     * Hits an advanced search once the search button is being clicked
+     */
     $("#searchButton").click(function() {
-        search(false);
+        var query = get_advsearch_values()
+        search(query, "advanced");
     });
     
     
     /***
      * TODO:
-     * write the 4 functions into 1
+     * implement autocompletion
      */
     $("#searchtitle").autocomplete(
         {
@@ -162,173 +144,96 @@ $(document).ready(function() {
         }
     });
     
-    $("#searchartist").autocomplete(
-        {
-            source: function(request, response){
-                // get other variables
-                var title = encodeURIComponent($("#advSearch tr:eq(0) input").val());
-                var artist = encodeURIComponent($("#advSearch tr:eq(1) input").val());
-                var album = encodeURIComponent($("#advSearch tr:eq(2) input").val());
-                var genre = encodeURIComponent($("#advSearch tr:eq(3) input").val());
 
-                var url = "{{ URL_PREFIX }}advautocomplete/artist/";
-                url += "?title=" + title;
-                url += "&artist=" + artist;
-                url += "&album=" + album;
-                url += "&genre=" + genre;
-                
-                $.getJSON(url, function(data) {
-                    response($.map(data.results, function(item) {
-                            return {
-                                value: item.value
-                            };
-                    }));
-                });
-
-            },
-            minLength: 3,
-            select: function(event, ui) {
-                if (ui.item){
-                    $(this).attr("value", ui.item.value);
-                }
-        }
-    });
-    
-    $("#searchalbum").autocomplete(
-        {
-            source: function(request, response){
-                // get other variables
-                var title = encodeURIComponent($("#advSearch tr:eq(0) input").val());
-                var artist = encodeURIComponent($("#advSearch tr:eq(1) input").val());
-                var album = encodeURIComponent($("#advSearch tr:eq(2) input").val());
-                var genre = encodeURIComponent($("#advSearch tr:eq(3) input").val());
-
-                var url = "{{ URL_PREFIX }}advautocomplete/album/";
-                url += "?title=" + title;
-                url += "&artist=" + artist;
-                url += "&album=" + album;
-                url += "&genre=" + genre;
-                
-                $.getJSON(url, function(data) {
-                    response($.map(data.results, function(item) {
-                            return {
-                                value: item.value
-                            };
-                    }));
-                });
-
-            },
-            minLength: 3,
-            select: function(event, ui) {
-                if (ui.item){
-                    $(this).attr("value", ui.item.value);
-                }
-        }
-    });
-    
-    $("#searchgenre").autocomplete(
-        {
-            source: function(request, response){
-                // get other variables
-                var title = encodeURIComponent($("#advSearch tr:eq(0) input").val());
-                var artist = encodeURIComponent($("#advSearch tr:eq(1) input").val());
-                var album = encodeURIComponent($("#advSearch tr:eq(2) input").val());
-                var genre = encodeURIComponent($("#advSearch tr:eq(3) input").val());
-
-                var url = "{{ URL_PREFIX }}advautocomplete/genre/";
-                url += "?title=" + title;
-                url += "&artist=" + artist;
-                url += "&album=" + album;
-                url += "&genre=" + genre;
-                
-                $.getJSON(url, function(data) {
-                    response($.map(data.results, function(item) {
-                            return {
-                                value: item.value
-                            };
-                    }));
-                });
-
-            },
-            minLength: 3,
-            select: function(event, ui) {
-                if (ui.item){
-                    $(this).attr("value", ui.item.value);
-                }
-        }
-    });
     
 });
 
 
-/*
- * Does and advanced or simple search
- * @param boolean simple:   if true, just look up the value from the 
- *                          simple searchfield, else check the 4 advanced
- *                          ones
- * 
+/**
+ * Start an advanced search
+ * @param Array search:     a dictionairy containing field and value
+ * @param String depth:     distincts between "advanced", "simple", "char"
+ *                          and "all"
  */
-function search(simple) {
-    $("#contentHeader th a").removeClass("sortup");
-    $("#contentHeader th a").removeClass("sortdown");
-    var all = $("#search input").attr("value");
-    var title = encodeURIComponent($("#advSearch tr:eq(0) input").attr("value"));
-    var artist = encodeURIComponent($("#advSearch tr:eq(1) input").attr("value"));
-    var album = encodeURIComponent($("#advSearch tr:eq(2) input").attr("value"));
-    var genre = encodeURIComponent($("#advSearch tr:eq(3) input").attr("value"));
+function search(search, depth){
+    // Start eyecandy animation
+    $("#collection tbody").fadeOut('fast');
+    $("#advSearch").fadeOut('fast');
+    $(".loading").fadeIn("slow");
     
-    // check if advanced search contains input
-    if((title || artist || album || genre) && !simple){
-        $("#collection tbody").fadeOut('fast');
-        $("#advSearch").fadeOut('fast');
-        $(".loading").fadeIn("slow");
-        var url =  "{{ URL_PREFIX }}advsearch/";
-        // FIXME: maybe set this as data instead of url, wouldnt be much
-        // shorter though
-        var query = "?artist=" + artist + "&amp;title=" + title +
-                    "&amp;genre=" + genre + "&amp;album=" + album;
-        $("#collection tbody").load(url + query, function (){
-            $(".loading").fadeOut('fast', function(){
-                $("#collection tbody").fadeIn('slow');
+    if (depth === "advanced"){
+        
+        var queryString = "?";
+        var i = 0;
+        // build querystring from dictinairy
+        for (field in search){
+            if(i !== 0){
+                queryString += "&";
+            }
+            queryString += field + "=" + encodeURIComponent( search[field] );
+        }
+        
+        var url = "{% url laudio.views.laudio_index %}advsearch/" + queryString;
+    
+    } else if (depth === "simple"){
+    
+        var url = "{% url laudio.views.laudio_index %}searchall/" + search + "/";
+
+    } else if(depth === "all"){
+        
+        var url = "{% url laudio.views.laudio_index %}collection/";
+        
+    } else if(depth === "char"){
+        
+        var url = "{% url laudio.views.laudio_index %}artist/" + search + "/";
+        
+    } else {
+        
+        return false;
+    
+    }
+    
+    // now that we got the get url, start query
+    $("#collection tbody").load(url, function (){
+        $(".loading").fadeOut('fast', function(){
+            $("#collection tbody").fadeIn('slow');
                 // set color to just playing song
-                var lastSong = $("body").data("playing");
+                var lastSong = db("playing");
+                
+                // if we didnt just start it see if the currently played
+                // song is in the collection and highlight it
                 if (lastSong !== 0){
-                    $("#row" + lastSong).addClass("playing");
+                    $( id_to_row(lastSong, true) ).addClass("playing");
                 }
+                
                 // update table sorting
                 $("#collection").trigger("update");
                 
-                // reset input fields
-                $("#advSearch tr:eq(0) input").attr("value", "");
-                $("#advSearch tr:eq(1) input").attr("value", "");
-                $("#advSearch tr:eq(2) input").attr("value", "");
-                $("#advSearch tr:eq(3) input").attr("value", "");
             });
         });
-           
-           
-    } else if (all) {
-        $("#collection tbody").fadeOut('fast');
-        $("#advSearch").fadeOut('fast');
-        $(".loading").fadeIn("slow");
-        var searchValue = encodeURIComponent($('.search').attr("value"));
-        $("#collection tbody").load( "{{ URL_PREFIX }}searchall/" + searchValue + "/", function() {
-            $(".loading").fadeOut('fast');
-            $("#collection tbody").fadeIn('slow');
-            // set color to just playing song
-            var lastSong = $("body").data("playing");
-            if (lastSong !== 0){
-                $("#row" + lastSong).addClass("playing");
-            }
-            // update table sorting
-            $("#collection").trigger("update");
-            // reset input fields
-                $("#advSearch tr:eq(0) input").attr("value", "");
-                $("#advSearch tr:eq(1) input").attr("value", "");
-                $("#advSearch tr:eq(2) input").attr("value", "");
-                $("#advSearch tr:eq(3) input").attr("value", "");
-        });
-    } else {
-        return false;
-    }
-};
+}
+
+/**
+ * This is a shortcut function which gets all the set values in the
+ * advanced search form, forms a query string out of it, clears the 
+ * values from the input fields and returns the query dictionairy
+ * @return dictionairy: The query dictionairy
+ */
+function get_advsearch_values(){
+    var title = $("#advSearch tr:eq(0) input").attr("value");
+    var artist = $("#advSearch tr:eq(1) input").attr("value");
+    var album = $("#advSearch tr:eq(2) input").attr("value");
+    var genre = $("#advSearch tr:eq(3) input").attr("value");
+    query = [];
+    query["title"] = title;
+    query["artist"] = artist;
+    query["album"] = album;
+    query["genre"] = genre;
+    // then reset input fields
+    $("#advSearch tr:eq(0) input").attr("value", "");
+    $("#advSearch tr:eq(1) input").attr("value", "");
+    $("#advSearch tr:eq(2) input").attr("value", "");
+    $("#advSearch tr:eq(3) input").attr("value", "");
+    
+    return query;    
+}

@@ -446,13 +446,23 @@ def ajax_search_collection(request, search):
 def ajax_adv_search_collection(request):
     """Get songs where the fields contain the search params"""
     title = request.GET.get("title", "")
+    length = request.GET.get("length", "")
+    tracknr = request.GET.get("tracknr", "")
     artist = request.GET.get("artist", "")
     album = request.GET.get("album", "")
+    date = request.GET.get("date", "")
     genre = request.GET.get("genre", "")
+    codec = request.GET.get("codec", "")
+    bitrate = request.GET.get("bitrate", "")
     songs = Song.objects.filter(title__contains=title,
+                                length__contains=length,
+                                tracknr__contains=tracknr,
                                 artist__contains=artist,
                                 album__contains=album,
-                                genre__contains=genre
+                                date__contains=date,
+                                genre__contains=genre,
+                                codec__contains=codec,
+                                bitrate__contains=bitrate
     ).extra( select={'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 
     'ltrnr': 'tracknumber',} ).order_by('lartist', 'lalbum', 'ltrnr')
     return render_to_response('requests/songs.html', {'songs': songs, })
