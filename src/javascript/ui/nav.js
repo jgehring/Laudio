@@ -121,7 +121,7 @@ $(document).ready(function() {
                 var album = encodeURIComponent($("#advSearch tr:eq(2) input").val());
                 var genre = encodeURIComponent($("#advSearch tr:eq(3) input").val());
 
-                var url = "{{ URL_PREFIX }}advautocomplete/title/";
+                var url = "{% url laudio.views.laudio_index %}advautocomplete/title/";
                 url += "?title=" + title;
                 url += "&artist=" + artist;
                 url += "&album=" + album;

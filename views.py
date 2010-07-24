@@ -45,6 +45,7 @@ from django.core.urlresolvers import reverse
 # other python libs
 import time
 import os
+import urllib
 
 
 ########################################################################
@@ -446,15 +447,15 @@ def ajax_search_collection(request, search):
 @check_login("user")
 def ajax_adv_search_collection(request):
     """Get songs where the fields contain the search params"""
-    title = request.GET.get("title", "")
-    length = request.GET.get("length", "")
-    tracknr = request.GET.get("tracknr", "")
-    artist = request.GET.get("artist", "")
-    album = request.GET.get("album", "")
-    date = request.GET.get("date", "")
-    genre = request.GET.get("genre", "")
-    codec = request.GET.get("codec", "")
-    bitrate = request.GET.get("bitrate", "")
+    title = urllib.unquote( request.GET.get("title", "") )
+    length = urllib.unquote( request.GET.get("length", "") )
+    tracknr = urllib.unquote( request.GET.get("tracknr", "") )
+    artist = urllib.unquote( request.GET.get("artist", "") )
+    album = urllib.unquote( request.GET.get("album", "") )
+    date = urllib.unquote( request.GET.get("date", "") )
+    genre = urllib.unquote( request.GET.get("genre", "") )
+    codec = urllib.unquote( request.GET.get("codec", "") )
+    bitrate = urllib.unquote( request.GET.get("bitrate", "") )
     songs = Song.objects.filter(title__contains=title,
                                 length__contains=length,
                                 tracknumber__contains=tracknr,

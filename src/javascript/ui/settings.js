@@ -24,7 +24,7 @@ $(document).ready(function() {
     $("#resetcoll").click(function() {
         $("#popup").fadeIn("slow");
         $("#popup").addClass("loading");
-        $("#popup").load("{{ URL_PREFIX }}settings/resetdb/", function (){ 
+        $("#popup").load("{% url laudio.views.ajax_drop_collection_db %}", function (){ 
             $("#popup").removeClass("loading");
             $("#popup p").fadeIn("slow");
         });       
@@ -37,7 +37,7 @@ $(document).ready(function() {
     $("#scancoll").click(function() {
         $("#popup").fadeIn("slow");
         $("#popup").addClass("loading");
-        $("#popup").load("{{ URL_PREFIX }}settings/scan/", function (){ 
+        $("#popup").load("{% url laudio.views.ajax_scan_collection %}", function (){ 
             $("#popup").removeClass("loading");
             $("#popup p").fadeIn("slow");
         });   
