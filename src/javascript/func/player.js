@@ -45,12 +45,38 @@ function precache(e){
     if(e.loaded === e.total){
         // check if shuffle is not activated, if so we cant precache the
         // next song
+        // if the next song has also be transcoded, do it now
         if (db("shuffle", false) === 0){
-            var nextSongId = get_next_song();
-            $.getJSON("{% url laudio.views.laudio_index %}song_data/" + nextSongId + "/", function(json){
-                $("#gapless").attr("src", "{% url laudio.views.laudio_index %}media/audio/" + json.path);
-                $("#gapless")[0].load();
-            });
+            {% if TRANSCODE %}
+                // load the next song
+                var nextSongId = get_next_song();
+                $.getJSON("{% url laudio.views.laudio_index %}song_data/" + nextSongId + "/", function(json){
+                    // check if we need to transcode
+                    if(json.codec !== "ogg"){
+                        $.getJSON("{% url laudio.views.laudio_index %}transcode/" + json.id + "/", function(transcoded){
+                            var songpath = "{% url laudio.views.laudio_index %}media/tmp/" + transcoded.path;
+                            $("#gapless").attr("src", songpath);
+                            $("#gapless")[0].load();
+                        });
+                    
+                    } else {
+                        // load the next song
+                        $("#gapless").attr("src", "{% url laudio.views.laudio_index %}media/audio/" + json.path);
+                        $("#gapless")[0].load();
+                    }
+                });
+        
+            {% else %}
+        
+                // load the next song
+                var nextSongId = get_next_song();
+                $.getJSON("{% url laudio.views.laudio_index %}song_data/" + nextSongId + "/", function(json){
+                    $("#gapless").attr("src", "{% url laudio.views.laudio_index %}media/audio/" + json.path);
+                    $("#gapless")[0].load();
+                });
+            
+            {% endif %}
+        
         }
     }
 }

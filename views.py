@@ -329,13 +329,20 @@ def ajax_transcode_song(request, id):
         os.symlink( "/tmp/laudio", settings.TMP_DIR )
     if not os.path.exists("/tmp/laudio/%s" % request.user.username):
         os.mkdir("/tmp/laudio/%s" % request.user.username, 0755)
-    if os.path.exists("/tmp/laudio/%s/transcoded.ogg" % request.user.username):
-        os.remove("/tmp/laudio/%s/transcoded.ogg" % request.user.username)
+    """if the file exists already then we directly return the path without
+    transcoding anything. If not, we remove anything in the userfolder
+    and start transcoding"""
+    if os.path.exists( "/tmp/laudio/%s/%s.ogg" % (request.user.username, id ) ):
+        path = "%s/%s.ogg" % (request.user.username, id )
+        return render_to_response('requests/transcode.html', {"path": path})
+    else:
+        for file in os.listdir("/tmp/laudio/%s" % request.user.username):
+            os.remove("/tmp/laudio/%s/%s" % (request.user.username, file) )
         
     """Now we start encoding the song via ffmpeg"""
-    cmd = "ffmpeg -i \"%s\" -acodec libvorbis -vn \"/tmp/laudio/%s/transcoded.ogg\"" % (abspath, request.user.username)
+    cmd = "ffmpeg -i \"%s\" -acodec libvorbis -vn \"/tmp/laudio/%s/%s.ogg\"" % (abspath, request.user.username, id)
     os.system(cmd)
-    path = "%s/transcoded.ogg" % request.user.username
+    path = "%s/%s.ogg" % (request.user.username, id )
     return render_to_response('requests/transcode.html', {"path": path})
 
 
