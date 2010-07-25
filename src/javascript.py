@@ -48,7 +48,7 @@ class JavaScript(object):
         if self.view == "library":
             files = ("inc/includes.js", "ui/collection.js", "ui/controls.js",
                      "ui/tablesorting.js", "ui/nav.js", "func/player.js",
-                     "func/search.js")
+                     "func/search.js", "func/debug.js")
                      
         elif self.view == "settings":
             files = ("ui/settings.js",)
@@ -71,7 +71,7 @@ class JavaScript(object):
         
         # create template and parse context
         tpl = Template(content)
-        context = Context( {} )
+        context = Context( { "AUDIO_DEBUG": settings.AUDIO_DEBUG } )
         self.javascript = tpl.render(context)
 
 

@@ -468,3 +468,24 @@ def ajax_adv_search_collection(request):
     ).extra( select={'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 
     'ltrnr': 'tracknumber',} ).order_by('lartist', 'lalbum', 'ltrnr')
     return render_to_response('requests/songs.html', {'songs': songs, })
+
+
+def ajax_debug_log(request):
+    if request.method == "POST":
+        date = request.POST.get( "date", time.time() )
+        msg = request.POST.get("msg", "")
+        event = request.POST.get("event", "")
+        songid = request.POST.get("songid", "")
+        
+        try:
+            song = Song.objects.get(id=songid)
+            songdata = "%s - %s" % (song.artist, song.title)
+        except Song.DoesNotExist:
+            songdata = "No song loaded"
+            
+        """If no debug log exists, we make a new one"""
+        if settings.DEBUG:
+            f = open(settings.DEBUG_LOG, 'a')
+            f.write( '%s: AT SONG "%s" WITH ID %s OCCURED EVENT "%s": %s\n' % (date, songdata, songid, event, msg) )
+            f.close()
+    return HttpResponse("logged")

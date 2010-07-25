@@ -61,6 +61,9 @@ urlpatterns = patterns('',
     # playlist
     (r'^playlist/$', laudio_playlist),
     
+    # debug
+    (r'^debug/$', ajax_debug_log),
+    
     # other sites
     (r'^about/$', laudio_about),
     (r'^profile/$', laudio_profile),

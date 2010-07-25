@@ -44,7 +44,7 @@ function search(search, depth){
             queryString += field + "=" + encodeURI( search[field] );
         }
         
-        var url = "{% url laudio.views.laudio_index %}advsearch/" + queryString;
+        var url = "{% url laudio.views.ajax_adv_search_collection %}" + queryString;
     
     } else if (depth === "simple"){
     
@@ -52,7 +52,7 @@ function search(search, depth){
 
     } else if(depth === "all"){
         
-        var url = "{% url laudio.views.laudio_index %}collection/";
+        var url = "{% url laudio.views.ajax_whole_collection %}";
         
     } else if(depth === "char"){
         
