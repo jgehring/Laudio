@@ -291,7 +291,7 @@ def ajax_scan_collection(request):
     try:
         config.scan()
     except OSError, e:
-        return render_to_response( 'settings.html', {"msg": e } )
+        return render_to_response( 'requests/dropscan.html', {"msg": e } )
     return render_to_response('requests/dropscan.html', { "msg": config })
 
 

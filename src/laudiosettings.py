@@ -45,7 +45,7 @@ class LaudioSettings(object):
         """Scan the directory where the collection is"""
         # we have to add a trailing slash for scanning
         indexer = MusicIndexer( settings.AUDIO_DIR + "/")
-        dbPath = settings.DATABASE_NAME
+        dbPath = settings.DATABASES['default']['NAME']
         if not os.access(dbPath, os.W_OK):
             raise OSError("No write access to database! \
                             Use: <b>sudo chmod 0777 %s</b>" % (dbPath))
