@@ -4,7 +4,7 @@
 
 .. image::  http://github.com/downloads/Raydiation/Laudio/screenshot_large_v04.png
 
-:Version: 0.4-alpha3
+:Version: 0.4-alpha4
 :Keywords: python, jquery, django, web, html5, audio, player, javascript, last.fm, libre.fm, json
 
 Laudio is a webbased player which takes advantage of the HTML5 audio
@@ -54,7 +54,7 @@ Type the following commands in the terminal residing in the downloaded Folder.
 
 First get the dependencies::
 
-    $ sudo apt-get install python-lxml python-django python-mutagen apache2 sqlite3 libapache2-mod-wsgi python-pysqlite2
+    $ sudo apt-get install python-lxml python-django python-mutagen apache2 sqlite3 libapache2-mod-wsgi python-pysqlite2 ffmpeg
 
 To get django running on apache we need to put our config file in its config
 directory::
@@ -84,7 +84,7 @@ Type the following commands in the terminal residing in the downloaded Folder.
 
 First get the dependencies::
 
-    # emerge -av dev-python/django dev-python/lxml media-libs/mutagen dev-python/pysqlite dev-db/sqlite www-apache/mod_wsgi www-servers/apache
+    # emerge -av dev-python/django dev-python/lxml media-libs/mutagen dev-python/pysqlite dev-db/sqlite www-apache/mod_wsgi www-servers/apache media-video/ffmpeg 
 
 To get django running on apache we need to put our config file in its config
 directory::
@@ -120,7 +120,7 @@ Type the following commands in the terminal residing in the downloaded Folder.
 
 First get the dependencies::
 
-    # pacman -S extra/django extra/python-lxml extra/mutagen extra/apache extra/python-pysqlite core/sqlite3 extra/mod_wsgi
+    # pacman -S extra/django extra/python-lxml extra/mutagen extra/apache extra/python-pysqlite core/sqlite3 extra/mod_wsgi ffmpeg
 
 To get django running on apache we need to put our config file in its config
 directory::
@@ -166,13 +166,16 @@ Depends wether you want to use MP3 or OGG VORBIS
 
 
 
+``NEW``: If you activate transcoding in your profile, Laudio will transcode mp3
+to ogg if your player cant play mp3.
+
 
 Why doesn't Chromium play my MP3?
 ---------------------------------
 Most likely you have to install an extra codecs package, Ubuntu for instance
 installs it with:
 
-    # sudo apt-get install chromium-codecs-ffmpeg-extra
+    $ sudo apt-get install chromium-codecs-ffmpeg-extra
 
 
 

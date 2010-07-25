@@ -51,8 +51,11 @@ function precache(e){
                 // load the next song
                 var nextSongId = get_next_song();
                 $.getJSON("{% url laudio.views.laudio_index %}song_data/" + nextSongId + "/", function(json){
+                    // check if browser supports codec
+                    var canPlayType = $("#player")[0].canPlayType("audio/" + json.codec);
+                    
                     // check if we need to transcode
-                    if(json.codec !== "ogg"){
+                    if( json.codec !== "ogg" && !canPlayType.match(/maybe|probably/i) ){
                         $.getJSON("{% url laudio.views.laudio_index %}transcode/" + json.id + "/", function(transcoded){
                             var songpath = "{% url laudio.views.laudio_index %}media/tmp/" + transcoded.path;
                             $("#gapless").attr("src", songpath);
@@ -293,9 +296,12 @@ function play_song(id){
  * @param String codec: Codec of the song
  */
 function check_and_load_song(id, path, codec){
-    // check if we have to transcode
+    // check if browser supports codec
+    var canPlayType = $("#player")[0].canPlayType("audio/" + codec);
+        
     {% if TRANSCODE %}
-        if(codec !== "ogg"){
+        // check if we have to transcode
+        if( codec !== "ogg" && !canPlayType.match(/maybe|probably/i) ){
             $(".loading").fadeIn("slow");
             $.getJSON("{% url laudio.views.laudio_index %}transcode/" + id + "/", function(transcoded){
                 var songpath = "{% url laudio.views.laudio_index %}media/tmp/" + transcoded.path;
@@ -308,8 +314,6 @@ function check_and_load_song(id, path, codec){
         }
         
     {% else %}
-        // check if browser supports codec
-        var canPlayType = $("#player")[0].canPlayType("audio/" + codec);
         if(!canPlayType.match(/maybe|probably/i)) {
             alert("Browser does not support codec " + codec + "!")
             return false;
