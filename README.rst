@@ -151,6 +151,8 @@ boot process: Add httpd to your DAEMONS in the /etc/rc.conf
 .. _`Celery`: http://github.com/ask/celery
 .. _`Ampache`: http://ampache.org/
 
+
+
 FAQ
 =======================
 
@@ -158,9 +160,12 @@ Which Browsers does Laudio support?
 -----------------------------------
 Depends wether you want to use MP3 or OGG VORBIS
 
-MP3: Google Chrome, Chromium, Apple Safari
+``MP3``: Google Chrome, Chromium, Apple Safari
 
-OGG: Google Chrome, Chromium, Opera, Firefox
+``OGG``: Google Chrome, Chromium, Opera, Firefox
+
+
+
 
 Why doesn't Chromium play my MP3?
 ---------------------------------
@@ -170,10 +175,14 @@ installs it with:
     # sudo apt-get install chromium-codecs-ffmpeg-extra
 
 
+
+
 What filerights should my musicdirectory have?
 ----------------------------------------------
 The music files should be chmoded 0755. Every folder above the files has
-to have a+x, so Apache can cd into the directory
+to have a+x, so Apache can traverse down into the directory
+
+
 
 
 I just added and scanned some music but it doesnt show up in the Library!
@@ -182,6 +191,10 @@ It's not a bug, it's a feature: Imagine loading 50 000 files on every
 startup; defenitely a browser killer. You can see your files either by
 searching or by clicking on the ABC button on the top, where you can 
 change the starting letters of the artist.
+
+
+
+
 
 How can i change the URL under which Laudio is being run
 --------------------------------------------------------
@@ -194,6 +207,7 @@ Open the laudio_apache.conf in the Apache config folder and change the two lines
     WSGIScriptAlias /audio /opt/laudio/media/django.wsgi
 
 Finally restart your Apache webserver.
+
 
 
 
