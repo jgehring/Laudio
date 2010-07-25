@@ -156,9 +156,10 @@ FAQ
 
 Which Browsers does Laudio support?
 -----------------------------------
-Depends wether you want to use mp3 or ogg vorbis
+Depends wether you want to use MP3 or OGG VORBIS
 
 MP3: Google Chrome, Chromium, Apple Safari
+
 OGG: Google Chrome, Chromium, Opera, Firefox
 
 Why doesn't Chromium play my MP3?
