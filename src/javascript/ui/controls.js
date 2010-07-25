@@ -27,6 +27,7 @@ $(document).ready(function() {
     $("#player")[0].addEventListener("playing", update_play_pause, true);
     $("#player")[0].addEventListener("pause", update_play_pause, true);
     $("#player")[0].addEventListener("timeupdate", update_progressbar, true);
+    $("#player")[0].addEventListener("progress", update_loaded, true);
     $("#player")[0].addEventListener("volumechange", update_volume, true);
     
     
@@ -186,15 +187,32 @@ function update_progressbar(){
     if(isNaN(duration)){
         duration = db("duration", false);
     }
-    
+
     // calculate how the progressbar is being filled
-    width = Math.floor((300 / duration) * currTime);    
+    var width = Math.floor((300 / duration) * currTime);    
     var $canvas = $("#progressbar canvas");
     var ctx = $canvas[0].getContext("2d");
     ctx.clearRect(0,0, 300 ,24);
+    // fill loaded bar
+    ctx.fillStyle = "#666";
+    ctx.fillRect(0,0, db("loaded", false) ,24);
+    // fill rectangle which indicates position in the song
     ctx.fillStyle = "#333";
     ctx.fillRect(0,0, width ,24);
     $("#progressbar").attr("title", Math.floor(currTime) + "/" + Math.floor(duration));    
+}
+
+
+/**
+ * Updates the progressbar according to the loaded data
+ */
+function update_loaded(e){
+    // only start computed the loaded data if we know that we can compute it
+    if(e.lengthComputable){
+        var width = Math.floor( (e.loaded * 300) / e.total );
+        db("loaded", width);
+        update_progressbar();
+    }    
 }
 
 
