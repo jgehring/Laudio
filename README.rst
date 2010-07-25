@@ -190,7 +190,7 @@ I just added and scanned some music but it doesnt show up in the Library!
 It's not a bug, it's a feature: Imagine loading 50 000 files on every 
 startup; defenitely a browser killer. You can see your files either by
 searching or by clicking on the ABC button on the top, where you can 
-change the starting letters of the artist.
+select the starting letters of the artist.
 
 
 
