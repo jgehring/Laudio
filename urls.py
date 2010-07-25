@@ -57,6 +57,7 @@ urlpatterns = patterns('',
     (r'^scrobble/(?P<id>.*)/$', ajax_scrobble_song),
     (r'^cover/(?P<id>.*)/$', ajax_cover_fetch),
     (r'^advautocomplete/(?P<row>.*)/$', ajax_adv_autocompletion),
+    (r'^transcode/(?P<id>.*)/$', ajax_transcode_song),
     
     # playlist
     (r'^playlist/$', laudio_playlist),

@@ -62,7 +62,7 @@ def laudio_index(request):
     else:
         firstsong = ""
     # get javascript
-    js = JavaScript("library")
+    js = JavaScript("library", request)
     return render_to_response('index.html', { 'firstsong': firstsong, 
                                               'js': js }, 
                                 context_instance=RequestContext(request))
@@ -79,7 +79,7 @@ def laudio_playlist(request):
     else:
         firstsong = ""
     # get javascript
-    js = JavaScript("playlist")
+    js = JavaScript("playlist", request)
     return render_to_response('index.html', { 'firstsong': firstsong, 
                                               'js': js }, 
                                 context_instance=RequestContext(request))
@@ -128,27 +128,27 @@ def laudio_settings(request):
     if request.method == 'POST':
         settingsForm = SettingsForm(request.POST)
         if settingsForm.is_valid(): 
-            collection = settingsForm.cleaned_data['collection']
-            requireLogin = settingsForm.cleaned_data['requireLogin']
             # get the first setting in the db
             try:
                 settings = Settings.objects.get(pk=1)
             except Settings.DoesNotExist:
                 settings = Settings()
-            settings.collection = collection
-            settings.requireLogin = requireLogin
+            fields = ("requireLogin", "debugAudio", "collection")
+            # write data into db
+            for key in fields:
+                setattr(settings, key, settingsForm.cleaned_data[key])
             settings.save()
             # set symlink
-            config.setCollectionPath(collection)
+            config.setCollectionPath(settingsForm.cleaned_data['collection'])
     else:
         try:
             settings = Settings.objects.get(pk=1)
             settingsForm = SettingsForm(instance=settings)
         except Settings.DoesNotExist:
-            settingsForm = SettingsForm()
+            settingsForm = SettingsForm(initial={'cacheSize': 100})
             
     # get javascript
-    js = JavaScript("settings")
+    js = JavaScript("settings", request)
     return render_to_response( 'settings/settings.html', { 
                                 "collection": config.collectionPath,  
                                 "settingsForm": settingsForm,
@@ -176,7 +176,8 @@ def laudio_settings_new_user(request):
             # profile
             profile = UserProfile(user=user)
             for key in ("lastFMName", "lastFMPass", "lastFMSubmit", 
-                         "libreFMName", "libreFMPass", "libreFMSubmit"):
+                         "libreFMName", "libreFMPass", "libreFMSubmit",
+                         "transcoding", "gaplessPlayback"):
                 setattr(profile, key, profileform.cleaned_data[key])
             profile.save()
             return HttpResponseRedirect( reverse ("laudio.views.laudio_settings") )
@@ -212,7 +213,8 @@ def laudio_settings_edit_user(request, userid):
             profile = UserProfile.objects.get(user=user)
             profile.user = user
             for key in ("lastFMName", "lastFMPass", "lastFMSubmit", 
-                         "libreFMName", "libreFMPass", "libreFMSubmit"):
+                         "libreFMName", "libreFMPass", "libreFMSubmit",
+                         "transcoding", "gaplessPlayback"):
                 setattr(profile, key, profileform.cleaned_data[key])
             profile.save()
             return HttpResponseRedirect( reverse ("laudio.views.laudio_settings") )
@@ -257,7 +259,8 @@ def laudio_profile(request):
             profile = UserProfile.objects.get(user=user)
             profile.user = user
             for key in ("lastFMName", "lastFMPass", "lastFMSubmit", 
-                         "libreFMName", "libreFMPass", "libreFMSubmit"):
+                         "libreFMName", "libreFMPass", "libreFMSubmit",
+                         "transcoding", "gaplessPlayback"):
                 setattr(profile, key, profileform.cleaned_data[key])
             profile.save()
             return HttpResponseRedirect( reverse ("laudio.views.laudio_profile") )
@@ -305,6 +308,35 @@ def ajax_song_metadata(request, id):
     """
     song = Song.objects.get(id=id)
     return render_to_response('requests/song_data.html', {"song": song})
+
+
+@check_login("user")
+def ajax_transcode_song(request, id):
+    """Returns a json object with metainformation about the song
+    
+    Keyword arguments:
+    id -- the id of the song we want the metadata from
+    
+    """
+    song = Song.objects.get(id=id)
+    abspath = os.path.join( settings.AUDIO_DIR, song.path )
+    """check if a user directory exists in tmp, otherwise create one to
+    store the information in. The song which gets transcoded is always
+    overwritten by the next transcoding"""
+    if not os.path.exists("/tmp/laudio"):
+        os.mkdir("/tmp/laudio", 0755)
+    if not os.path.exists(settings.TMP_DIR):
+        os.symlink( "/tmp/laudio", settings.TMP_DIR )
+    if not os.path.exists("/tmp/laudio/%s" % request.user.username):
+        os.mkdir("/tmp/laudio/%s" % request.user.username, 0755)
+    if os.path.exists("/tmp/laudio/%s/transcoded.ogg" % request.user.username):
+        os.remove("/tmp/laudio/%s/transcoded.ogg" % request.user.username)
+        
+    """Now we start encoding the song via ffmpeg"""
+    cmd = "ffmpeg -i \"%s\" -acodec libvorbis -vn \"/tmp/laudio/%s/transcoded.ogg\"" % (abspath, request.user.username)
+    os.system(cmd)
+    path = "%s/transcoded.ogg" % request.user.username
+    return render_to_response('requests/transcode.html', {"path": path})
 
 
 @check_login("user")

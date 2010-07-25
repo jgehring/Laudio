@@ -55,6 +55,8 @@ class PlaylistEntry(models.Model):
 class Settings(models.Model):
     collection = models.CharField("Path to collection", max_length=500)
     requireLogin = models.BooleanField("Require Login")
+    debugAudio = models.BooleanField("Enable HTML5 audio debugging")
+    
 
 class UserProfile(models.Model):
     user = models.ForeignKey(User, unique=True)
@@ -64,3 +66,5 @@ class UserProfile(models.Model):
     libreFMName = models.CharField("Libre FM username", max_length=100, blank=True)
     libreFMPass = models.CharField("Libre FM password", max_length=100, blank=True)
     libreFMSubmit = models.BooleanField("Submit tracks to Libre FM")
+    transcoding = models.BooleanField("Transcode mp3 to ogg")
+    gaplessPlayback = models.BooleanField("Gapless Playback (higher Transfer)")

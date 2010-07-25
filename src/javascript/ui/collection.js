@@ -19,6 +19,18 @@
  *
  */
 
+$(document).ready(function() { 
+    
+    /**
+     * Disable right clicks because we want to show our own custom menu
+     */
+    $("#collection").bind("contextmenu", function(e) {
+        e.preventDefault();
+        alert($(this).attr("id"));
+    });
+});
+
+
 /**
  * Colors all lines in the collection
  */

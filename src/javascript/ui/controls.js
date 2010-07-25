@@ -187,9 +187,9 @@ function update_progressbar(){
     if(isNaN(duration)){
         duration = db("duration", false);
     }
-
+    var width = 0;
     // calculate how the progressbar is being filled
-    var width = Math.floor((300 / duration) * currTime);    
+    width = Math.floor((300 / duration) * currTime);    
     var $canvas = $("#progressbar canvas");
     var ctx = $canvas[0].getContext("2d");
     ctx.clearRect(0,0, 300 ,24);

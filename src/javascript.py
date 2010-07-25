@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 from django.template import Context, Template
 from django.conf import settings
+from laudio.models import Settings, UserProfile
+from django.contrib.auth.models import User
 
 import os
 
@@ -30,7 +32,7 @@ class JavaScript(object):
     """This class is for enabling django template vars and template syntax
     in javascript files and manipulating the js for different views"""
     
-    def __init__(self, view):
+    def __init__(self, view, request):
         """First we set the functions and files we have to include for
         the view we serve
         
@@ -40,6 +42,24 @@ class JavaScript(object):
         
         """
         self.view = view
+        
+        # check config vars
+        try:
+            config = Settings.objects.get(pk=1)
+            audio_debug = config.debugAudio
+            user = request.user
+            # check if no user is logged in
+            if user.id == None:
+                gapless = False
+                transcode = False
+            else:
+                gapless = user.get_profile().gaplessPlayback
+                transcode = user.get_profile().transcoding
+            
+        except Settings.DoesNotExist, AttributeError:
+            audio_debug = False
+            
+            
         
         files = ()
         """Depending on the view, different js files are being included. 
@@ -71,7 +91,11 @@ class JavaScript(object):
         
         # create template and parse context
         tpl = Template(content)
-        context = Context( { "AUDIO_DEBUG": settings.AUDIO_DEBUG } )
+        context = Context( { 
+                            "AUDIO_DEBUG": audio_debug,
+                            "GAPLESS_PLAYBACK": gapless,
+                            "TRANSCODE": transcode
+                        } )
         self.javascript = tpl.render(context)
 
 

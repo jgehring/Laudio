@@ -6,5 +6,6 @@
 *~
 *.pyc
 audio
+tmp
 *.db
 error.log

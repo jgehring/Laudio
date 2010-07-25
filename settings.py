@@ -65,11 +65,12 @@ MEDIA_ROOT = os.path.join(os.path.dirname(__file__), '/media/').replace('\\', '/
 
 AUDIO_DIR = os.path.join( os.path.dirname(__file__),
                                     'media/audio').replace('\\', '/' )
+TMP_DIR = os.path.join( os.path.dirname(__file__),
+                                    'media/tmp').replace('\\', '/' )
 INSTALL_DIR = os.path.dirname(__file__)
 LAST_FM_API_KEY = "a1d1111ab0b08262e6d7484cc5dc949a"
 DEBUG_LOG = os.path.join( os.path.dirname(__file__),
                                     'error.log').replace('\\', '/' )
-AUDIO_DEBUG = True
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
