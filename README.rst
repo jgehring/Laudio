@@ -151,19 +151,29 @@ boot process: Add httpd to your DAEMONS in the /etc/rc.conf
 .. _`Celery`: http://github.com/ask/celery
 .. _`Ampache`: http://ampache.org/
 
-Changing the URL prefix
+FAQ
 =======================
+
+Which Browsers does Laudio support?
+-----------------------------------
+Depends wether you want to use mp3 or ogg vorbis
+
+MP3: Google Chrome, Chromium, Apple Safari
+OGG: Google Chrome, Chromium, Opera, Firefox
+
+Why doesn't Chromium play my MP3?
+---------------------------------
+Most likely you have to install an extra codecs package, Ubuntu for instance
+installs it with:
+
+    # sudo apt-get install chromium-codecs-ffmpeg-extra
+
+Changing the URL prefix
+-----------------------
 If you want to let Laudio run under a different URL then localhost/laudio, like
-localhost/audio for instance, you can now easily adjust these settings.
+localhost/audio for instance, you can now easily adjust it.
 
-Open settings.py in the Laudio installation folder and and change the 
-variable URL_PREFIX to your desired prefix. For an URL like localhost/audio
-it would be::
-
-    ULR_PREFIX="/audio/"
-
-Then you have to tell your server to link the URL to Laudio. Open the
-laudio_apache.conf in the Apache config folder and change the two lines to::
+Open the laudio_apache.conf in the Apache config folder and change the two lines to::
 
     Alias /audio/media/ /opt/laudio/media/
     WSGIScriptAlias /audio /opt/laudio/media/django.wsgi
