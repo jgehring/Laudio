@@ -26,6 +26,7 @@ import urllib, urllib2
 from urllib2 import URLError, HTTPError
 from lxml import etree
 from django.conf import settings
+from django.core.urlresolvers import reverse
 
 class CoverFetcher(object):
     
@@ -59,7 +60,7 @@ class CoverFetcher(object):
                 # check for folder.jpg or cover.jpg which is very common
                 if file.lower().startswith("folder.") or file.lower().startswith("cover."):
                     relPath = os.path.join(self.relSongDir, file)
-                    mediaPath = '%smedia/audio' % settings.URL_PREFIX
+                    mediaPath = '%smedia/audio' % reverse ("laudio.views.laudio_index")
                     self.cover = os.path.join( mediaPath,  relPath)
                     return urllib.quote(self.cover)
 
