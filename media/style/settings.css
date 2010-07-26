@@ -5,6 +5,11 @@
     margin: auto;
 }
 
+.required {
+    color: #cc0000;
+    font-size: 0.9em;
+}
+
 #popup {
     margin: 0 10px;
     padding: 10px 5px;

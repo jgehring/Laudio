@@ -14,7 +14,8 @@
                 {% for field in userform %}
                 <tr>
                     <th>
-                        {{ field.label_tag }}<br />
+                        {{ field.label_tag }}
+                        {% if field.field.required %}<sup class="required">*</sup>{% endif%}<br />
                         <span class="help_text">{{ field.help_text }}</span>
                     </th>
                     <td>{{ field }}</td>
@@ -33,7 +34,8 @@
                 {% for field in profileform %}
                 <tr>
                     <th>
-                        {{ field.label_tag }}<br />
+                        {{ field.label_tag }}
+                        {% if field.field.required %}<sup class="required">*</sup>{% endif%}<br />
                         <span class="help_text">{{ field.help_text }}</span>
                     </th>
                     <td>{{ field }}</td>
