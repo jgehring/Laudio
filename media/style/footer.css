@@ -3,7 +3,8 @@
  */
 #footer {
     width: 100%;
-    background-color: #ccc;
+    background: -moz-linear-gradient(top, #ccc, #aaa);
+    background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#aaa));
     border-top: 1px solid #aaa;
     height: 35px;
     bottom: 0;
@@ -45,7 +46,7 @@
 }
 
 #progressbar:hover {
-    background-color: #ccc !important;
+    background-color: transparent !important;
 }
 
 

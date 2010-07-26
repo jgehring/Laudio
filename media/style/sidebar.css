@@ -6,7 +6,8 @@
     height: 100%;
     float: left;
     padding-right: 3px;
-    background-color: #ccc;
+    background: -moz-linear-gradient(top, #ccc, #aaa);
+    background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#aaa));
     border-right: 1px solid #aaa;
 }
 #sidebar hr {
