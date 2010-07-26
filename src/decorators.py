@@ -28,6 +28,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.contrib.auth.models import User
 from django.template import RequestContext
+from django.core.urlresolvers import reverse
 
 def check_login(authLevel):
     """This decorator checks if the user has to be authenticated and checks
@@ -81,7 +82,7 @@ def check_login(authLevel):
                         return render_to_response( '403.html', {}, 
                                 context_instance=RequestContext(request) )
                 else:
-                    return HttpResponseRedirect( settings.URL_PREFIX + "login/" )
+                    return HttpResponseRedirect( reverse ("laudio.views.laudio_login" ) )
                 
             else:
                 return view(*args, **kwargs)
