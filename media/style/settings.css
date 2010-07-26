@@ -128,7 +128,6 @@
     text-align: justify;
     width: 270px;
     padding: 10px;
-    font-size: 1.4em;
     border-bottom: 1px dashed #ccc;
 }
 
@@ -145,7 +144,7 @@
 }
 
 #settings form th .help_text {
-    font-size: 0.6em;
+    font-size: 8pt;
     text-align: left;
 }
 
