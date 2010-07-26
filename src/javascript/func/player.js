@@ -50,6 +50,11 @@ function precache(e){
             {% if TRANSCODE %}
                 // load the next song
                 var nextSongId = get_next_song();
+                // if the next song doesnt not exist, dont try to 
+                // precache it
+                if(nextSongId === false){
+                    return false
+                }
                 $.getJSON("{% url laudio.views.laudio_index %}song_data/" + nextSongId + "/", function(json){
                     // check if browser supports codec
                     var canPlayType = $("#player")[0].canPlayType("audio/" + json.codec);
@@ -73,6 +78,11 @@ function precache(e){
         
                 // load the next song
                 var nextSongId = get_next_song();
+                // if the next song doesnt not exist, dont try to 
+                // precache it
+                if(nextSongId === false){
+                    return false
+                }
                 $.getJSON("{% url laudio.views.laudio_index %}song_data/" + nextSongId + "/", function(json){
                     $("#gapless").attr("src", "{% url laudio.views.laudio_index %}media/audio/" + json.path);
                     $("#gapless")[0].load();
@@ -302,11 +312,15 @@ function check_and_load_song(id, path, codec){
     {% if TRANSCODE %}
         // check if we have to transcode
         if( codec !== "ogg" && !canPlayType.match(/maybe|probably/i) ){
+            $("#collection tbody").fadeOut('fast');
             $(".loading").fadeIn("slow");
             $.getJSON("{% url laudio.views.laudio_index %}transcode/" + id + "/", function(transcoded){
                 var songpath = "{% url laudio.views.laudio_index %}media/tmp/" + transcoded.path;
-                $(".loading").fadeOut('fast');
-                load_song(songpath);
+                $(".loading").fadeOut('fast', function(){
+                    $("#collection tbody").fadeIn('slow');
+                    load_song(songpath);
+                    document.location.hash = id_to_row( id );
+                });
             });
         } else {
             var songpath = "{% url laudio.views.laudio_index %}media/audio/" + path;

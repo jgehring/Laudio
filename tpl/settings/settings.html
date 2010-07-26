@@ -49,6 +49,8 @@
         <a id="adduser" href="{% url laudio.views.laudio_settings_new_user %}">Add a new user</a>
     </fieldset>
     <h1>Users</h1>
+    <p>Please add a superuser if you plan to share your music with other
+    people! If a superuser exists, only he can change the settings.</p>
     {% for user in users %}
     <fieldset>
         <legend>{{ user.username }}</legend>
