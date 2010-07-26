@@ -54,8 +54,10 @@ class PlaylistEntry(models.Model):
 
 class Settings(models.Model):
     collection = models.CharField("Collection", max_length=500, 
-        help_text="Path to your Music files. All directories above it\
-                    need to have the rights a+x")
+        help_text="Sets ONLY the path to your music files! To add the \
+                    files to your library hit the \"Scan collection\" \
+                    button button above. All directories above the music \
+                    directory need to have the rights a+x")
     requireLogin = models.BooleanField("Require Login", 
         help_text="All User which want to listen to your files have to sign in")
     debugAudio = models.BooleanField("HTML5 audio debugging", 
