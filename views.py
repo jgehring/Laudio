@@ -284,7 +284,7 @@ def ajax_drop_collection_db(request):
     """Deletes all playlists and songs in the db"""
     config = LaudioSettings()
     config.resetDB()
-    return render_to_response('requests/dropscan.html', { "msg": config })
+    return render_to_response('requests/dropscan.html', { "msg": config.log })
 
 
 @check_login("admin")
@@ -295,7 +295,7 @@ def ajax_scan_collection(request):
         config.scan()
     except OSError, e:
         return render_to_response( 'requests/dropscan.html', {"msg": e } )
-    return render_to_response('requests/dropscan.html', { "msg": config })
+    return render_to_response('requests/dropscan.html', { "msg": config.log })
 
 
 @check_login("user")
@@ -318,8 +318,10 @@ def ajax_transcode_song(request, id):
     id -- the id of the song we want the metadata from
     
     """
+    
     song = Song.objects.get(id=id)
     abspath = os.path.join( settings.AUDIO_DIR, song.path )
+    
     """check if a user directory exists in tmp, otherwise create one to
     store the information in. The song which gets transcoded is always
     overwritten by the next transcoding"""
@@ -329,21 +331,23 @@ def ajax_transcode_song(request, id):
         os.symlink( "/tmp/laudio", settings.TMP_DIR )
     if not os.path.exists("/tmp/laudio/%s" % request.user.username):
         os.mkdir("/tmp/laudio/%s" % request.user.username, 0755)
+        
     """if the file exists already then we directly return the path without
     transcoding anything. If not, we remove anything in the userfolder
     and start transcoding"""
     if os.path.exists( "/tmp/laudio/%s/%s.ogg" % (request.user.username, id ) ):
         path = "%s/%s.ogg" % (request.user.username, id )
         return render_to_response('requests/transcode.html', {"path": path})
+    
     else:
         for file in os.listdir("/tmp/laudio/%s" % request.user.username):
             os.remove("/tmp/laudio/%s/%s" % (request.user.username, file) )
-        
-    """Now we start encoding the song via ffmpeg"""
-    cmd = "ffmpeg -i \"%s\" -acodec libvorbis -vn \"/tmp/laudio/%s/%s.ogg\"" % (abspath, request.user.username, id)
-    os.system(cmd)
-    path = "%s/%s.ogg" % (request.user.username, id )
-    return render_to_response('requests/transcode.html', {"path": path})
+            
+        """Now we start encoding the song via ffmpeg"""
+        cmd = "ffmpeg -i \"%s\" -acodec libvorbis -vn \"/tmp/laudio/%s/%s.ogg\"" % (abspath, request.user.username, id)
+        os.system(cmd)
+        path = "%s/%s.ogg" % (request.user.username, id )
+        return render_to_response('requests/transcode.html', {"path": path})
 
 
 @check_login("user")

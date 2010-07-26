@@ -21,26 +21,53 @@
 
 $(document).ready(function() { 
 
+    /** 
+     * This function resets the db when you click on it
+     */
     $("#resetcoll").click(function() {
-        $("#popup").fadeIn("slow");
-        $("#popup").addClass("loading");
+        // first we unbind any previously attached events
+        $("#site").unbind("click");
+        $(".small_loading").fadeIn("slow");
+        
+        // execute the ajax query which deletes the db
         $("#popup").load("{% url laudio.views.ajax_drop_collection_db %}", function (){ 
-            $("#popup").removeClass("loading");
-            $("#popup p").fadeIn("slow");
-        });       
+            $(".small_loading").fadeOut("slow", function() {
+                $("#popup").slideDown("slow");
+            });
+            
+            // add a fine animation to fade out the popup
+            $("#site").bind("click", function() {
+                $("#popup").slideUp("slow");
+            });
+
+        });     
+          
     });
     
-    $("#popup").click(function() {
-       $(this).fadeOut("fast");
-    });
-    
+
+    /**
+     * When you click on scan Collection this function gets executed
+     * and starts a collection scan
+     */
     $("#scancoll").click(function() {
-        $("#popup").fadeIn("slow");
-        $("#popup").addClass("loading");
+        // first we unbind any previously attached events
+        $("#site").unbind("click");
+        $(".small_loading").fadeIn("slow");
+        
+        // execute the ajax query which scans the collection
         $("#popup").load("{% url laudio.views.ajax_scan_collection %}", function (){ 
-            $("#popup").removeClass("loading");
-            $("#popup p").fadeIn("slow");
+            $(".small_loading").fadeOut("slow", function() {
+                $("#popup").slideDown("slow");
+            });
+            
+            
+            // add a fine animation to fade out the popup
+            $("#site").bind("click", function() {
+                $("#popup").slideUp("slow");
+            });
+            
         });   
+   
     });
     
 });

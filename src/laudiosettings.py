@@ -47,17 +47,16 @@ class LaudioSettings(object):
         indexer = MusicIndexer( settings.AUDIO_DIR + "/")
         dbPath = settings.DATABASES['default']['NAME']
         if not os.access(dbPath, os.W_OK):
-            raise OSError("No write access to database! \
-                            Use: <b>sudo chmod 0777 %s</b>" % (dbPath))
+            raise OSError( "No write access to database!" )
         indexer.scan()
-        self.log.append( "Scanned <b>%i</b> files, updated <b>%i</b> files and \
-                         added <b>%i</b> songs to the library!"
-                % (indexer.scanned, indexer.modified, indexer.added) )
+        self.log.append( "Scanned %i files" % indexer.scanned )
+        self.log.append( "Updated %i files" %  indexer.modified )
+        self.log.append( "Added %i songs to the library" %  indexer.added )        
         # append broken and no right files
         for file in indexer.broken:
-            self.log.append( "The file: <b>%s</b> is broken" % file )
+            self.log.append( "The file: %s is broken" % file )
         for file in indexer.noRights:
-            self.log.append( "The file: <b>%s</b> is not accessible due to filerights" % file )
+            self.log.append( "The file: %s is not accessible due to filerights" % file )
         
         
     def setCollectionPath(self, path):
@@ -76,7 +75,7 @@ class LaudioSettings(object):
             pass
         os.symlink( path, settings.AUDIO_DIR )
         self.collectionPath = path
-        self.log.append( "Musiclibrarypath set to <b>%s</b>!" % (path) )
+        self.log.append( "Musiclibrarypath set to %s!" % (path) )
         
         
     def resetDB(self):
@@ -84,9 +83,4 @@ class LaudioSettings(object):
         Song.objects.all().delete()
         Playlist.objects.all().delete()
         self.log.append( "Deleted all files and playlists in the Database!" )
-
-
-    def  __str__(self):
-        """Returns log entries"""
-        return '<br />'.join(self.log)
             

@@ -53,9 +53,15 @@ class PlaylistEntry(models.Model):
 
 
 class Settings(models.Model):
-    collection = models.CharField("Path to collection", max_length=500)
-    requireLogin = models.BooleanField("Require Login")
-    debugAudio = models.BooleanField("Enable HTML5 audio debugging")
+    collection = models.CharField("Collection", max_length=500, 
+        help_text="Path to your Music files. All directories above it\
+                    need to have the rights a+x")
+    requireLogin = models.BooleanField("Require Login", 
+        help_text="All User which want to listen to your files have to sign in")
+    debugAudio = models.BooleanField("HTML5 audio debugging", 
+        help_text="Writes debug information into the file error.log \
+                    located in your Laudio directory. Only usefull for \
+                    developers")
     
 
 class UserProfile(models.Model):

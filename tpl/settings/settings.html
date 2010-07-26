@@ -1,28 +1,33 @@
-{% extends 'base.html' %}
+{% extends 'base_settings.html' %}
 
 {% block title %}LAudio - Settings{% endblock %}
 
 {% block content %}
-<div id="popup"></div>
+
 
 <div id="settings">
     <h1>Setttings</h1>
-
-    {% if msg %}
-        <div id="settingsmsg" title="Information">
-            <p>{{ msg|safe }}</p>
-        </div>
-    {% endif %}
+    
+    <fieldset>
+        <legend>Utils</legend>
+        <a href="#" id="scancoll">Scan Collection</a>
+        <a href="#" id="resetcoll">Reset Songs and Playlists</a>
+        
+    </fieldset>
+    <div class="small_loading"><p>Executing query, please wait.</p></div>
+    
+    <div id="popup">hi</div>
     
     <form method="post" action=".">
         <fieldset>
             <legend>Collection</legend>
-            <a href="#" id="resetcoll">Reset Songs and Playlists</a>
-            <a href="#" id="scancoll">Scan Collection</a>
-            <table>
+            <table cellspacing="0">
                 {% for field in settingsForm %}
                 <tr>
-                    <th>{{ field.label_tag }}</th>
+                    <th>
+                        {{ field.label_tag }}<br />
+                        <span class="help_text">{{ field.help_text }}</span>
+                    </th>
                     <td>{{ field }}</td>
                     {% if field.errors %}
                         <td class="errors">{{ field.errors }}</td>
@@ -37,10 +42,16 @@
         </fieldset>
     </form>
     
+    
+    <h1>Usermanagement</h1>
+    <fieldset>
+        <legend>Utils</legend>
+        <a id="adduser" href="{% url laudio.views.laudio_settings_new_user %}">Add a new user</a>
+    </fieldset>
+    
     <div id="users">
         <fieldset>
             <legend>Users</legend>
-            <a href="{% url laudio.views.laudio_settings_new_user %}">Add a new user</a>
             <table>
                 <tr>
                     <th>Username</th>

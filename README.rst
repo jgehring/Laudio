@@ -47,6 +47,9 @@ Installation
 This is different from Distribution to Distribution so i will outline it for the
 main Distributions ``Ubuntu``, ``Gentoo`` and ``Arch Linux``:
 
+``IMPORTANT``: THE CURRENT GIT VERSION AND ALPHA 4 OF 0.4 NEEDS DJANGO 1.2.1
+Go to http://www.djangoproject.com/download/ to read how to install it
+
 Ubuntu
 ------
 

@@ -323,19 +323,24 @@ function check_and_load_song(id, path, codec){
     {% endif %}
 }
 
+
 /**
  * Loads a song
  * @param String songpath: Path to the song
  */
 function load_song(songpath){
-    // load the song into the player tag
+    
     if ($("#player").attr("paused")){
+        
         $("#player").attr("src", songpath);
         $("#player")[0].load();
         
     } else {
+        
         $("#player")[0].pause();
         $("#player").attr("src", songpath);
         $("#player")[0].load();
+        
     }
+    
 }
