@@ -344,7 +344,7 @@ def ajax_transcode_song(request, id):
             os.remove("/tmp/laudio/%s/%s" % (request.user.username, file) )
             
         """Now we start encoding the song via ffmpeg"""
-        cmd = "ffmpeg -i \"%s\" -acodec libvorbis -vn \"/tmp/laudio/%s/%s.ogg\"" % (abspath, request.user.username, id)
+        cmd = "ffmpeg -i \"%s\" -acodec libvorbis -ab %sk -vn \"/tmp/laudio/%s/%s.ogg\"" % (abspath, song.bitrate, request.user.username, id)
         os.system(cmd)
         path = "%s/%s.ogg" % (request.user.username, id )
         return render_to_response('requests/transcode.html', {"path": path})
