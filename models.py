@@ -66,11 +66,20 @@ class Settings(models.Model):
 
 class UserProfile(models.Model):
     user = models.ForeignKey(User, unique=True)
-    lastFMName = models.CharField("Last FM username", max_length=100, blank=True)
-    lastFMPass = models.CharField("Last FM password", max_length=100, blank=True)
-    lastFMSubmit = models.BooleanField("Submit tracks to Last FM")
-    libreFMName = models.CharField("Libre FM username", max_length=100, blank=True)
-    libreFMPass = models.CharField("Libre FM password", max_length=100, blank=True)
-    libreFMSubmit = models.BooleanField("Submit tracks to Libre FM")
-    transcoding = models.BooleanField("Transcode mp3 to ogg")
-    gaplessPlayback = models.BooleanField("Gapless Playback (higher Transfer)")
+    lastFMName = models.CharField("last.fm username", max_length=100, blank=True)
+    lastFMPass = models.CharField("last.fm password", max_length=100, blank=True)
+    lastFMSubmit = models.BooleanField("Scrobble last.fm", 
+        help_text="Activate this if you want to submit your played tracks \
+                    to your last.fm account")
+    libreFMName = models.CharField("libre.fm username", max_length=100, blank=True)
+    libreFMPass = models.CharField("libre.fm password", max_length=100, blank=True)
+    libreFMSubmit = models.BooleanField("Scrobble libre.fm",
+        help_text="Activate this if you want to submit your played tracks \
+                    to your libre.fm account")
+    transcoding = models.BooleanField("Transcoding", 
+        help_text="If your browser doesn't support playing Mp3s, you can \
+                    Laudio can automatically convert them to Ogg Vorbis. \
+                    This enables Mp3 playback in Firefox")
+    gaplessPlayback = models.BooleanField("Gapless Playback",
+        help_text="If activated, the next song gets automatically cached \
+                    once the current one has finished downloading")

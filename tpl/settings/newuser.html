@@ -30,7 +30,10 @@
                 
                 {% for field in profileform %}
                 <tr>
-                    <th>{{ field.label_tag }}</th>
+                    <th>
+                        {{ field.label_tag }}<br />
+                        <span class="help_text">{{ field.help_text }}</span>
+                    </th>
                     <td>{{ field }}</td>
                     {% if field.errors %}
                         <td class="errors">{{ field.errors }}</td>

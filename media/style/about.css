@@ -1,15 +1,14 @@
 #about {
-    width: 960px;
-    margin: auto;
+    padding: 20px;
 }
 
 #about h1 {
-    font-size: 14pt;
+    font-size: 2em;
     margin-bottom: 20px;
 }
 
 #about h2 {
-    font-size: 12pt;
+    font-size: 1.6em;
     margin-bottom: 5px;
 }
 
@@ -20,4 +19,18 @@
 #about ul {
     margin-left: 15px;
     margin-bottom: 15px;
+}
+
+#about a {
+    color: #880000 !important;
+    background-color: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#about a:hover {
+    box-shadow: 0 0 0!important;
+    -moz-box-shadow: 0 0 0!important;
+    -webkit-box-shadow: 0 0 0!important;
+    text-decoration: underline;
 }

@@ -1,56 +1,43 @@
-{% extends 'base.html' %}
+{% extends 'base_settings.html' %}
 
 {% block title %}LAudio - About{% endblock %}
 
 
 {% block content %}
-<div id="about">
-    <h1>About Laudio</h1>
-    <p>Laudio is a webclient and server for your Musiccollection. It aims
-    to replace the DAAP standard which originates from Apple.
-    After some years, Apple decided to encrypt iTunes' DAAP service making
-    it nearly impossible to set up shares or listen to shares.</p>
-    
-    <p>Other than Ampache, Laudio implements an easy to use interface and
-    uses some of the web's newest features such as the HTML5 audio and 
-    tag canvas. This requires the users to have a recent browser which 
-    supports HTML5.</p>
-    
-    <p>Laudio supports MP3 and Ogg Vorbis, both implemented using HTML5.
-    That means if you want to listen to MP3, you need a browser which is 
-    able to play MP3, such as Chromium. Firefox only supports Ogg Vorbis.</p>
-    
-    <h2>Recommended Browser </h2>
-    <ul>
-        <li>Firefox 3.5 or higher</li>
-        <li>Chrome 4 or higher</li>
-        <li>Chromium 5 or higher</li>
-    </ul>
-    
-    <h2>Less recommended webbrowser</h2>
-    <ul>
-        <li>Epiphany: extremely slow and not fully supporting html5 audio</li>
-        <li>Apple Safari - Safari only plays MP3</li> 
-    </ul>
-    
-    <h2>Not recommended browsers</h2>
-    <ul>
-        <li>Microsoft Internet Explorer any version - Doesnt support HTML5 yet</li>
-    </ul>    
+<div id="settings">
+    <fieldset id="about">
+    <legend>About</legend>
+        <div id="about">
+            <h1>About Laudio</h1>
+            <p>Laudio is a webclient and server for your Musiccollection. It aims
+            to replace the DAAP standard which originates from Apple.
+            After some years, Apple decided to encrypt iTunes' DAAP service making
+            it nearly impossible to set up shares or listen to shares.</p>
+            
+            <p>Other than Ampache, Laudio implements an easy to use interface and
+            uses some of the web's newest features such as the HTML5 audio and 
+            tag canvas. This requires the users to have a recent browser which 
+            supports HTML5.</p>
 
-    <p>I didnt try Konqueror or Internet Explorer 9 yet, please 
-    <a href="mailto:bernhard.posselt@gmx.at">send me an email</a> so
-    i can update this description.</p>
+            <h2>Recommended Browser </h2>
+            <ul>
+                <li>Firefox 3.6 or higher</li>
+                <li>Chrome 4 or higher</li>
+                <li>Chromium 5 or higher</li>
+            </ul>
 
-    <h2>Support</h2>
-    <p>If you want to ask some questions or file a bug, please consider
-    visiting <a href="http://laudio-player.org">our website</a> or our
-    IRC channel #laudio on irc.freenode.net</p>
-    
-    <p>You can also <a href="mailto:bernhard.posselt@gmx.at">send me an email</a>.</p>
 
-    <h2>We thank</h2>
-    <p>We use <a href="http://www.oxygen-icons.org/">Oxygen</a> and 
-    <a href="http://amarok.kde.org/">Amarok</a> Icons, cheers :D</p>
+            <h2>Support</h2>
+            <p>If you want to ask some questions or file a bug, please consider
+            visiting <a href="http://laudio-player.org">our website</a> or our
+            IRC channel #laudio on irc.freenode.net</p>
+            
+            <p>You can also <a href="mailto:bernhard.posselt@gmx.at">send me an email</a>.</p>
+
+            <h2>We thank</h2>
+            <p>We use <a href="http://www.oxygen-icons.org/">Oxygen</a> and 
+            <a href="http://amarok.kde.org/">Amarok</a> Icons, cheers :D</p>
+        </div>
+    </fieldset>
 </div>
 {% endblock %}

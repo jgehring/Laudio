@@ -89,10 +89,38 @@
     background-image: url("img/add_user.png");
 }
 
+.edituser {
+    background-image: url("img/edit_user.png");
+}
+
+.deleteuser {
+    background-image: url("img/delete_user.png");
+}
+
+.superuser {
+    background-image: url("img/superuser.png");
+}
+
+.user {
+    background-image: url("img/user.png");
+}
+
+.activeuser {
+    background-image: url("img/active.png");
+}
+
+.closeduser {
+    background-image: url("img/account_closed.png");
+}
+
 #settings fieldset a:hover {
     -moz-box-shadow: inset 0px 1px 2px #ccc;
     -webkit-box-shadow: inset 0px 1px 2px #ccc;
     box-shadow: inset 0px 1px 2px #ccc;
+}
+
+#settings form {
+    margin-bottom: 40px;
 }
 
 #settings form th {
@@ -158,7 +186,8 @@ td.errors {
 .errorlist li {
     list-style-type: none;
     color: #fefefe;
-    background-color: #D24A4A;    
+    background-color: #D24A4A;
+    font-size: 1em; 
 }
 
 #settings #users th {

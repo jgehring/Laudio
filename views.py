@@ -270,7 +270,7 @@ def laudio_profile(request):
         profile = UserProfile.objects.get(user=user)
         profileform = UserProfileForm(instance=profile)
 
-    return render_to_response( 'profile.html', { 
+    return render_to_response( 'settings/profile.html', { 
                                 "userform": userform,  
                                 "profileform": profileform
                                 }, 
