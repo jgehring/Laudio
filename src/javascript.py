@@ -58,7 +58,8 @@ class JavaScript(object):
             
         except Settings.DoesNotExist, AttributeError:
             audio_debug = False
-            
+            gapless = False
+            transcode = False
             
         
         files = ()
