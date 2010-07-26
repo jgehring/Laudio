@@ -319,6 +319,7 @@ function check_and_load_song(id, path, codec){
                 $(".loading").fadeOut('fast', function(){
                     $("#collection tbody").fadeIn('slow');
                     load_song(songpath);
+                    // jump the currently playing song
                     document.location.hash = id_to_row( id );
                 });
             });

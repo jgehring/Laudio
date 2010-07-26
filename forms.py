@@ -14,12 +14,18 @@ class UserProfileForm(forms.ModelForm):
         exclude = ("user")
 
 class UserForm(forms.ModelForm):
+    is_superuser = forms.BooleanField(label="Superuser", 
+        help_text="Sets if the user is a superuser. If a superuser exists, \
+        only superusers can view the settings dialogue")
     class Meta:
         model = User
         exclude = ("first_name", "last_name", "is_staff", "last_login", 
                    "date_joined", "groups", "user_permissions", "password")
 
 class UserEditForm(forms.ModelForm):
+    is_superuser = forms.BooleanField(label="Superuser", 
+        help_text="Sets if the user is a superuser. If a superuser exists, \
+        only superusers can view the settings dialogue")
     class Meta:
         model = User
         exclude = ("first_name", "last_name", "is_staff", "last_login", 
