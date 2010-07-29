@@ -55,7 +55,15 @@ import urllib
 def laudio_index(request):
     """The collection view which is displayed as index by default
     Returns one song which we have to set for the audio element in order
-    to work properly"""
+    to work properly.
+    
+    If the directory is not set and thus you can't play songs, redirect
+    to the settings page."""
+    try:
+        settings = Settings.objects.get(pk=1)
+    except Settings.DoesNotExist:
+        return HttpResponseRedirect( reverse ("laudio.views.laudio_settings") )
+
     song = Song.objects.all()[:1]
     if song:
         firstsong = song[0].path
@@ -73,6 +81,11 @@ def laudio_playlist(request):
     """The collection view which is displayed as index by default
     Returns one song which we have to set for the audio element in order
     to work properly"""
+    try:
+        settings = Settings.objects.get(pk=1)
+    except Settings.DoesNotExist:
+        return HttpResponseRedirect( reverse ("laudio.views.laudio_settings") )
+
     song = Song.objects.all()[:1]
     if song:
         firstsong = song[0].path
