@@ -89,7 +89,7 @@ class MusicIndexer (object):
                                      'length', 'date'):
                             setattr( song, attr, getattr(musicFile, attr) )
                         song.lastmodified = lastModified
-                        song.path = relSongPath
+                        song.path = unicode(relSongPath)
                         song.save()
                         self.modified += 1
                     # broken ogg file
@@ -106,7 +106,7 @@ class MusicIndexer (object):
                                 tracknumber=musicFile.tracknumber,
                                 codec=musicFile.codec,
                                 lastmodified=lastModified,
-                                path=relSongPath,
+                                path=unicode(relSongPath),
                                 added=int( time.time() ),
                                 length=musicFile.length,
                                 bitrate=musicFile.bitrate,
