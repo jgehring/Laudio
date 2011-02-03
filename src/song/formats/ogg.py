@@ -35,7 +35,7 @@ class OGGSong (Song):
         path -- the full path to the song
         """
         self.codec = "ogg"
-        self.path = path
+        self.path = unicode(path)
         self.song = OggVorbis(self.path)
         for key in ('title', 'artist', 'album', 'genre', 'date'):
             setattr(self, key, unicode( self.song.get(key, ('',))[0] ))
