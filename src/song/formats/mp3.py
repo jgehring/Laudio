@@ -48,6 +48,7 @@ class MP3Song (Song):
             # check if tracknumber is numeric
             if not self.tracknumber.isdigit():
                 self.tracknumber = 0
+
         # except no id3 tags
         except (ID3NoHeaderError, AttributeError):
             for key in ('title', 'artist', 'album', 'genre', 'date'):
