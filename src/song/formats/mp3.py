@@ -36,7 +36,7 @@ class MP3Song (Song):
         path -- the full path to the song
         """
         self.codec = "mp3"
-        self.path = unicode(path)
+        self.path = path
         self.song = MP3(self.path)
         self.id3 = EasyID3(self.path)
         for key in ('title', 'artist', 'album', 'genre', 'date', 'tracknumber'):

@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 import os
 import mutagen
 import time
+# django imports
+from django.conf import settings
 # laudio specific imports
 from laudio.src.song.formats.ogg import OGGSong
 from laudio.src.song.formats.mp3 import MP3Song
@@ -41,7 +43,7 @@ class MusicIndexer (object):
                     path
         
         """
-        self.musicDir = musicDir
+        self.musicDir = musicDir.encode("utf-8")
         self.scanned = 0
         self.added = 0
         self.modified = 0
@@ -51,18 +53,22 @@ class MusicIndexer (object):
 
     def scan(self):
         """ Scans a directory recursively for ogg files """
+        self._debug("Begin Scan")
         for root, directories, files in os.walk(self.musicDir):
             for name in files:
                 songpath = os.path.join( root, name )
                 # TODO: check for ogg audio in the file rather then extension
                 #       possible ogv files could be falsy indexed by this
                 if name.lower().endswith(".ogg") or name.lower().endswith(".oga"):
+                    self._debug("Scanned %s" % songpath)
                     self._addSong( songpath, "ogg" )
                     self.scanned += 1
                 if name.lower().endswith(".mp3"):
+                    self._debug("Scanned %s" % songpath)
                     self._addSong( songpath, "mp3" )
                     self.scanned += 1
-
+                    
+        
 
     def _addSong(self, songpath, codec):
         """ Add a song to the database.
@@ -89,9 +95,10 @@ class MusicIndexer (object):
                                      'length', 'date'):
                             setattr( song, attr, getattr(musicFile, attr) )
                         song.lastmodified = lastModified
-                        song.path = unicode(relSongPath)
+                        song.path = relSongPath
                         song.save()
                         self.modified += 1
+                        self._debug("modified %s in the db" % songpath)
                     # broken ogg file
                     except mutagen.oggvorbis.OggVorbisHeaderError:
                         self.broken.append(songpath)
@@ -106,7 +113,7 @@ class MusicIndexer (object):
                                 tracknumber=musicFile.tracknumber,
                                 codec=musicFile.codec,
                                 lastmodified=lastModified,
-                                path=unicode(relSongPath),
+                                path=relSongPath,
                                 added=int( time.time() ),
                                 length=musicFile.length,
                                 bitrate=musicFile.bitrate,
@@ -114,11 +121,21 @@ class MusicIndexer (object):
                                 )
                     song.save()
                     self.added += 1
+                    self._debug("added %s to the db" % songpath)
                 # broken ogg file
                 except mutagen.oggvorbis.OggVorbisHeaderError:
                     self.broken.append(songpath)
         except IOError:
             self.noRights.append(songpath)
+
+
+    def _debug(self, msg):
+        """If no debug log exists, we make a new one"""
+        if settings.DEBUG:
+            f = open(settings.DEBUG_LOG, 'a')
+            f.write( '%s\n' % msg )
+            f.close()
+
 
 
     def _musicFile(self, songpath, codec):
