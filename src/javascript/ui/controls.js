@@ -140,6 +140,7 @@ $(document).ready(function() {
         ctx.fillRect(0,0, width ,24);
         var volume = width / 80;
         $("#player").attr("volume", volume); 
+        db( "volume", $("#player").attr("volume") );
         clicking = true;
         
         $(this).mousemove(function(e){
@@ -152,7 +153,7 @@ $(document).ready(function() {
             ctx.fillRect(0,0, width ,24);
             var volume = width / 80;
             $("#player").attr("volume", volume);
-            
+            db( "volume", $("#player").attr("volume") );
         });
     });
 
