@@ -25,6 +25,7 @@ import os
 from time import time
 from mutagen.mp3 import MP3
 from mutagen.easyid3 import EasyID3
+from mutagen.id3 import ID3NoHeaderError
 from laudio.src.song.song import Song
 
 class MP3Song (Song):
@@ -38,11 +39,20 @@ class MP3Song (Song):
         self.codec = "mp3"
         self.path = path
         self.song = MP3(self.path)
-        self.id3 = EasyID3(self.path)
-        for key in ('title', 'artist', 'album', 'genre', 'date', 'tracknumber'):
-            setattr(self, key, unicode( self.id3.get(key, ('',))[0] ) )
-        self.bitrate = int(self.song.info.bitrate) / 1000
-        self.length = int(self.song.info.length)
-        # check if tracknumber is numeric
-        if not self.tracknumber.isdigit():
-            self.tracknumber = 0
+        try:
+            self.id3 = EasyID3(self.path)
+            for key in ('title', 'artist', 'album', 'genre', 'date', 'tracknumber'):
+                setattr(self, key, unicode( self.id3.get(key, ('',))[0] ) )
+            self.bitrate = int(self.song.info.bitrate) / 1000
+            self.length = int(self.song.info.length)
+            # check if tracknumber is numeric
+            if not self.tracknumber.isdigit():
+                self.tracknumber = 0
+        # except no id3 tags
+        except (ID3NoHeaderError, AttributeError):
+            for key in ('title', 'artist', 'album', 'genre', 'date'):
+                setattr(self, key, "")
+                self.tracknumber = 0
+                self.bitrate = 0
+                self.length = 0
+        
