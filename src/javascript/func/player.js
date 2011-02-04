@@ -175,9 +175,14 @@ function get_next_song(){
          */
         if ($( id_to_row(songId, true) ).next().length === 0){
             
-            var id = $("#collection tbody tr:first").attr("id");
-            return row_to_id(id);
-            
+            // check if there is a first song
+            if($("#collection tbody tr:first").length !== 0){
+                var id = $("#collection tbody tr:first").attr("id");
+                return row_to_id(id);
+            } else {
+                return false;
+            }
+
         }
     }
     
@@ -202,7 +207,7 @@ function get_next_song(){
     } else {
         // if current song which is playing is not in the collection, play 
         // the first song in the list
-        if( $( id_to_row(songId, true) ).length === 0){
+        if( $( id_to_row(songId, true) ).length === 0 && $("#collection tbody tr:first").length !== 0){
             var id = $("#collection tbody tr:first").attr("id");
             return row_to_id(id);
         } else {
