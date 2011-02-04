@@ -42,7 +42,8 @@ class MP3Song (Song):
         try:
             self.id3 = EasyID3(self.path)
             for key in ('title', 'artist', 'album', 'genre', 'date', 'tracknumber'):
-                setattr(self, key, unicode( self.id3.get(key, ('',))[0] ) )
+                attr = self.id3.get(key, ('',))[0]
+                setattr(self, key, attr.encode("utf-8") )
             self.bitrate = int(self.song.info.bitrate) / 1000
             self.length = int(self.song.info.length)
             # check if tracknumber is numeric

@@ -38,7 +38,8 @@ class OGGSong (Song):
         self.path = path
         self.song = OggVorbis(self.path)
         for key in ('title', 'artist', 'album', 'genre', 'date'):
-            setattr(self, key, unicode( self.song.get(key, ('',))[0] ))
+            attr = self.song.get(key, ('',))[0]
+            setattr(self, key, attr.encode("utf-8") )
         self.bitrate = int(self.song.info.bitrate) / 1000
         self.length = int(self.song.info.length)
         # check for empty track number
