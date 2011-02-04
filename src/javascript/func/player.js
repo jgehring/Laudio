@@ -200,9 +200,14 @@ function get_next_song(){
         return row_to_id(nextSongId);
 
     } else {
-    
-        return false;
-        
+        // if current song which is playing is not in the collection, play 
+        // the first song in the list
+        if( $( id_to_row(songId, true) ).length === 0){
+            var id = $("#collection tbody tr:first").attr("id");
+            return row_to_id(id);
+        } else {
+            return false;
+        }
     }
     
 }
