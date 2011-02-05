@@ -439,6 +439,7 @@ def ajax_artists_by_letters(request, artist):
     artist -- searches for artists in the db starting with this value
     
     """
+    #artist = artist.encode("utf-8")
     songs = Song.objects.filter(artist__istartswith=artist).extra(select=
     {'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 'ltrnr': 'tracknumber',}
             ).order_by('lartist', 'lalbum', 'ltrnr')
