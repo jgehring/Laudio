@@ -1,0 +1,15 @@
+Source: laudio
+Section: web
+Priority: extra
+Maintainer: Bernhard Posselt <bernhard.posselt@gmx.at>
+Build-Depends: debhelper (>= 7.0.50~)
+Standards-Version: 3.8.4
+Homepage: https://github.com/Raydiation/Laudio
+#Vcs-Git: git://git.debian.org/collab-maint/laudio.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/laudio.git;a=summary
+
+Package: laudio
+Architecture: all
+Depends: python, python-lxml, python-django, python-mutagen, apache2, sqlite3, libapache2-mod-wsgi, python-pysqlite2, ffmpeg
+Description: An HTML5 musicplayer
+ Laudio is an HTML5 Music Player which can be accessed from anyone with a webbrowser. You set up Laudio on your machine with the music collection, then add your directory and scan your music. If you like to, you can add useraccounts and restrict usage for registered users. Laudio is an alternative to the heavyweight Ampache application.
