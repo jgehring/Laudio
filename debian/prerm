@@ -8,6 +8,7 @@ set -e
 DB_FILE="/opt/laudio/laudio.db"
 AUDIO_SYM="/opt/laudio/audio"
 LOG_FILE="/opt/laudio/error.log"
+INSTALL_DIR="/opt/laudio"
 
 # summary of how this script can be called:
 #        * <prerm> `remove'
@@ -32,6 +33,8 @@ case "$1" in
         if [ -e $LOG_FILE ]; then 
             rm $LOG_FILE 
         fi
+        # delete pyc files for proper removal
+        find $INSTALL_DIR -name "*.pyc" -exec rm '{}' ';'
     ;;
 
     failed-upgrade)
