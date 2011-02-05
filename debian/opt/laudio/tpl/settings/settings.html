@@ -1,0 +1,77 @@
+{% extends 'base_settings.html' %}
+
+{% block title %}LAudio - Settings{% endblock %}
+
+{% block content %}
+
+
+<div id="settings">
+    <h1>Setttings</h1>
+    
+    <fieldset>
+        <legend>Utils</legend>
+        <a href="#" id="scancoll">Scan Collection</a>
+        <a href="#" id="resetcoll">Reset Songs and Playlists</a>
+        
+    </fieldset>
+    <div class="small_loading"><p>Executing query, please wait.</p></div>
+    
+    <div id="popup">hi</div>
+    
+    <form method="post" action=".">
+        <fieldset>
+            <legend>Collection</legend>
+            <table cellspacing="0">
+                {% for field in settingsForm %}
+                <tr>
+                    <th>
+                        {{ field.label_tag }}
+                        {% if field.field.required %}<sup class="required">*</sup>{% endif%}<br />
+                        <span class="help_text">{{ field.help_text }}</span>
+                    </th>
+                    <td>{{ field }}</td>
+                    {% if field.errors %}
+                        <td class="errors">{{ field.errors }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                <tr>
+                    <th></th>
+                    <td><input class="submit" type="submit" value="save" /></td>
+                </tr>
+            </table>
+        </fieldset>
+    </form>
+    
+    
+    <h1>Usermanagement</h1>
+    <fieldset>
+        <legend>Utils</legend>
+        <a id="adduser" href="{% url laudio.views.laudio_settings_new_user %}">Add a new user</a>
+    </fieldset>
+    <h2>Users</h2>
+    <p>Please add a superuser if you plan to share your music with other
+    people! If a superuser exists, only he can change the settings.</p>
+    {% for user in users %}
+    <fieldset>
+        <legend>{{ user.username }}</legend>
+        
+        {% if user.is_superuser %}
+            <a class="superuser" onclick="return false;" href="#">Superuser</a>
+        {% else %}
+            <a class="user" onclick="return false;" href="#">User</a>
+        {% endif %}
+        
+        {% if user.is_active %}
+            <a class="activeuser" onclick="return false;" href="#">Active</a>
+        {% else %}
+            <a class="closeduser" onclick="return false;" href="#">Disabled</a>
+        {% endif %}
+        
+        <a class="edituser" href="{% url laudio.views.laudio_settings %}edituser/{{ user.id }}/">Edit</a>
+        <a class="deleteuser" href="{% url laudio.views.laudio_settings %}deleteuser/{{ user.id }}/">Delete</a>
+    </fieldset>
+    {% endfor %}
+    <p style="height: 175px;"></p>
+</div>
+{% endblock %}

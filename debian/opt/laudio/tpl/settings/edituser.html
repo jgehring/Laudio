@@ -1,0 +1,60 @@
+{% extends 'base_settings.html' %}
+
+{% block title %}LAudio - Edit a user{% endblock %}
+
+
+{% block content %}
+<div id="settings">
+    <h1>Edit a user</h1>
+    <form method="post" action=".">
+        <fieldset>
+            <legend>User</legend>
+            <table>
+                
+                {% for field in userform %}
+                <tr>
+                    <th>
+                        {{ field.label_tag }}
+                        {% if field.field.required %}
+                            {% if field.label != "Superuser" %}
+                            <sup class="required">*</sup>
+                            {% endif%}
+                        {% endif %}<br />
+                        <span class="help_text">{{ field.help_text }}</span>
+                    </th>
+                    <td>{{ field }}</td>
+                    {% if field.errors %}
+                        <td class="errors">{{ field.errors }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                
+                <tr>
+                    <th>Password</th>
+                    <td><input name="password" type="password" /></td>
+                </tr>
+
+                
+                {% for field in profileform %}
+                <tr>
+                    <th>
+                        {{ field.label_tag }}
+                        {% if field.field.required %}<sup class="required">*</sup>{% endif%}<br />
+                        <span class="help_text">{{ field.help_text }}</span>
+                    </th>
+                    <td>{{ field }}</td>
+                    {% if field.errors %}
+                        <td class="errors">{{ field.errors }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+
+                <tr>
+                    <th></th>
+                    <td><input name="submit" class="submit" type="submit" value="save" /></td>
+                </tr>
+            </table>
+        </fieldset>
+    </form>
+</div>
+{% endblock %}

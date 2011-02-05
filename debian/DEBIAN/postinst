@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+# Source debconf library.
+. /usr/share/debconf/confmodule
+
+chown root:root /etc/apache2/conf.d/laudio_apache.conf
+chmod 0755 /etc/apache2/conf.d/laudio_apache.conf
+python /opt/laudio/manage.py syncdb --noinput
+chown -R www-data:www-data /opt/laudio
+chmod -R 0755 /opt/laudio
+
+invoke-rc.d apache2 restart
+
+
