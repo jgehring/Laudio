@@ -1,0 +1,23 @@
+{ "results": [
+{% for song in songs %}
+    {
+    {% ifequal row "title" %}
+        "value": "{{ song.title|escape }}",
+    {% endifequal %}
+    
+    {% ifequal row "artist" %}
+        "value": "{{ song.artist|escape }}",
+    {% endifequal %}
+    
+    {% ifequal row "album" %}
+        "value": "{{ song.album|escape }}",
+    {% endifequal %}
+    
+    {% ifequal row "genre" %}
+        "value": "{{ song.genre|escape }}",
+    {% endifequal %}
+    
+    },
+{% endfor %}
+    ]
+}

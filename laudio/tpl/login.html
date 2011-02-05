@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}LAudio - Login{% endblock %}
+
+
+{% block content %}
+
+<div id="settings">
+    <form action="." method="post">
+        <fieldset>
+        <legend>Login</legend>
+            <table>
+                <tr>
+                    <th>Username</th>
+                    <td><input name="username" type="text" /></td>
+                    {% if success %}
+                        <td class="errors">{{ success }}</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <th>Password</th>
+                    <td><input name="password" type="password" /></td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td><input class="submit" type="submit" value="login"/></td>
+                </tr>
+            </table>
+        </fieldset>
+    </form>
+</div>
+{% endblock %}
