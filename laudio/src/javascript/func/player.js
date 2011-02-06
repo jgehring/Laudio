@@ -90,7 +90,7 @@ function play_song(id){
         db("playing", id);
     
         // update title information
-        document.title = json.title + " - " + json.artist;
+        document.title = unescape(json.title) + " - " + unescape(json.artist);
 
         // set the background color for the song
         $( id_to_row(id, true) ).addClass("playing");

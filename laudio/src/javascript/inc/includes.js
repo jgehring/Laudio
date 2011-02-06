@@ -72,3 +72,5 @@ function id_to_row(id, hash){
 function row_to_id(row){
     return row.replace("row", "");
 }
+
+
