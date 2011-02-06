@@ -38,7 +38,7 @@ case "$1" in
         if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
             invoke-rc.d apache2 force-reload || exit $?
         else
-            /etc/init.d/dbus force-reload || exit $?
+            /etc/init.d/apache2 force-reload || exit $?
         fi
     ;;
 
