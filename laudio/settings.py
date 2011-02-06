@@ -26,7 +26,7 @@ import os.path
 from django.core.urlresolvers import reverse
 
 # Django settings for laudio project.
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
