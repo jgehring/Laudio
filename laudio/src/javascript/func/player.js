@@ -18,104 +18,111 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-$(document).ready(function() { 
-    
-    {% if GAPLESS_PLAYBACK %}
-        $("#player")[0].addEventListener("progress", precache, true);
-    {% endif %}
-
-    db("playing", 0);
-    db("select", 1);
-    db("repeat", 0);
-    db("shuffle", 0);
-    db("volume", 1);
-
-    // default Eventlisteners
-    $("#player")[0].addEventListener("ended", next_song, true);
-    $("#player")[0].addEventListener("canplay", play_when_loaded, true);
-
-});
 
 
 /**
- * Precache the next song if shuffle is not activated and the currently
- * played song finished loading
+ * Plays a Song which matches the id
+ * @param id = id of the line (without row, like 143)
+ *
  */
-function precache(e){
-    if(e.loaded === e.total){
-        // check if shuffle is not activated, if so we cant precache the
-        // next song
-        // if the next song has also be transcoded, do it now
-        if (db("shuffle", false) === 0){
-            {% if TRANSCODE %}
-                // load the next song
-                var nextSongId = get_next_song();
-                // if the next song doesnt not exist, dont try to 
-                // precache it
-                if(nextSongId === false){
-                    return false
-                }
-                $.getJSON("{% url laudio.views.laudio_index %}song_data/" + nextSongId + "/", function(json){
-                    // check if browser supports codec
-                    var canPlayType = $("#player")[0].canPlayType("audio/" + json.codec);
-                    
-                    // check if we need to transcode
-                    if( json.codec !== "ogg" && !canPlayType.match(/maybe|probably/i) ){
-                        $.getJSON("{% url laudio.views.laudio_index %}transcode/" + json.id + "/", function(transcoded){
-                            var songpath = "{% url laudio.views.laudio_index %}media/tmp/" + transcoded.path;
-                            $("#gapless").attr("src", songpath);
-                            $("#gapless")[0].load();
-                        });
-                    
-                    } else {
-                        // load the next song
-                        $("#gapless").attr("src", "{% url laudio.views.laudio_index %}media/audio/" + json.path);
-                        $("#gapless")[0].load();
-                    }
-                });
+function play_song(id){
+    
+    // get song data
+    $.getJSON("{% url laudio.views.laudio_index %}song_data/" + id + "/", function(json){
         
-            {% else %}
-        
-                // load the next song
-                var nextSongId = get_next_song();
-                // if the next song doesnt not exist, dont try to 
-                // precache it
-                if(nextSongId === false){
-                    return false
-                }
-                $.getJSON("{% url laudio.views.laudio_index %}song_data/" + nextSongId + "/", function(json){
-                    $("#gapless").attr("src", "{% url laudio.views.laudio_index %}media/audio/" + json.path);
-                    $("#gapless")[0].load();
-                });
-            
-            {% endif %}
-        
+        // store duration, then get mins and secs
+        db("duration", json.duration);
+        mins = Math.floor(json.duration / 60);
+        secs = json.duration % 60;
+
+        if(secs < 10){
+            secs = "0" + secs;
         }
-    }
+        
+        // set info in sidebar
+        $("#currentSong tr:eq(0) td").html(json.title);
+        $("#currentSong tr:eq(1) td").html(mins + ":" + secs);
+        $("#currentSong tr:eq(2) td").html(json.tracknr);
+        $("#currentSong tr:eq(3) td").html(json.artist);
+        $("#currentSong tr:eq(4) td").html(json.album);
+        $("#currentSong tr:eq(5) td").html(json.date);
+        $("#currentSong tr:eq(6) td").html(json.genre);
+        $("#currentSong tr:eq(7) td").html(json.codec);
+        $("#currentSong tr:eq(8) td").html(json.bitrate +  " kb/s");
+        
+        // get some stored values
+        var lastSong = db("playing", false);
+        var volume = db("volume", false);
+
+        // stop the currently playing song and remove the playing class from 
+        // the previous played song
+        if(lastSong !== 0){
+            $( id_to_row(lastSong, true) ).removeClass("playing");
+            soundManager.stopAll()
+        }
+
+        // play song
+        soundManager.createSound({
+            id: json.id,
+            url: '{% url laudio.views.laudio_index %}media/audio/' +  json.path,
+            volume: volume,
+        });
+
+        soundManager.play(json.id, {
+            onfinish: function() { 
+                next_song(); 
+            },
+            onpause: function() {
+                update_pause_icon();
+            },
+            onplay: function() {
+                update_play_icon();
+            },
+            onresume: function() {
+                update_play_icon();
+            },
+            whileplaying: function() {
+                update_progressbar();
+            },
+        });
+
+        // store the id for later use
+        db("playing", id);
+    
+        // update title information
+        document.title = json.title + " - " + json.artist;
+
+        // set the background color for the song
+        $( id_to_row(id, true) ).addClass("playing");
+        
+        // scrobble song
+        $.get("{% url laudio.views.laudio_index %}scrobble/" + id + "/");
+        
+        // get cover
+        $.getJSON("{% url laudio.views.laudio_index %}cover/" + id + "/", function(json){
+            $("#cover img").attr("src", json.coverpath);
+            $("#cover img").attr("title", json.album);
+            $("#cover img").attr("alt", json.album);
+        });
+        
+    });
+    
 }
 
 /**
  * Mute or unmute the player
  */
 function mute(){
-    var volume = $("#player").attr("volume");
-    if(volume === 0){
-        $("#player").attr("volume", db("volume", false));
-    } else {
-        db( "volume", $("#player").attr("volume") );
-        $("#player").attr("volume", 0);
-    }
+    var playing = db("playing", false);
+    soundManager.toggleMute(playing);
 }
 
 /**
  * Function to play or stop a song
  */
 function play_pause(){
-    if ($("#player").attr("paused") === true){
-        $("#player")[0].play();
-    } else {
-        $("#player")[0].pause();
-    }
+    var playing = db("playing", false);
+    soundManager.togglePause(playing);
 }
 
 
@@ -235,137 +242,4 @@ function previous_song(){
     if (songId !== false){
         play_song(songId);
     }
-}
-
-
-/**
- * If the song is loaded play it
- */
-function play_when_loaded(){
-    // prevent it from playing the first loaded song when you initially
-    // load the site
-    if($("body").data("playing") !== 0){
-        $("#player")[0].play();
-    }
-}
-
-
-/**
- * Plays a Song which matches the id
- * @param id = id of the line (without row, like 143)
- *
- */
-function play_song(id){
-
-    var lastSong = db("playing", false);
-    if(lastSong !== 0){
-        $( id_to_row(lastSong, true) ).removeClass("playing");
-    }
-    
-    // get song data
-    $.getJSON("{% url laudio.views.laudio_index %}song_data/" + id + "/", function(json){
-        
-        // store duration, then get mins and secs
-        db("duration", json.duration);
-        mins = Math.floor(json.duration / 60);
-        secs = json.duration % 60;
-        if(secs < 10){
-            secs = "0" + secs;
-        }
-        
-        // set info in sidebar
-        $("#currentSong tr:eq(0) td").html(json.title);
-        $("#currentSong tr:eq(1) td").html(mins + ":" + secs);
-        $("#currentSong tr:eq(2) td").html(json.tracknr);
-        $("#currentSong tr:eq(3) td").html(json.artist);
-        $("#currentSong tr:eq(4) td").html(json.album);
-        $("#currentSong tr:eq(5) td").html(json.date);
-        $("#currentSong tr:eq(6) td").html(json.genre);
-        $("#currentSong tr:eq(7) td").html(json.codec);
-        $("#currentSong tr:eq(8) td").html(json.bitrate +  " kb/s");
-        
-        // load song
-        check_and_load_song(json.id, json.path, json.codec);
-        
-        // set volume back to selected value
-        $("#player").attr("volume", db("volume", false));
-        
-        // store the id for later use
-        db("playing", id);
-        $( id_to_row(id, true) ).addClass("playing");
-        
-        // scrobble song
-        $.get("{% url laudio.views.laudio_index %}scrobble/" + id + "/");
-        
-        // get cover
-        $.getJSON("{% url laudio.views.laudio_index %}cover/" + id + "/", function(json){
-            $("#cover img").attr("src", json.coverpath);
-            $("#cover img").attr("title", json.album);
-            $("#cover img").attr("alt", json.album);
-        });
-        
-    });
-    
-}
-
-/**
- * Stuff which has to get checked before a song is being loaded, e.g.
- * if the browser can play the file or if the file needs to be transcoded
- * @param Integer id:   Id of the song
- * @param String path:  Path to the song
- * @param String codec: Codec of the song
- */
-function check_and_load_song(id, path, codec){
-    // check if browser supports codec
-    var canPlayType = $("#player")[0].canPlayType("audio/" + codec);
-        
-    {% if TRANSCODE %}
-        // check if we have to transcode
-        if( codec !== "ogg" && !canPlayType.match(/maybe|probably/i) ){
-            $("#collection tbody").fadeOut('fast');
-            $(".loading").fadeIn("slow");
-            $.getJSON("{% url laudio.views.laudio_index %}transcode/" + id + "/", function(transcoded){
-                var songpath = "{% url laudio.views.laudio_index %}media/tmp/" + transcoded.path;
-                $(".loading").fadeOut('fast', function(){
-                    $("#collection tbody").fadeIn('slow');
-                    load_song(songpath);
-                    // jump the currently playing song
-                    document.location.hash = id_to_row( id );
-                });
-            });
-        } else {
-            var songpath = "{% url laudio.views.laudio_index %}media/audio/" + path;
-            load_song(songpath);
-        }
-        
-    {% else %}
-        if(!canPlayType.match(/maybe|probably/i)) {
-            alert("Browser does not support codec " + codec + "!")
-            return false;
-        }
-        var songpath = "{% url laudio.views.laudio_index %}media/audio/" + path;
-        load_song(songpath);
-    {% endif %}
-}
-
-
-/**
- * Loads a song
- * @param String songpath: Path to the song
- */
-function load_song(songpath){
-    
-    if ($("#player").attr("paused")){
-        
-        $("#player").attr("src", songpath);
-        $("#player")[0].load();
-        
-    } else {
-        
-        $("#player")[0].pause();
-        $("#player").attr("src", songpath);
-        $("#player")[0].load();
-        
-    }
-    
 }

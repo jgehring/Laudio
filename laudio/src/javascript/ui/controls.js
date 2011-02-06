@@ -24,12 +24,6 @@ $(document).ready(function() {
     // update volume
     update_volume();
     
-    $("#player")[0].addEventListener("playing", update_play_pause, true);
-    $("#player")[0].addEventListener("pause", update_play_pause, true);
-    $("#player")[0].addEventListener("timeupdate", update_progressbar, true);
-    $("#player")[0].addEventListener("progress", update_loaded, true);
-    $("#player")[0].addEventListener("volumechange", update_volume, true);
-    
     
     $("#previoussong").click(function(){
         previous_song();
@@ -132,15 +126,18 @@ $(document).ready(function() {
      * Click on the volume bar to change it
      */
     $("#volume canvas").mousedown(function(e){
+        var playing = db("playing", false);
         // simple clicking
         var width = e.layerX - $(this).attr("offsetLeft");
         var ctx = $(this)[0].getContext("2d");
         ctx.clearRect(0,0, 80 ,24);
         ctx.fillStyle = "#333";
         ctx.fillRect(0,0, width ,24);
-        var volume = width / 80;
-        $("#player").attr("volume", volume); 
-        db( "volume", $("#player").attr("volume") );
+        var volume = Math.floor(width / 0.8);
+        if(playing !== 0){
+            soundManager.getSoundById(playing).setVolume(volume);
+        }
+        db("volume", volume);
         clicking = true;
         
         $(this).mousemove(function(e){
@@ -151,22 +148,23 @@ $(document).ready(function() {
             ctx.clearRect(0,0, 80 ,24);
             ctx.fillStyle = "#333";
             ctx.fillRect(0,0, width ,24);
-            var volume = width / 80;
-            $("#player").attr("volume", volume);
-            db( "volume", $("#player").attr("volume") );
-        });
+            var volume = Math.floor(width / 0.8);
+            if(playing !== 0){
+                soundManager.getSoundById(playing).setVolume(volume);
+            }
+            db("volume", volume);
+       });
     });
 
     /**
      * If click on the progressbar, the player will jump to that position
      */
     $("#progressbar canvas").click(function(e){
-        
+        var playing = db("playing", false);
         var width = e.layerX - $(this).attr("offsetLeft");
-        var duration = $("#player").attr("duration");
+        var duration = soundManager.getSoundById(playing).duration;
         var position = Math.floor( (duration / 300) * width );
-        $("#player").attr("currentTime", position);   
-        
+        soundManager.getSoundById(playing).setPosition(position);
     });
 
 });
@@ -181,71 +179,60 @@ $(document).ready(function() {
  */
 function update_progressbar(){
     // get audio data
-    var duration = $("#player").attr("duration");
-    var currTime = $("#player").attr("currentTime");
-    
+    var playing = db("playing", false);
+    var duration = soundManager.getSoundById(playing).duration / 1000;
+    var currTime = soundManager.getSoundById(playing).position / 1000;
     // prevent duration from being Nan
     if(isNaN(duration)){
         duration = db("duration", false);
     }
-    var width = 0;
-    // calculate how the progressbar is being filled
-    width = Math.floor((300 / duration) * currTime);    
     var $canvas = $("#progressbar canvas");
     var ctx = $canvas[0].getContext("2d");
     ctx.clearRect(0,0, 300 ,24);
     // fill loaded bar
+    sm = soundManager.getSoundById(playing)
+    var loaded =  sm.bytesTotal / sm.bytesLoaded;
+    var width = 0;
+    var width = Math.floor(loaded * 300);
     ctx.fillStyle = "#666";
-    ctx.fillRect(0,0, db("loaded", false) ,24);
+    ctx.fillRect(0,0, width ,24);
     // fill rectangle which indicates position in the song
+    var width = 0;
+    width = Math.floor((300 / duration) * currTime);  
     ctx.fillStyle = "#333";
     ctx.fillRect(0,0, width ,24);
     $("#progressbar").attr("title", Math.floor(currTime) + "/" + Math.floor(duration));    
 }
 
 
-/**
- * Updates the progressbar according to the loaded data
- */
-function update_loaded(e){
-    // only start computed the loaded data if we know that we can compute it
-    if(e.lengthComputable){
-        var width = Math.floor( (e.loaded * 300) / e.total );
-        db("loaded", width);
-        update_progressbar();
-    }    
+function update_play_icon(){
+    var $img = $("#play img"); 
+    $img.attr("src",  "{% url laudio.views.laudio_index %}media/style/img/pause.png");
+    $img.attr("title", "pause");
+    $img.attr("alt", "pause");
 }
 
-
-function update_play_pause(){
+function update_pause_icon(){
     var $img = $("#play img");
-    
-    if ($("#player").attr("paused") === true){
-        
-        $img.attr("src",  "{% url laudio.views.laudio_index %}media/style/img/play.png");
-        $img.attr("title", "play");
-        $img.attr("alt", "play");
-        
-    } else {
-        
-        // update title information
-        var title = $("#currentSong tr:eq(0) td").html();
-        var artist = $("#currentSong tr:eq(3) td").html();
-        document.title = title + " - " + artist;
-        $img.attr("src",  "{% url laudio.views.laudio_index %}media/style/img/pause.png");
-        $img.attr("title", "pause");
-        $img.attr("alt", "pause");
-        
-    }
+    $img.attr("src",  "{% url laudio.views.laudio_index %}media/style/img/play.png");
+    $img.attr("title", "play");
+    $img.attr("alt", "play");
 }
+
 
 /**
  * Updates the volume bar according to the volume set
  */
 function update_volume(){
+    var playing = db("playing", false);
+    if(playing !== 0){
+        var volume = soundManager.getSoundById(playing).volume;
+    } else {
+        var volume = 100;
+    }
+
     var $canvas = $("#volume canvas");
     var ctx = $canvas[0].getContext("2d");
-    var volume = $("#player").attr("volume");
     
     if (volume === 0){
         $("#mute img").attr("src", "{% url laudio.views.laudio_index %}media/style/img/muted.png");
@@ -253,7 +240,7 @@ function update_volume(){
         $("#mute img").attr("src", "{% url laudio.views.laudio_index %}media/style/img/volume.png");
     }
     
-    var width = Math.floor(volume * 80);
+    var width = Math.floor(volume * 0.8);
     ctx.clearRect(0,0, 80 ,24);
     ctx.fillStyle = "#333";
     ctx.fillRect(0,0, width, 24);
