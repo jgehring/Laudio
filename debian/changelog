@@ -1,3 +1,17 @@
+laudio (0.4-beta4-1) maverick; urgency=low
+
+  * Cleaned up code
+  * Changed install directories accordingly to FHS
+  * If no tags are found, display the filename as title
+
+ -- Bernhard Posselt <bernhard.posselt@gmx.at>  Sun, 06 Feb 2011 17:00:11 +0100
+
+laudio (0.4-beta3-1) maverick; urgency=low
+
+  * Added mp3 support for all browsers
+
+ -- Bernhard Posselt <bernhard.posselt@gmx.at>  Sun, 06 Feb 2011 06:00:11 +0100
+
 laudio (0.4-beta2-1) maverick; urgency=low
 
   * Initial release
