@@ -4,7 +4,7 @@
 
 .. image::  http://github.com/downloads/Raydiation/Laudio/screenshot_large_v04.png
 
-:Version: 0.4-beta2
+:Version: 0.4-beta4
 :Keywords: python, jquery, django, web, html5, audio, player, javascript, last.fm, libre.fm, json, mp3, ogg, vorbis
 
 Laudio is a webbased player which takes advantage of the HTML5 audio
@@ -47,114 +47,20 @@ to get into the directory. Proceed with ``Installation``
 Installation
 ============
 
-This is different from Distribution to Distribution so i will outline it for the
-main Distributions ``Ubuntu``, ``Gentoo`` and ``Arch Linux``:
+This is different from Distribution to Distribution so i wrote a script for the
+main Distributions ``Ubuntu``, ``Gentoo`` and ``Arch Linux``
+
+Please read it, it hasnt been tested thouroughly!!!
+
+To run it type:
+    $ sudo /bin/bash setup.sh
 
 ``IMPORTANT``: THE CURRENT GIT VERSION AND ALPHA 4 or later OF 0.4 NEEDS DJANGO 1.2.1
 Go to http://www.djangoproject.com/download/ to read how to install it
 
-Ubuntu
-------
 
-Type the following commands in the terminal residing in the downloaded Folder.
-
-First get the dependencies::
-
-    $ sudo apt-get install python-lxml python-django python-mutagen apache2 sqlite3 libapache2-mod-wsgi python-pysqlite2 ffmpeg
-
-To get django running on apache we need to put our config file in its config
-directory::
-
-    $ sudo mv laudio_apache.conf /etc/apache2/conf.d/
-    $ sudo chown root:root /etc/apache2/conf.d/laudio_apache.conf
-    $ sudo chmod 0755 /etc/apache2/conf.d/laudio_apache.conf
-
-Now to finish the installation we install the program to /opt/laudio::
-
-    $ sudo mkdir /opt/laudio
-    $ sudo mv laudio/ /opt/laudio
-    $ sudo python /opt/laudio/manage.py syncdb --noinput
-    $ sudo chown -R www-data:www-data /opt/laudio # if you update remove the symlink first!!
-    $ sudo chmod -R 0755 /opt/laudio
-
-Now the only thing left is to restart the Apache webserver::
-
-    $ sudo /etc/init.d/apache2 restart
-
-Laudio should now be accessible under http://localhost/laudio
-
-Gentoo
-------
-
-Type the following commands in the terminal residing in the downloaded Folder.
-
-First get the dependencies::
-
-    # emerge -av dev-python/django dev-python/lxml media-libs/mutagen dev-python/pysqlite dev-db/sqlite www-apache/mod_wsgi www-servers/apache media-video/ffmpeg 
-
-To get django running on apache we need to put our config file in its config
-directory::
-
-    # mv laudio_apache.conf /etc/apache2/vhosts.d/
-    # chown root:root /etc/apache2/vhosts.d/laudio_apache.conf
-    # chmod 0755 /etc/apache2/vhosts.d/laudio_apache.conf
-
-Now to finish the installation we install the program to /opt/laudio::
-
-    # mkdir /opt/laudio
-    # mv laudio/ /opt/laudio
-    # python /opt/laudio/manage.py syncdb --noinput
-    # chown -R www-data:www-data /opt/laudio # if you update remove the symlink first!!
-    # chmod -R 0755 /opt/laudio
-
-Now the only thing left is to restart the Apache webserver::
-
-    # /etc/init.d/apache2 restart
-
-Laudio should now be accessible under http://localhost/laudio
-
-You may want to add Apache to start at system startup, you have to add him to the
-boot process::
-
-    # rc-update add apache2 default
-
-
-Arch Linux
-----------
-
-Type the following commands in the terminal residing in the downloaded Folder.
-
-First get the dependencies::
-
-    # pacman -S extra/django extra/python-lxml extra/mutagen extra/apache extra/python-pysqlite core/sqlite3 extra/mod_wsgi ffmpeg
-
-To get django running on apache we need to put our config file in its config
-directory::
-
-    # mv laudio_apache.conf /etc/httpd/conf/extra/
-    # chown root:root /etc/httpd/conf/extra/laudio_apache.conf
-    # chmod 0755 /etc/httpd/conf/extra/laudio_apache.conf
-    # echo "Include conf/extra/laudio_apache.conf" >> /etc/httpd/conf/httpd.conf
-
-Now to finish the installation we install the program to /opt/laudio::
-
-    # mkdir /opt/laudio
-    # mv laudio/ /opt/laudio
-    # python /opt/laudio/manage.py syncdb --noinput
-    # chown -R http:http /opt/laudio # if you update remove the symlink first!!
-    # chmod -R 0755 /opt/laudio
-
-Now the only thing left is to restart the Apache webserver::
-
-    # /etc/rc.d/httpd restart
-
-Laudio should now be accessible under http://localhost/laudio
-
-You may want to add Apache to start at system startup, you have to add him to the
-boot process: Add httpd to your DAEMONS in the /etc/rc.conf
 
 .. _`Download Page`: http://github.com/Raydiation/Laudio/downloads
-.. _`Celery`: http://github.com/ask/celery
 .. _`Ampache`: http://ampache.org/
 
 
@@ -166,14 +72,11 @@ Which Browsers does Laudio support?
 -----------------------------------
 Depends wether you want to use MP3 or OGG VORBIS
 
-``MP3``: Google Chrome, Chromium, Apple Safari
+``MP3``: All, Flash required
 
 ``OGG``: Google Chrome, Chromium, Opera, Firefox
 
 
-
-``NEW``: If you activate transcoding in your profile, Laudio will transcode mp3
-to ogg if your player cant play mp3.
 
 
 Why doesn't Chromium play my MP3?
@@ -212,8 +115,8 @@ localhost/audio for instance, you can now easily adjust it.
 
 Open the laudio_apache.conf in the Apache config folder and change the two lines to::
 
-    Alias /audio/media/ /opt/laudio/media/
-    WSGIScriptAlias /audio /opt/laudio/media/django.wsgi
+    Alias /audio/media/ /usr/share/laudio/media/
+    WSGIScriptAlias /audio /usr/share/laudio/media/django.wsgi
 
 Finally restart your Apache webserver.
 
