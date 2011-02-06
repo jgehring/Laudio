@@ -47,6 +47,8 @@ to get into the directory. Proceed with ``Installation``
 Installation
 ============
 
+If you've downloaded the deb file, install it. Otherwise read on:
+
 This is different from Distribution to Distribution so i wrote a script for the
 main Distributions ``Ubuntu``, ``Gentoo`` and ``Arch Linux``
 
@@ -55,6 +57,7 @@ Please read it, it hasnt been tested thouroughly!!!
 To run it type::
 
     $ sudo /bin/bash setup.sh
+
 
 ``IMPORTANT``: THE CURRENT GIT VERSION AND ALPHA 4 or later OF 0.4 NEEDS DJANGO 1.2.1
 Go to http://www.djangoproject.com/download/ to read how to install it
