@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 A pure-python library to assist sending data to AudioScrobbler (the LastFM
 backend)
