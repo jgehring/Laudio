@@ -1,3 +1,10 @@
+laudio (0.4-beta5-1) maverick; urgency=low
+
+  * Fixed some stuff for debian packages
+  * Fixed the notags behaviour: only when no title is found, its being used
+
+ -- Bernhard Posselt <bernhard.posselt@gmx.at>  Sun, 06 Feb 2011 21:00:11 +0100
+
 laudio (0.4-beta4-1) maverick; urgency=low
 
   * Cleaned up code

@@ -1,7 +1,7 @@
 Source: laudio
 Section: web
 Priority: extra
-Version: 0.4-beta4
+Version: 0.4-beta5
 Maintainer: Bernhard Posselt <bernhard.posselt@gmx.at>
 Build-Depends: debhelper (>= 7.0.50~)
 Standards-Version: 3.8.4
