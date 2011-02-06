@@ -42,9 +42,10 @@ class OGGSong (Song):
             setattr(self, key, attr.encode("utf-8") )
         self.bitrate = int(self.song.info.bitrate) / 1000
         self.length = int(self.song.info.length)
+        if self.title == "":
+            self.title = os.path.basename(self.path)
         # check for empty track number
         try:
             self.tracknumber = int(self.song['tracknumber'][0])
         except (ValueError, KeyError):
             self.tracknumber = 0
-            self.title = os.path.basename(self.path)
