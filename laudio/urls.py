@@ -57,10 +57,6 @@ urlpatterns = patterns('',
     (r'^scrobble/(?P<id>.*)/$', ajax_scrobble_song),
     (r'^cover/(?P<id>.*)/$', ajax_cover_fetch),
     (r'^advautocomplete/(?P<row>.*)/$', ajax_adv_autocompletion),
-    (r'^transcode/(?P<id>.*)/$', ajax_transcode_song),
-    
-    # playlist
-    (r'^playlist/$', laudio_playlist),
     
     # debug
     (r'^debug/$', ajax_debug_log),
@@ -68,6 +64,6 @@ urlpatterns = patterns('',
     # other sites
     (r'^about/$', laudio_about),
     (r'^profile/$', laudio_profile),
-    (r'^login/$', laudio_login),
-    (r'^logout/$', laudio_logout),
+    (r'^login/', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
+    (r'^logout/$', 'django.contrib.auth.views.logout', {'template_name': 'logout.html'}),
 )

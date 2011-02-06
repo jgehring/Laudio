@@ -1,4 +1,4 @@
-{% extends 'base_settings.html' %}
+{% extends 'base.html' %}
 
 {% block title %}LAudio - Settings{% endblock %}
 
@@ -19,6 +19,7 @@
     <div id="popup">hi</div>
     
     <form method="post" action=".">
+        {% csrf_token %}
         <fieldset>
             <legend>Collection</legend>
             <table cellspacing="0">

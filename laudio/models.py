@@ -78,10 +78,3 @@ class UserProfile(models.Model):
     libreFMSubmit = models.BooleanField("Scrobble libre.fm",
         help_text="Activate this if you want to submit your played tracks \
                     to your libre.fm account")
-    transcoding = models.BooleanField("Transcoding", 
-        help_text="If your browser doesn't support playing Mp3s, you can \
-                    Laudio can automatically convert them to Ogg Vorbis. \
-                    This enables Mp3 playback in Firefox")
-    gaplessPlayback = models.BooleanField("Gapless Playback",
-        help_text="If activated, the next song gets automatically cached \
-                    once the current one has finished downloading")

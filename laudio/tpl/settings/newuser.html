@@ -1,4 +1,4 @@
-{% extends 'base_settings.html' %}
+{% extends 'base.html' %}
 
 {% block title %}LAudio - Add a new user{% endblock %}
 
@@ -8,6 +8,7 @@
 <div id="settings">
     <h1>Add a new user</h1>
     <form method="post" action=".">
+        {% csrf_token %}
         <fieldset>
             <legend>User</legend>
             <table>

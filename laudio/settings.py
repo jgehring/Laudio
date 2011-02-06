@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import os.path
 
+from django.core.urlresolvers import reverse
+
 # Django settings for laudio project.
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -38,7 +40,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join( os.path.dirname( os.path.abspath(__file__) ), 'laudio.db'),
+        'NAME': '/var/lib/laudio/laudio.db',
     }
 }
 
@@ -64,12 +66,10 @@ USE_I18N = True
 
 
 LAST_FM_API_KEY = "a1d1111ab0b08262e6d7484cc5dc949a"
-
 INSTALL_DIR = os.path.dirname( os.path.abspath(__file__) )
 MEDIA_ROOT = os.path.join( os.path.dirname( os.path.abspath(__file__) ), 'media/')
 AUDIO_DIR = os.path.join( os.path.dirname( os.path.abspath(__file__) ), 'media/audio')
-TMP_DIR = os.path.join( os.path.dirname( os.path.abspath(__file__) ), 'media/tmp')
-DEBUG_LOG = os.path.join( os.path.dirname( os.path.abspath(__file__) ), 'error.log')
+DEBUG_LOG = "/var/log/laudio/debug.log"
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
@@ -90,20 +90,13 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.load_template_source',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = ( 
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.contrib.messages.context_processors.messages",
-    "laudio.context.template_defaults"
-)
-
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
 )
 
 ROOT_URLCONF = 'laudio.urls'

@@ -20,10 +20,20 @@ set -e
 
 case "$1" in
     configure)
-        # generate sqlite db and chmod dirs
-        python /opt/laudio/manage.py syncdb --noinput
-        chown -R www-data:www-data /opt/laudio
-        chmod -R 0755 /opt/laudio
+        # generate sqlite db
+        python /usr/share/laudio/manage.py syncdb --noinput
+        
+        # set rights for apache
+        dirs=( "/usr/share/laudio" 
+               "/var/lib/laudio" 
+               "/var/log/laudio" 
+                )
+
+        for elem in ${dirs[@]}; do
+            chown -R www-data:www-data $elem
+            chmod -R 0755 $elem
+        done
+
         # restart apache
         if [ -x "`which invoke-rc.d 2>/dev/null`" ]; then
             invoke-rc.d apache2 force-reload || exit $?

@@ -47,3 +47,4 @@ class OGGSong (Song):
             self.tracknumber = int(self.song['tracknumber'][0])
         except (ValueError, KeyError):
             self.tracknumber = 0
+            self.title = os.path.basename(self.path)

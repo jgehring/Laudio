@@ -57,4 +57,4 @@ class MP3Song (Song):
                 self.tracknumber = 0
                 self.bitrate = 0
                 self.length = 0
-        
+                self.title = os.path.basename(self.path)

@@ -1,4 +1,4 @@
-{% extends 'base_settings.html' %}
+{% extends 'base.html' %}
 
 {% block title %}LAudio - Edit a user{% endblock %}
 
@@ -7,6 +7,7 @@
 <div id="settings">
     <h1>Edit a user</h1>
     <form method="post" action=".">
+        {% csrf_token %}
         <fieldset>
             <legend>User</legend>
             <table>

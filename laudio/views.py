@@ -41,6 +41,7 @@ from django.contrib.auth import logout
 from django.contrib.auth import authenticate, login
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
+from django.core.context_processors import csrf
 
 # other python libs
 import time
@@ -49,13 +50,27 @@ import urllib
 
 
 ########################################################################
+# Shortcuts                                                            #
+########################################################################
+
+def render(request, tpl, tplvars={}):
+    """Shortcut for renewing csrf cookie and passing request context
+    
+    Keyword arguments:
+    tpl -- the template we want to use
+    args -- the template variables
+
+    """
+    tplvars.update(csrf(request))
+    return render_to_response(tpl, tplvars,
+                               context_instance=RequestContext(request))
+
+########################################################################
 # Visible Sites                                                        #
 ########################################################################
 @check_login("user")
 def laudio_index(request):
     """The collection view which is displayed as index by default
-    Returns one song which we have to set for the audio element in order
-    to work properly.
     
     If the directory is not set and thus you can't play songs, redirect
     to the settings page."""
@@ -63,74 +78,14 @@ def laudio_index(request):
         settings = Settings.objects.get(pk=1)
     except Settings.DoesNotExist:
         return HttpResponseRedirect( reverse ("laudio.views.laudio_settings") )
-
-    song = Song.objects.all()[:1]
-    if song:
-        firstsong = song[0].path
-    else:
-        firstsong = ""
     # get javascript
     js = JavaScript("library", request)
-    return render_to_response('index.html', { 'firstsong': firstsong, 
-                                              'js': js }, 
-                                context_instance=RequestContext(request))
-
-
-@check_login("user")
-def laudio_playlist(request):
-    """The collection view which is displayed as index by default
-    Returns one song which we have to set for the audio element in order
-    to work properly"""
-    try:
-        settings = Settings.objects.get(pk=1)
-    except Settings.DoesNotExist:
-        return HttpResponseRedirect( reverse ("laudio.views.laudio_settings") )
-
-    song = Song.objects.all()[:1]
-    if song:
-        firstsong = song[0].path
-    else:
-        firstsong = ""
-    # get javascript
-    js = JavaScript("playlist", request)
-    return render_to_response('index.html', { 'firstsong': firstsong, 
-                                              'js': js }, 
-                                context_instance=RequestContext(request))
+    return render(request, 'index.html', { 'js': js })
                                 
 
 def laudio_about(request):
     """A plain about site"""
-    return render_to_response('about.html', {}, 
-                                context_instance=RequestContext(request))
-
-
-def laudio_login(request):
-    """A site which tells the user to log in"""
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            if user.is_active:
-                login(request, user)
-                return HttpResponseRedirect( reverse ("laudio.views.laudio_settings") )
-            else:
-                success = "Your account has been disabled!"
-                return render_to_response( 'login.html', {"success": success}, 
-                                context_instance=RequestContext(request) )
-        else:
-            success = "Username or Password is wrong!"
-            return render_to_response( 'login.html', {"success": success}, 
-                                context_instance=RequestContext(request) )
-    else:
-        return render_to_response( 'login.html', {}, 
-                                context_instance=RequestContext(request) )
-
-
-def laudio_logout(request):
-    """Logs out a user"""
-    logout(request)
-    return HttpResponseRedirect( reverse ("laudio.views.laudio_login") )
+    return render(request, 'about.html', {})
 
 
 @check_login("admin")
@@ -162,14 +117,12 @@ def laudio_settings(request):
             
     # get javascript
     js = JavaScript("settings", request)
-    return render_to_response( 'settings/settings.html', { 
-                                "collection": config.collectionPath,  
-                                "settingsForm": settingsForm,
-                                "users": users,
-                                "js": js, 
-                                }, 
-                                context_instance=RequestContext(request)
-                            )
+    return render(request, 'settings/settings.html', { "collection": config.collectionPath,  
+                                               "settingsForm": settingsForm,
+                                               "users": users,
+                                               "js": js, 
+                                            }
+                 )
                      
                             
 @check_login("admin")    
@@ -189,8 +142,7 @@ def laudio_settings_new_user(request):
             # profile
             profile = UserProfile(user=user)
             for key in ("lastFMName", "lastFMPass", "lastFMSubmit", 
-                         "libreFMName", "libreFMPass", "libreFMSubmit",
-                         "transcoding", "gaplessPlayback"):
+                         "libreFMName", "libreFMPass", "libreFMSubmit"):
                 setattr(profile, key, profileform.cleaned_data[key])
             profile.save()
             return HttpResponseRedirect( reverse ("laudio.views.laudio_settings") )
@@ -198,11 +150,9 @@ def laudio_settings_new_user(request):
         userform = UserForm()
         profileform = UserProfileForm()
 
-    return render_to_response( 'settings/newuser.html', { 
-                                "userform": userform,  
-                                "profileform": profileform
-                                }, 
-                                context_instance=RequestContext(request)
+    return render(request, 'settings/newuser.html', { "userform": userform,  
+                                                          "profileform": profileform
+                                                        }
                             )
 
 
@@ -226,8 +176,7 @@ def laudio_settings_edit_user(request, userid):
             profile = UserProfile.objects.get(user=user)
             profile.user = user
             for key in ("lastFMName", "lastFMPass", "lastFMSubmit", 
-                         "libreFMName", "libreFMPass", "libreFMSubmit",
-                         "transcoding", "gaplessPlayback"):
+                         "libreFMName", "libreFMPass", "libreFMSubmit"):
                 setattr(profile, key, profileform.cleaned_data[key])
             profile.save()
             return HttpResponseRedirect( reverse ("laudio.views.laudio_settings") )
@@ -237,11 +186,9 @@ def laudio_settings_edit_user(request, userid):
         profile = UserProfile.objects.get(user=user)
         profileform = UserProfileForm(instance=profile)
 
-    return render_to_response( 'settings/edituser.html', { 
-                                "userform": userform,  
-                                "profileform": profileform
-                                }, 
-                                context_instance=RequestContext(request)
+    return render(request, 'settings/edituser.html', { "userform": userform,  
+                                                          "profileform": profileform
+                                                        }
                             )
 
 
@@ -272,8 +219,7 @@ def laudio_profile(request):
             profile = UserProfile.objects.get(user=user)
             profile.user = user
             for key in ("lastFMName", "lastFMPass", "lastFMSubmit", 
-                         "libreFMName", "libreFMPass", "libreFMSubmit",
-                         "transcoding", "gaplessPlayback"):
+                         "libreFMName", "libreFMPass", "libreFMSubmit"):
                 setattr(profile, key, profileform.cleaned_data[key])
             profile.save()
             return HttpResponseRedirect( reverse ("laudio.views.laudio_profile") )
@@ -283,11 +229,9 @@ def laudio_profile(request):
         profile = UserProfile.objects.get(user=user)
         profileform = UserProfileForm(instance=profile)
 
-    return render_to_response( 'settings/profile.html', { 
-                                "userform": userform,  
-                                "profileform": profileform
-                                }, 
-                                context_instance=RequestContext(request)
+    return render(request, 'settings/profile.html', { "userform": userform,  
+                                                          "profileform": profileform
+                                                        }
                             )
 ########################################################################
 # AJAX Requests                                                        #
@@ -321,46 +265,6 @@ def ajax_song_metadata(request, id):
     """
     song = Song.objects.get(id=id)
     return render_to_response('requests/song_data.html', {"song": song})
-
-
-@check_login("user")
-def ajax_transcode_song(request, id):
-    """Returns a json object with metainformation about the song
-    
-    Keyword arguments:
-    id -- the id of the song we want the metadata from
-    
-    """
-    
-    song = Song.objects.get(id=id)
-    abspath = os.path.join( settings.AUDIO_DIR, song.path )
-    
-    """check if a user directory exists in tmp, otherwise create one to
-    store the information in. The song which gets transcoded is always
-    overwritten by the next transcoding"""
-    if not os.path.exists("/tmp/laudio"):
-        os.mkdir("/tmp/laudio", 0755)
-    if not os.path.exists(settings.TMP_DIR):
-        os.symlink( "/tmp/laudio", settings.TMP_DIR )
-    if not os.path.exists("/tmp/laudio/%s" % request.user.username):
-        os.mkdir("/tmp/laudio/%s" % request.user.username, 0755)
-        
-    """if the file exists already then we directly return the path without
-    transcoding anything. If not, we remove anything in the userfolder
-    and start transcoding"""
-    if os.path.exists( "/tmp/laudio/%s/%s.ogg" % (request.user.username, id ) ):
-        path = "%s/%s.ogg" % (request.user.username, id )
-        return render_to_response('requests/transcode.html', {"path": path})
-    
-    else:
-        for file in os.listdir("/tmp/laudio/%s" % request.user.username):
-            os.remove("/tmp/laudio/%s/%s" % (request.user.username, file) )
-            
-        """Now we start encoding the song via ffmpeg"""
-        cmd = "ffmpeg -i \"%s\" -acodec libvorbis -ab %sk -vn -ac 2 -threads 4 \"/tmp/laudio/%s/%s.ogg\"" % (abspath, song.bitrate, request.user.username, id)
-        os.system(cmd)
-        path = "%s/%s.ogg" % (request.user.username, id )
-        return render_to_response('requests/transcode.html', {"path": path})
 
 
 @check_login("user")

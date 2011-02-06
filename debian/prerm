@@ -5,9 +5,9 @@
 
 set -e
 
-DB_FILE="/opt/laudio/laudio.db"
+DB_FILE="/var/lib/laudio/laudio.db"
 AUDIO_SYM="/opt/laudio/audio"
-LOG_FILE="/opt/laudio/error.log"
+LOG_FILE="/var/log/laudio/debug.log"
 INSTALL_DIR="/opt/laudio"
 
 # summary of how this script can be called:

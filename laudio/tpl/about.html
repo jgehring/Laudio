@@ -1,4 +1,4 @@
-{% extends 'base_settings.html' %}
+{% extends 'base.html' %}
 
 {% block title %}LAudio - About{% endblock %}
 
@@ -21,12 +21,9 @@
              HTML5 standard. Laudio is completely written in Python and 
              Javasript and can be used from any fast enough and up to date Browser.</p>
         
-            <p>Laudio supports Ogg Vorbis and Mp3 audio files, though in 
-            case of Mp3 it depends on the Browser you use. If you want 
-            still want to play your Mp3s in Firefox, you can set up a
-            user account and enable transcoding: Laudio will convert 
-            every Mp3 you want to listen to into an Ogg Vorbis file and 
-            play it in your Browser.</p>
+            <p>Laudio supports Ogg Vorbis and Mp3 audio files, but in case of Vorbis
+                only for the browsers which support it. Vorbis is being played using
+                the HTML5 audio tag, Mp3 is being played by a flash plugin.</p>
 
             <h2>Recommended Browsers</h2>
             <ul>
@@ -46,9 +43,16 @@
             
             <p>You can also <a href="mailto:bernhard.posselt@gmx.at">send me an email</a>.</p>
 
-            <h2>We thank</h2>
-            <p>We use <a href="http://www.oxygen-icons.org/">Oxygen</a> and 
-            <a href="http://amarok.kde.org/">Amarok</a> Icons, cheers :D</p>
+            <h2>We use</h2>
+            <p>We humbly thank the creators of such great software such as</p>
+            <ul>
+                <li><a href="http://www.oxygen-icons.org/">Oxygen</a>, 
+                    <a href="http://amarok.kde.org/">Amarok</a>: Icons</li>
+                <li><a href="http://www.schillmania.com/projects/soundmanager2/">SoundManager</a>: Audio Playback</li>
+                <li><a href="http://www.djangoproject.com/">Django</a>: Web Framework</li>
+                <li><a href="http://jquery.com/">jQuery</a>: Javascript Framework</li>
+            </ul>            
+
         </div>
     </fieldset>
 </div>

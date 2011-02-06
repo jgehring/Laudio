@@ -48,18 +48,9 @@ class JavaScript(object):
             config = Settings.objects.get(pk=1)
             audio_debug = config.debugAudio
             user = request.user
-            # check if no user is logged in
-            if user.id == None:
-                gapless = False
-                transcode = False
-            else:
-                gapless = user.get_profile().gaplessPlayback
-                transcode = user.get_profile().transcoding
             
         except Settings.DoesNotExist, AttributeError:
             audio_debug = False
-            gapless = False
-            transcode = False
             
         
         files = ()
@@ -94,8 +85,6 @@ class JavaScript(object):
         tpl = Template(content)
         context = Context( { 
                             "AUDIO_DEBUG": audio_debug,
-                            "GAPLESS_PLAYBACK": gapless,
-                            "TRANSCODE": transcode
                         } )
         self.javascript = tpl.render(context)
 

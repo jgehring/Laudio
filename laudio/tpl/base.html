@@ -21,11 +21,11 @@
             <ul>
                 <li><a href="{% url laudio.views.laudio_index %}">Collection</a></li>
                 <li><a href="{% url laudio.views.laudio_settings %}">Settings</a></li>
-                {% if LOGGED_IN %}
+                {% if user.is_authenticated %}
                     <li><a href="{% url laudio.views.laudio_profile %}">Profile</a></li>
-                    <li><a href="{% url laudio.views.laudio_logout %}">Logout</a></li>
+                    <li><a href="{% url django.contrib.auth.views.logout %}">Logout</a></li>
                 {% else %}
-                    <li><a href="{% url laudio.views.laudio_login %}">Login</a></li>
+                    <li><a href="{% url django.contrib.auth.views.login %}?next={% url laudio.views.laudio_index %}">Login</a></li>
                 {% endif %}
                 <li><a href="{% url laudio.views.laudio_about %}">About</a></li>
             </ul>
@@ -37,10 +37,7 @@
             {% block content %}{% endblock %}
         </div>
         
-        
-        <div id="footer" style="clear: both;">
-            {% block footer %}{% endblock %}
-        </div>     
+        {% block footer %}{% endblock %}
     </div>
     </body>
 </html>
