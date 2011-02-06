@@ -52,7 +52,8 @@ main Distributions ``Ubuntu``, ``Gentoo`` and ``Arch Linux``
 
 Please read it, it hasnt been tested thouroughly!!!
 
-To run it type:
+To run it type::
+
     $ sudo /bin/bash setup.sh
 
 ``IMPORTANT``: THE CURRENT GIT VERSION AND ALPHA 4 or later OF 0.4 NEEDS DJANGO 1.2.1
