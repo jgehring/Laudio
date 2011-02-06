@@ -4,7 +4,7 @@
 
 .. image::  http://github.com/downloads/Raydiation/Laudio/screenshot_large_v04.png
 
-:Version: 0.4-alpha4
+:Version: 0.4-beta2
 :Keywords: python, jquery, django, web, html5, audio, player, javascript, last.fm, libre.fm, json, mp3, ogg, vorbis
 
 Laudio is a webbased player which takes advantage of the HTML5 audio
@@ -19,6 +19,9 @@ even your friends can listen to it over the Internet.
 
 Getting LAudio
 ==============
+Ubuntu Maverick
+---------------
+Download the deb package from https://github.com/Raydiation/Laudio/downloads
 
 Obtaining Source: Unstable
 --------------------------
@@ -47,7 +50,7 @@ Installation
 This is different from Distribution to Distribution so i will outline it for the
 main Distributions ``Ubuntu``, ``Gentoo`` and ``Arch Linux``:
 
-``IMPORTANT``: THE CURRENT GIT VERSION AND ALPHA 4 OF 0.4 NEEDS DJANGO 1.2.1
+``IMPORTANT``: THE CURRENT GIT VERSION AND ALPHA 4 or later OF 0.4 NEEDS DJANGO 1.2.1
 Go to http://www.djangoproject.com/download/ to read how to install it
 
 Ubuntu
@@ -69,7 +72,7 @@ directory::
 Now to finish the installation we install the program to /opt/laudio::
 
     $ sudo mkdir /opt/laudio
-    $ sudo mv * /opt/laudio
+    $ sudo mv laudio/ /opt/laudio
     $ sudo python /opt/laudio/manage.py syncdb --noinput
     $ sudo chown -R www-data:www-data /opt/laudio # if you update remove the symlink first!!
     $ sudo chmod -R 0755 /opt/laudio
@@ -99,7 +102,7 @@ directory::
 Now to finish the installation we install the program to /opt/laudio::
 
     # mkdir /opt/laudio
-    # mv * /opt/laudio
+    # mv laudio/ /opt/laudio
     # python /opt/laudio/manage.py syncdb --noinput
     # chown -R www-data:www-data /opt/laudio # if you update remove the symlink first!!
     # chmod -R 0755 /opt/laudio
@@ -136,7 +139,7 @@ directory::
 Now to finish the installation we install the program to /opt/laudio::
 
     # mkdir /opt/laudio
-    # mv * /opt/laudio
+    # mv laudio/ /opt/laudio
     # python /opt/laudio/manage.py syncdb --noinput
     # chown -R http:http /opt/laudio # if you update remove the symlink first!!
     # chmod -R 0755 /opt/laudio
