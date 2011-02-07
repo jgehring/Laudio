@@ -1,3 +1,11 @@
+laudio (0.4-beta8-1) maverick; urgency=low
+
+  * Fixed some copyright issues
+  * Added Favicon
+  * Fixed behaviour in settings which let you scan and delete at the same time
+
+ -- Bernhard Posselt <bernhard.posselt@gmx.at>  Sun, 07 Feb 2011 22:00:11 +0100
+
 laudio (0.4-beta7-1) maverick; urgency=low
 
   * Fixed clickable shuffle and repeat buttons to work on first click
