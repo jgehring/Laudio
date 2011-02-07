@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 from django.contrib.auth.models import User
-
+from django.conf import settings
 from django.db import models
 from django import forms
 
@@ -60,10 +60,10 @@ class Settings(models.Model):
                     directory need to have the rights a+x")
     requireLogin = models.BooleanField("Require Login", 
         help_text="All User which want to listen to your files have to sign in")
-    debugAudio = models.BooleanField("HTML5 audio debugging", 
-        help_text="Writes debug information into the file error.log \
-                    located in your Laudio directory. Only usefull for \
-                    developers")
+    debugAudio = models.BooleanField("Debug", 
+        help_text="Enable output to your firebug console including audio debug information \
+                    and writing of debug information while scanning your collection \
+                    to %s" % settings.DEBUG_LOG)
     
 
 class UserProfile(models.Model):

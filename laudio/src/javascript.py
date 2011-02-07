@@ -23,8 +23,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 from django.template import Context, Template
 from django.conf import settings
-from laudio.models import Settings, UserProfile
-from django.contrib.auth.models import User
 
 import os
 
@@ -41,17 +39,7 @@ class JavaScript(object):
                 according to those views
         
         """
-        self.view = view
-        
-        # check config vars
-        try:
-            config = Settings.objects.get(pk=1)
-            audio_debug = config.debugAudio
-            user = request.user
-            
-        except Settings.DoesNotExist, AttributeError:
-            audio_debug = False
-            
+        self.view = view            
         
         files = ()
         """Depending on the view, different js files are being included. 
@@ -60,13 +48,10 @@ class JavaScript(object):
         if self.view == "library":
             files = ("inc/includes.js", "ui/collection.js", "ui/controls.js",
                      "ui/tablesorting.js", "ui/nav.js", "func/player.js",
-                     "func/search.js", "func/debug.js")
+                     "func/search.js")
                      
         elif self.view == "settings":
             files = ("ui/settings.js",)
-            
-        elif self.view == "playlist":
-            files = ()
             
         else:
             files = ()
@@ -83,9 +68,7 @@ class JavaScript(object):
         
         # create template and parse context
         tpl = Template(content)
-        context = Context( { 
-                            "AUDIO_DEBUG": audio_debug,
-                        } )
+        context = Context( {} )
         self.javascript = tpl.render(context)
 
 

@@ -12,7 +12,9 @@
 }
 
 
-
+#soundmanager-debug {
+    display: none !important;
+}
 /**********
  * Library
  */

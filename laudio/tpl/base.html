@@ -9,7 +9,11 @@
         <script src="{% url laudio.views.laudio_index %}media/js/jquery-1.5.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="{% url laudio.views.laudio_index %}media/js/jquery-ui-1.8.1.custom.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="{% url laudio.views.laudio_index %}media/js/jquery.tablesorter.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="{% url laudio.views.laudio_index %}media/js/soundmanager/script/soundmanager2-nodebug-jsmin.js" type="text/javascript" charset="utf-8"></script>
+        {% if audio_debug %}
+            <script src="{% url laudio.views.laudio_index %}media/js/soundmanager/script/soundmanager2-jsmin.js" type="text/javascript" charset="utf-8"></script>
+        {% else %}
+            <script src="{% url laudio.views.laudio_index %}media/js/soundmanager/script/soundmanager2-nodebug-jsmin.js" type="text/javascript" charset="utf-8"></script>
+        {% endif %}
         <script type="text/javascript" charset="utf-8">{{ js|safe }}</script>
         <link rel="icon" type="image/png" href="{% url laudio.views.laudio_index %}media/style/img/favicon.png" />
     </head>

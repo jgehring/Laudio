@@ -29,7 +29,7 @@ from django.conf import settings
 # laudio specific imports
 from laudio.src.song.formats.ogg import OGGSong
 from laudio.src.song.formats.mp3 import MP3Song
-from laudio.models import Song
+from laudio.models import Song, Settings
 
 
 class MusicIndexer (object):
@@ -49,25 +49,35 @@ class MusicIndexer (object):
         self.modified = 0
         self.broken = []
         self.noRights = []
+        # check config vars
+        try:
+            config = Settings.objects.get(pk=1)
+            self.debug = config.debugAudio
+        except Settings.DoesNotExist, AttributeError:
+            self.debug = False 
 
 
     def scan(self):
         """ Scans a directory recursively for ogg files """
-        self._debug("Begin Scan")
+        if self.debug:
+            self._debug("Begin Scan")
         for root, directories, files in os.walk(self.musicDir):
             for name in files:
                 songpath = os.path.join( root, name )
                 # TODO: check for ogg audio in the file rather then extension
                 #       possible ogv files could be falsy indexed by this
                 if name.lower().endswith(".ogg") or name.lower().endswith(".oga"):
-                    self._debug("Scanned %s" % songpath)
+                    if self.debug:
+                        self._debug("Scanned %s" % songpath)
                     self._addSong( songpath, "ogg" )
                     self.scanned += 1
                 if name.lower().endswith(".mp3"):
-                    self._debug("Scanned %s" % songpath)
+                    if self.debug:
+                        self._debug("Scanned %s" % songpath)
                     self._addSong( songpath, "mp3" )
                     self.scanned += 1
-                    
+        if self.debug:
+            self._debug("Finished Scan")
         
 
     def _addSong(self, songpath, codec):
@@ -131,10 +141,9 @@ class MusicIndexer (object):
 
     def _debug(self, msg):
         """If no debug log exists, we make a new one"""
-        if settings.DEBUG:
-            f = open(settings.DEBUG_LOG, 'a')
-            f.write( '%s\n' % msg )
-            f.close()
+        f = open(settings.DEBUG_LOG, 'a')
+        f.write( '%s\n' % msg )
+        f.close()
 
 
 

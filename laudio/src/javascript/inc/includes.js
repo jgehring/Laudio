@@ -28,6 +28,8 @@ $(document).ready(function() {
     soundManager.useHTML5Audio = true;
     db("playing", 0);
     db("volume", 100);
+    db("shuffle", 0);
+    db("repeat", 0);
 });
 
 /**
