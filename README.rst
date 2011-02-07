@@ -17,7 +17,7 @@ Installed on the machine where your music collection resides, it can be accessed
 in the whole network. By forwarding Port 80 on your router,
 even your friends can listen to it over the Internet.
 
-Getting LAudio
+Installing Laudio
 ==============
 Ubuntu Maverick
 ---------------
@@ -33,6 +33,11 @@ Then update and install it::
 
     $ sudo apt-get update
     $ sudo apt-get install laudio
+
+Your Laudio installation is now up and running at http://localhost/laudio
+
+Other
+-----
 
 Obtaining Source: Unstable
 --------------------------
@@ -58,8 +63,6 @@ to get into the directory. Proceed with ``Installation``
 Installation
 ============
 
-If you've downloaded the deb file, install it. Otherwise read on:
-
 This is different from Distribution to Distribution so i wrote a script for the
 main Distributions ``Ubuntu``, ``Gentoo`` and ``Arch Linux``
 
@@ -73,7 +76,7 @@ To run it type::
 ``IMPORTANT``: THE CURRENT GIT VERSION AND ALPHA 4 or later OF 0.4 NEEDS DJANGO 1.2.1
 Go to http://www.djangoproject.com/download/ to read how to install it
 
-
+Your Laudio installation is now up and running at http://localhost/laudio
 
 .. _`Download Page`: http://github.com/Raydiation/Laudio/downloads
 .. _`Ampache`: http://ampache.org/
