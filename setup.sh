@@ -52,7 +52,7 @@ case "$DISTRO" in
             chown -R $APACHE:$APACHE $elem
             chmod -R 0755 $elem
         done
-        mv laudio/ /usr/share/laudio
+        mv laudio/* /usr/share/laudio
         
         echo "Creating Database"
         python /usr/share/laudio/manage.py syncdb --noinput
@@ -80,7 +80,7 @@ case "$DISTRO" in
             chown -R $APACHE:$APACHE $elem
             chmod -R 0755 $elem
         done
-        mv laudio/ /usr/share/laudio  
+        mv laudio/* /usr/share/laudio  
 
         echo "Creating Database"
         python /usr/share/laudio/manage.py syncdb --noinput
@@ -111,7 +111,7 @@ case "$DISTRO" in
             chown -R $APACHE:$APACHE $elem
             chmod -R 0755 $elem
         done
-        mv laudio/ /usr/share/laudio
+        mv laudio/* /usr/share/laudio
 
         echo "Creating Database"
         python /usr/share/laudio/manage.py syncdb --noinput
@@ -128,5 +128,7 @@ case "$DISTRO" in
         exit 1    
     ;;
 esac
+
+exit 0
 
 
