@@ -72,7 +72,7 @@ case "$DISTRO" in
         echo "Setting up Apache"  
         APACHE=$ARCH_HTTP_USER
         mv laudio_apache.conf /etc/httpd/conf/extra/
-
+        echo "Include conf/extra/laudio_apache.conf" >> /etc/httpd/conf/httpd.conf
         echo "Creating Directories and installing laudio"
         for elem in ${CREATE_DIRS[@]}; do
             if ! [[ -e $elem ]]; then
