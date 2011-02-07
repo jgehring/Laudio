@@ -4,7 +4,7 @@
 
 .. image::  http://github.com/downloads/Raydiation/Laudio/screenshot_large_v04.png
 
-:Version: 0.4-beta4
+:Version: 0.4-beta6
 :Keywords: python, jquery, django, web, html5, audio, player, javascript, last.fm, libre.fm, json, mp3, ogg, vorbis
 
 Laudio is a webbased player which takes advantage of the HTML5 audio
@@ -22,6 +22,17 @@ Getting LAudio
 Ubuntu Maverick
 ---------------
 Download the deb package from https://github.com/Raydiation/Laudio/downloads
+
+Or 
+
+Add the PPA to your sources::
+
+    $ sudo apt-add-repository ppa:bernhard-posselt/laudio-ppa
+
+Then update and install it::
+
+    $ sudo apt-get update
+    $ sudo apt-get install laudio
 
 Obtaining Source: Unstable
 --------------------------
