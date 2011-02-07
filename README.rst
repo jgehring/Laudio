@@ -18,7 +18,7 @@ in the whole network. By forwarding Port 80 on your router,
 even your friends can listen to it over the Internet.
 
 Installing Laudio
-==============
+=================
 Ubuntu Maverick
 ---------------
 Download the deb package from https://github.com/Raydiation/Laudio/downloads
@@ -48,7 +48,7 @@ want the source to be downloaded. Then type in::
     $ git clone git://github.com/Raydiation/Laudio.git
     $ cd Laudio*
 
-to get into the directory. Proceed with ``Installation``
+to get into the directory. Proceed with ``Installation other``
 
 Obtaining Source: Stable
 ------------------------
@@ -58,15 +58,15 @@ personal directory. Fire up a terminal and type in::
 
     $ cd Laudio*
 
-to get into the directory. Proceed with ``Installation``
+to get into the directory. Proceed with ``Installation other``
 
-Installation
-============
+Installation other
+------------------
 
 This is different from Distribution to Distribution so i wrote a script for the
 main Distributions ``Ubuntu``, ``Gentoo`` and ``Arch Linux``
 
-Please read it, it hasnt been tested thouroughly!!!
+``Please read it, it hasnt been tested thouroughly!!!``
 
 To run it type::
 
@@ -95,24 +95,10 @@ Depends wether you want to use MP3 or OGG VORBIS
 ``OGG``: Google Chrome, Chromium, Opera, Firefox
 
 
-
-
-Why doesn't Chromium play my MP3?
----------------------------------
-Most likely you have to install an extra codecs package, Ubuntu for instance
-installs it with:
-
-    $ sudo apt-get install chromium-codecs-ffmpeg-extra
-
-
-
-
 What filerights should my musicdirectory have?
 ----------------------------------------------
 The music files should be chmoded 0755. Every folder above the files has
 to have a+x, so Apache can traverse down into the directory
-
-
 
 
 I just added and scanned some music but it doesnt show up in the Library!
@@ -121,9 +107,6 @@ It's not a bug, it's a feature: Imagine loading 50 000 files on every
 startup; defenitely a browser killer. You can see your files either by
 searching or by clicking on the ABC button on the top, where you can 
 select the starting letters of the artist.
-
-
-
 
 
 How can i change the URL under which Laudio is being run
