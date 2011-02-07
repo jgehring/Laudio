@@ -1,3 +1,10 @@
+laudio (0.4-beta6-1) maverick; urgency=low
+
+  * Fixed a simple mistake which didnt allow laudio to uninstall completely
+  * If youre affected just sudo rm -r /usr/share/laudio when uninstalling
+
+ -- Bernhard Posselt <bernhard.posselt@gmx.at>  Sun, 07 Feb 2011 15:00:11 +0100
+
 laudio (0.4-beta5-1) maverick; urgency=low
 
   * Fixed some stuff for debian packages
