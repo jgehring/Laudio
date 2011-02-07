@@ -25,11 +25,15 @@ $(document).ready(function() {
      * This function resets the db when you click on it
      */
     $("#resetcoll").click(function() {
+        // if popup is visible do nothing
+        if( $("#popup").css("display") === "block" || 
+            $(".small_loading").css("display") === "block" ){
+            return;
+        }
+
         // first we unbind any previously attached events
         $("#site").unbind("click");
-        $("#popup").fadeOut("fast", function(){ 
-            $(".small_loading").fadeIn("slow");
-        });
+        $(".small_loading").fadeIn("slow");
         
         // execute the ajax query which deletes the db
         $("#popup").load("{% url laudio.views.ajax_drop_collection_db %}", function (){ 
@@ -52,11 +56,14 @@ $(document).ready(function() {
      * and starts a collection scan
      */
     $("#scancoll").click(function() {
+        // if popup is visible do nothing
+        if( $("#popup").css("display") === "block" || 
+            $(".small_loading").css("display") === "block" ){
+            return;
+        }
         // first we unbind any previously attached events
         $("#site").unbind("click");
-        $("#popup").fadeOut("fast", function(){ 
-            $(".small_loading").fadeIn("slow");
-        });
+        $(".small_loading").fadeIn("slow");
         
         // execute the ajax query which scans the collection
         $("#popup").load("{% url laudio.views.ajax_scan_collection %}", function (){ 
