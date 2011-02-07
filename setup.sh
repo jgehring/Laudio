@@ -17,12 +17,12 @@ if [ "$(whoami)" != 'root' ]; then
     exit 1;
 fi
 
-echo ""
-echo "###################################################"
-echo "This install script hasnt been thouroughly tested!#"
-echo "Please read and check it before you execute it!   #"
-echo "###################################################"
-echo ""
+echo -e "\n\n\n                     WARNING\n\n"
+echo "#####################################################"
+echo "# This install script hasnt been thouroughly tested!#"
+echo "# You have been warned.                             #"
+echo "# Please read and check it before you execute it!   #"
+echo -e "#####################################################\n"
 
 echo "Please select your distribution and enter the number"
 echo "0) Ubuntu"
