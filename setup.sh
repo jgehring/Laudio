@@ -4,8 +4,7 @@
 STANDARD_HTTP_USER="www-data"
 CREATE_DIRS=(   "/usr/share/laudio" 
                 "/var/lib/laudio" 
-                "/var/log/laudio" 
-                "/usr/share/laudio"
+                "/var/log/laudio"
         )
 DATABASE_FILE="/var/lib/laudio/laudio.db"
 
