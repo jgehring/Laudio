@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # general constants
+INSTALL_DIR="/usr/share/laudio"
 STANDARD_HTTP_USER="www-data"
 CREATE_DIRS=(   "/usr/share/laudio" 
                 "/var/lib/laudio" 
@@ -52,7 +53,7 @@ case "$DISTRO" in
             chown -R $APACHE:$APACHE $elem
             chmod -R 0755 $elem
         done
-        mv laudio/* /usr/share/laudio
+        mv laudio/* $INSTALL_DIR
         
         echo "Creating Database"
         python /usr/share/laudio/manage.py syncdb --noinput
@@ -80,7 +81,7 @@ case "$DISTRO" in
             chown -R $APACHE:$APACHE $elem
             chmod -R 0755 $elem
         done
-        mv laudio/* /usr/share/laudio  
+        mv laudio/* $INSTALL_DIR 
 
         echo "Creating Database"
         python /usr/share/laudio/manage.py syncdb --noinput
@@ -111,7 +112,7 @@ case "$DISTRO" in
             chown -R $APACHE:$APACHE $elem
             chmod -R 0755 $elem
         done
-        mv laudio/* /usr/share/laudio
+        mv laudio/* $INSTALL_DIR
 
         echo "Creating Database"
         python /usr/share/laudio/manage.py syncdb --noinput
