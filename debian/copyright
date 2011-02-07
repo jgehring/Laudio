@@ -54,6 +54,9 @@ License: BSD
 
 
 Files: laudio/media/js/jquery.tablesorter.min.js
+       laudio/media/style/img/nosort.gif
+       laudio/media/style/img/desc.gif
+       laudio/media/style/img/asc.gif
 Copyright: 2011 Christian Bach <christian@lovepeacenukes.com>
 License: GPL-3 or other
     This program is free software; you can redistribute it and/or modify
@@ -197,6 +200,28 @@ Clarification:
     .
     On Debian systems, the complete text of the GNU General Public License
     version 3 can be found in /usr/share/common-licenses/GPL-3
+
+
+Files: laudio/media/style/img/favicon.png
+       laudio/media/style/img/nocover.png
+Copyright: 2011 Karsten Janke <karsten.janke@googlemail.com>
+License: GPL-3+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    .
+    This package is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    .
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+    .
+    On Debian systems, the complete text of the GNU General
+    Public License version 3 can be found in 
+    "/usr/share/common-licenses/GPL-3".
 
 
 The Debian packaging is:
