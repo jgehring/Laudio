@@ -1,3 +1,11 @@
+laudio (0.4-beta7-1) maverick; urgency=low
+
+  * Fixed clickable shuffle and repeat buttons to work on first click
+  * Improved debug output functionality which is now only activated when set in settings
+  * Added soundmanager debug output to appear in firebug console
+
+ -- Bernhard Posselt <bernhard.posselt@gmx.at>  Sun, 07 Feb 2011 18:00:11 +0100
+
 laudio (0.4-beta6-1) maverick; urgency=low
 
   * Fixed a simple mistake which didnt allow laudio to uninstall completely
