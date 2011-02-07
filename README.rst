@@ -72,10 +72,6 @@ To run it type::
 
     $ sudo /bin/bash setup.sh
 
-
-``IMPORTANT``: THE CURRENT GIT VERSION AND ALPHA 4 or later OF 0.4 NEEDS DJANGO 1.2.1
-Go to http://www.djangoproject.com/download/ to read how to install it
-
 Your Laudio installation is now up and running at http://localhost/laudio
 
 .. _`Download Page`: http://github.com/Raydiation/Laudio/downloads
