@@ -205,23 +205,23 @@ Clarification:
 Files: laudio/media/style/img/favicon.png
        laudio/media/style/img/nocover.png
 Copyright: 2011 Karsten Janke <karsten.janke@googlemail.com>
-License: GPL-3+
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+License: Cc-by-sa-3.0
+    You are free:
     .
-    This package is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    * to share – to copy, distribute and transmit the work
+    * to remix – to adapt the work
     .
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
+    Under the following conditions:
     .
-    On Debian systems, the complete text of the GNU General
-    Public License version 3 can be found in 
-    "/usr/share/common-licenses/GPL-3".
+    * attribution – You must attribute the work in the manner specified by the 
+      author or licensor (but not in any way that suggests that they endorse 
+      you or your use of the work).
+    * share alike – If you alter, transform, or build upon 
+      this work, you may distribute the resulting work only under the same or 
+      similar license to this one.
+    .
+    The Full legalcode is available under 
+    http://creativecommons.org/licenses/by-sa/3.0/legalcode
 
 
 The Debian packaging is:
