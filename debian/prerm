@@ -6,7 +6,7 @@
 set -e
 
 DB_FILE="/var/lib/laudio/laudio.db"
-AUDIO_SYM="/usr/share/laudio/audio"
+AUDIO_SYM="/usr/share/laudio/media/audio"
 LOG_FILE="/var/log/laudio/debug.log"
 INSTALL_DIR="/usr/share/laudio"
 
