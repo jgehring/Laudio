@@ -118,14 +118,6 @@ The music files should be chmoded 0755. Every folder above the files has
 to have a+x, so Apache can traverse down into the directory
 
 
-I just added and scanned some music but it doesnt show up in the Library!
--------------------------------------------------------------------------
-It's not a bug, it's a feature: Imagine loading 50 000 files on every 
-startup; defenitely a browser killer. You can see your files either by
-searching or by clicking on the ABC button on the top, where you can 
-select the starting letters of the artist.
-
-
 How can i change the URL under which Laudio is being run
 --------------------------------------------------------
 If you want to let Laudio run under a different URL then localhost/laudio, like
@@ -167,7 +159,8 @@ to our issue tracker at http://github.com/Raydiation/Laudio/issues
 Contributing
 ============
 
-To contribute send a mail to: bernhard.posselt@gmx.at
+To contribute send a mail to: bernhard.posselt@gmx.at or join the channel
+on Freenode
 
 License
 =======
