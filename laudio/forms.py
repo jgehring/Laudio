@@ -12,6 +12,10 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         exclude = ("user")
+        widgets = {
+            'lastFMPass': forms.PasswordInput(render_value=False),
+            'libreFMPass': forms.PasswordInput(render_value=False),
+        }
 
 class UserForm(forms.ModelForm):
     is_superuser = forms.BooleanField(label="Superuser", 
@@ -38,6 +42,7 @@ class UserEditProfileForm(forms.ModelForm):
         exclude = ("first_name", "last_name", "is_staff", "last_login", 
                    "date_joined", "groups", "user_permissions", "password",
                    "username", "is_active", "is_superuser")
+
 
 class SettingsForm(forms.ModelForm):
     class Meta:

@@ -71,7 +71,9 @@ function play_song(id){
         soundManager.play(json.id, {
             onfinish: function() {
                 update_pause_icon() 
-                next_song(); 
+                next_song();
+                // scrobble song
+                $.get("{% url laudio.views.laudio_index %}scrobble/" + json.id + "/"); 
             },
             onpause: function() {
                 update_pause_icon();
@@ -98,8 +100,7 @@ function play_song(id){
         // set the background color for the song
         $( id_to_row(id, true) ).addClass("playing");
         
-        // scrobble song
-        $.get("{% url laudio.views.laudio_index %}scrobble/" + id + "/");
+        
         
         // get cover
         $.getJSON("{% url laudio.views.laudio_index %}cover/" + id + "/", function(json){
