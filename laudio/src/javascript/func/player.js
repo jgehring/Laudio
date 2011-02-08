@@ -69,7 +69,8 @@ function play_song(id){
         });
 
         soundManager.play(json.id, {
-            onfinish: function() { 
+            onfinish: function() {
+                update_pause_icon() 
                 next_song(); 
             },
             onpause: function() {
