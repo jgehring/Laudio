@@ -19,38 +19,10 @@
  *
  */
 
-/**
- * Colors all lines in the collection
- */
-function update_line_colors(){
-    $("#collection tbody tr").each(function(index) {
-        
-        if(index % 2){
-            
-            $(this).removeClass("line1");
-            $(this).removeClass("line2");
-            $(this).addClass("line1");
-        } else {
-            
-            $(this).removeClass("line1");
-            $(this).removeClass("line2");
-            $(this).addClass("line2");
-            
-        }
-        
-    });
-}
-
 
 /**
- * Selects a line (sets a darker bg) when you click on it
- * @param id = id of the line (without row, like 143)
- *
+ * This file defines usefull scripts which are often used on all sites
  */
-function select_line(id){
-    var lastSong = db("select", false);
-    $("#row" + lastSong).removeClass("selected");
-    // store the id for later use
-    db("select", id);
-    $("#row" + id).addClass("selected");
-}
+$(document).ready(function() { 
+    search("", "all");
+});

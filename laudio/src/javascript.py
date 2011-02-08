@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 from django.template import Context, Template
 from django.conf import settings
-
+from laudio.models import Settings
 import os
 
 class JavaScript(object):
@@ -39,22 +39,35 @@ class JavaScript(object):
                 according to those views
         
         """
-        self.view = view            
+        self.view = view   
+        files = []
         
-        files = ()
+        """check settings values"""         
+        try:
+            config = Settings.objects.get(pk=1)
+            if config.showLib and self.view == "library":
+                files.append("func/autoload.js")
+        except Settings.DoesNotExist, AttributeError:
+            pass
+        
+        
         """Depending on the view, different js files are being included. 
         We specify the ones we want to load with a files tuple, path 
         starting from src/javascript/"""
         if self.view == "library":
-            files = ("inc/includes.js", "ui/collection.js", "ui/controls.js",
-                     "ui/tablesorting.js", "ui/nav.js", "func/player.js",
-                     "func/search.js")
-                     
+            files.append("inc/includes.js")
+            files.append("ui/collection.js")
+            files.append("ui/controls.js")
+            files.append("ui/tablesorting.js")
+            files.append("ui/nav.js")
+            files.append("func/player.js")
+            files.append("func/search.js")
+            
         elif self.view == "settings":
-            files = ("ui/settings.js",)
+            files.append("ui/settings.js",)
             
         else:
-            files = ()
+            pass
         
         content = ""
         # loop over files and build the content

@@ -23,6 +23,16 @@
     overflow: auto;
 }
 
+#hint {
+    text-align: center;
+    font-size: 12pt;
+    padding: 50px;
+    background-image: url("img/nocover.png");
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    height: 400px;
+}
+
 #playlist {
     min-width: 396px;
     height: 100%;

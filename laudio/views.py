@@ -66,8 +66,10 @@ def render(request, tpl, tplvars={}):
     try:
         config = Settings.objects.get(pk=1)
         tplvars["audio_debug"] = config.debugAudio
+        tplvars["auto_load"] = config.showLib
     except Settings.DoesNotExist, AttributeError:
         tplvars["audio_debug"] = False 
+        tplvars["auto_load"] = False 
 
     return render_to_response(tpl, tplvars,
                                context_instance=RequestContext(request))
@@ -108,7 +110,7 @@ def laudio_settings(request):
                 settings = Settings.objects.get(pk=1)
             except Settings.DoesNotExist:
                 settings = Settings()
-            fields = ("requireLogin", "debugAudio", "collection")
+            fields = ("requireLogin", "debugAudio", "collection", "showLib")
             # write data into db
             for key in fields:
                 setattr(settings, key, settingsForm.cleaned_data[key])

@@ -60,6 +60,10 @@ class Settings(models.Model):
                     directory need to have the rights a+x")
     requireLogin = models.BooleanField("Require Login", 
         help_text="All User which want to listen to your files have to sign in")
+    showLib = models.BooleanField("Show all songs on startup", 
+        help_text="This displays your whole collection automatically on startup. \
+                    Be carefull with bigger collections as it may impact your \
+                    browsers speed")
     debugAudio = models.BooleanField("Debug", 
         help_text="Enable output to your firebug console including audio debug information \
                     and writing of debug information while scanning your collection \
