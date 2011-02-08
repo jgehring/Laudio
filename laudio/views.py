@@ -254,6 +254,22 @@ def ajax_drop_collection_db(request):
 
 
 @check_login("admin")
+def ajax_scan_perc(request):
+    """gets the last scan entry and the scan values"""
+    f = open(settings.SCAN_LOG, 'r')
+    data = f.read()
+    f.close()
+    try:
+        data = data.split(" ")
+        scanned = data[0]
+        total = data[1]
+    except IndexError:
+        scanned = 0
+        total = 1
+    return render_to_response('requests/scan_info.html', {"scanned": scanned,
+                                                          "total": total })
+
+@check_login("admin")
 def ajax_scan_collection(request):
     """Scan the files in the collection"""
     config = LaudioSettings()
@@ -262,6 +278,9 @@ def ajax_scan_collection(request):
     except OSError, e:
         return render_to_response( 'requests/dropscan.html', {"msg": e } )
     return render_to_response('requests/dropscan.html', { "msg": config.log })
+
+
+
 
 
 @check_login("user")

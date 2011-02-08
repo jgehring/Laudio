@@ -33,11 +33,11 @@ $(document).ready(function() {
 
         // first we unbind any previously attached events
         $("#site").unbind("click");
-        $(".small_loading").fadeIn("slow");
+        $("#deleteinfo").fadeIn("slow");
         
         // execute the ajax query which deletes the db
         $("#popup").load("{% url laudio.views.ajax_drop_collection_db %}", function (){ 
-            $(".small_loading").fadeOut("slow", function() {
+            $("#deleteinfo").fadeOut("slow", function() {
                 $("#popup").slideDown("slow");
             });
             
@@ -63,12 +63,17 @@ $(document).ready(function() {
         }
         // first we unbind any previously attached events
         $("#site").unbind("click");
-        $(".small_loading").fadeIn("slow");
+        $("#scaninfo").fadeIn("slow");
+        
+        // wait 5 secs then set db querying
+        timeout = setTimeout("query_start()",5000);
         
         // execute the ajax query which scans the collection
         $("#popup").load("{% url laudio.views.ajax_scan_collection %}", function (){ 
-            $(".small_loading").fadeOut("slow", function() {
+            $("#scaninfo").fadeOut("slow", function() {
                 $("#popup").slideDown("slow");
+                clearTimeout(timeout);
+                clearInterval( db("timer", false) );
             });
             
             
@@ -77,8 +82,35 @@ $(document).ready(function() {
                 $("#popup").slideUp("slow");
             });
             
-        });   
+        });
+        
+          
    
     });
-    
+
 });
+
+/*
+ * Start querying the db
+ */
+function query_start(){
+    db("timer", setInterval( "update_percentage()", 10000 ) );    
+}
+
+/*
+ * Sets the percentage of the canvas while querying the db
+ * 
+ */
+function update_percentage(){
+    // get the percentage from the db
+    $.getJSON("{% url laudio.views.ajax_scan_perc %}", function(json){
+        var percent = json.scanned / json.total;
+        var width = Math.floor(percent * 300);
+        var $canvas = $(".percentage canvas");
+        var ctx = $canvas[0].getContext("2d");
+        ctx.clearRect(0,0, 300 ,24);
+        // fill loaded bar
+        ctx.fillStyle = "#333";
+        ctx.fillRect(0,0, width ,24);
+    }); 
+}

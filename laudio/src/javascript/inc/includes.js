@@ -23,14 +23,7 @@
 /**
  * This file defines usefull scripts which are often used on all sites
  */
-$(document).ready(function() { 
-    soundManager.url = '{% url laudio.views.laudio_index %}media/js/soundmanager/swf/';
-    soundManager.useHTML5Audio = true;
-    db("playing", 0);
-    db("volume", 100);
-    db("shuffle", 0);
-    db("repeat", 0);
-});
+
 
 /**
  * This is basically a shortcut for the jquery store function

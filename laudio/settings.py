@@ -70,6 +70,7 @@ INSTALL_DIR = os.path.dirname( os.path.abspath(__file__) )
 MEDIA_ROOT = os.path.join( os.path.dirname( os.path.abspath(__file__) ), 'media/')
 AUDIO_DIR = os.path.join( os.path.dirname( os.path.abspath(__file__) ), 'media/audio')
 DEBUG_LOG = "/var/log/laudio/debug.log"
+SCAN_LOG = "/var/log/laudio/scan.log"
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"

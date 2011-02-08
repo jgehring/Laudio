@@ -70,6 +70,7 @@ class Settings(models.Model):
                     to %s" % settings.DEBUG_LOG)
     
 
+
 class UserProfile(models.Model):
     user = models.ForeignKey(User, unique=True)
     lastFMName = models.CharField("last.fm username", max_length=100, blank=True)

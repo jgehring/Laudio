@@ -64,6 +64,7 @@ class JavaScript(object):
             files.append("func/search.js")
             
         elif self.view == "settings":
+            files.append("inc/includes.js",)
             files.append("ui/settings.js",)
             
         else:

@@ -19,6 +19,15 @@
  *
  */
 
+$(document).ready(function() { 
+    soundManager.url = '{% url laudio.views.laudio_index %}media/js/soundmanager/swf/';
+    soundManager.useHTML5Audio = true;
+    db("playing", 0);
+    db("volume", 100);
+    db("shuffle", 0);
+    db("repeat", 0);
+});
+
 /**
  * Colors all lines in the collection
  */

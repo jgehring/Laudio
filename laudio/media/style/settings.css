@@ -38,16 +38,26 @@
 .small_loading {
     background-image: url("img/loading.gif") !important;
     background-repeat: no-repeat;
-    background-position: center center;
+    background-position: center 30px;
     background-color: transparent;
     width: 100%;
-    height: 70px;
-    display: none;
+    height: 150px;
+    display:none;
 }
 
 .small_loading p {
     text-align: center;
-    padding-top: 60px;
+    padding-top: 80px;
+}
+
+.percentage {
+    width: 300px;
+    height: 24px;
+    text-align: center;
+    margin: auto;
+    border: 1px solid #ccc;
+    padding: 0 !important;
+    margin-top: 10px;
 }
 
 #settings h1 {

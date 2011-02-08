@@ -57,6 +57,7 @@ urlpatterns = patterns('',
     (r'^scrobble/(?P<id>.*)/$', ajax_scrobble_song),
     (r'^cover/(?P<id>.*)/$', ajax_cover_fetch),
     (r'^advautocomplete/(?P<row>.*)/$', ajax_adv_autocompletion),
+    (r'^settings/scan/info/$', ajax_scan_perc),
     
     # other sites
     (r'^about/$', laudio_about),

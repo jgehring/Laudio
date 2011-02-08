@@ -59,23 +59,31 @@ class MusicIndexer (object):
 
     def scan(self):
         """ Scans a directory recursively for ogg files """
-        if self.debug:
-            self._debug("Begin Scan")
+        # reset count
+        self._updateScanCount(True)
+        # scan all files
+        fileList = []
         for root, directories, files in os.walk(self.musicDir):
             for name in files:
-                songpath = os.path.join( root, name )
-                # TODO: check for ogg audio in the file rather then extension
-                #       possible ogv files could be falsy indexed by this
-                if name.lower().endswith(".ogg") or name.lower().endswith(".oga"):
-                    if self.debug:
-                        self._debug("Scanned %s" % songpath)
-                    self._addSong( songpath, "ogg" )
-                    self.scanned += 1
-                if name.lower().endswith(".mp3"):
-                    if self.debug:
-                        self._debug("Scanned %s" % songpath)
-                    self._addSong( songpath, "mp3" )
-                    self.scanned += 1
+                fileList.append( os.path.join( root, name ) )
+        # add a new scan entry
+        self.total = len(fileList)
+        if self.debug:
+            self._debug("Begin Scan")
+        # now add the files to the db
+        for name in fileList:
+            # TODO: check for ogg audio in the file rather then extension
+            #       possible ogv files could be falsy indexed by this
+            if name.lower().endswith(".ogg") or name.lower().endswith(".oga"):
+                if self.debug:
+                    self._debug("Scanned %s" % name)
+                self._addSong( name, "ogg" )
+                self._updateScanCount()
+            if name.lower().endswith(".mp3"):
+                if self.debug:
+                    self._debug("Scanned %s" % name)
+                self._addSong( name, "mp3" )
+                self._updateScanCount()
         if self.debug:
             self._debug("Finished Scan")
         
@@ -145,6 +153,20 @@ class MusicIndexer (object):
         f.write( '%s\n' % msg )
         f.close()
 
+
+    def _updateScanCount(self, reset=False):
+        """Updates values in the scan log"""
+        if reset == True:
+            f = open(settings.SCAN_LOG, 'w')
+            f.write( '%s %s' % (0, 1) )
+            f.close()
+        else:
+            self.scanned += 1
+            # open file only for every ten songs
+            if self.scanned % 10 == 0:
+                f = open(settings.SCAN_LOG, 'w')
+                f.write( '%s %s' % (self.scanned, self.total) )
+                f.close()
 
 
     def _musicFile(self, songpath, codec):
