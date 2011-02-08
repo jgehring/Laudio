@@ -1,8 +1,18 @@
+laudio (0.4-1) maverick; urgency=low
+
+  * 0.4 stable release!
+  * Scrobble at end of song
+  * If song has ended, change pause button to play
+  * Hide characters in password fields
+
+ -- Bernhard Posselt <bernhard.posselt@gmx.at>  Tue, 08 Feb 2011 22:16:11 +0100
+
+
 laudio (0.4-beta10-1) maverick; urgency=low
 
   * Added an indicator for the scan progress
 
- -- Bernhard Posselt <bernhard.posselt@gmx.at>  Mon, 08 Feb 2011 14:30:11 +0100
+ -- Bernhard Posselt <bernhard.posselt@gmx.at>  Tue, 08 Feb 2011 14:30:11 +0100
 
 
 laudio (0.4-beta9-1) maverick; urgency=low
@@ -12,7 +22,7 @@ laudio (0.4-beta9-1) maverick; urgency=low
   * Integrated link to webchat
   * Updated the about page with installing instructions and current information
 
- -- Bernhard Posselt <bernhard.posselt@gmx.at>  Mon, 08 Feb 2011 02:00:11 +0100
+ -- Bernhard Posselt <bernhard.posselt@gmx.at>  Mon, 07 Feb 2011 02:00:11 +0100
 
 laudio (0.4-beta8-1) maverick; urgency=low
 
@@ -20,7 +30,7 @@ laudio (0.4-beta8-1) maverick; urgency=low
   * Added Favicon
   * Fixed behaviour in settings which let you scan and delete at the same time
 
- -- Bernhard Posselt <bernhard.posselt@gmx.at>  Sun, 07 Feb 2011 22:00:11 +0100
+ -- Bernhard Posselt <bernhard.posselt@gmx.at>  Sun, 06 Feb 2011 22:00:11 +0100
 
 laudio (0.4-beta7-1) maverick; urgency=low
 
@@ -28,14 +38,14 @@ laudio (0.4-beta7-1) maverick; urgency=low
   * Improved debug output functionality which is now only activated when set in settings
   * Added soundmanager debug output to appear in firebug console
 
- -- Bernhard Posselt <bernhard.posselt@gmx.at>  Sun, 07 Feb 2011 18:00:11 +0100
+ -- Bernhard Posselt <bernhard.posselt@gmx.at>  Sun, 06 Feb 2011 18:00:11 +0100
 
 laudio (0.4-beta6-1) maverick; urgency=low
 
   * Fixed a simple mistake which didnt allow laudio to uninstall completely
   * If youre affected just sudo rm -r /usr/share/laudio when uninstalling
 
- -- Bernhard Posselt <bernhard.posselt@gmx.at>  Sun, 07 Feb 2011 15:00:11 +0100
+ -- Bernhard Posselt <bernhard.posselt@gmx.at>  Sun, 06 Feb 2011 15:00:11 +0100
 
 laudio (0.4-beta5-1) maverick; urgency=low
 
