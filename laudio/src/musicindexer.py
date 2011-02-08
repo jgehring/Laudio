@@ -65,7 +65,9 @@ class MusicIndexer (object):
         fileList = []
         for root, directories, files in os.walk(self.musicDir):
             for name in files:
-                fileList.append( os.path.join( root, name ) )
+                if name.lower().endswith(".ogg") or name.lower().endswith(".oga") \
+                                                 or name.lower().endswith("mp3"):
+                    fileList.append( os.path.join( root, name ) )
         # add a new scan entry
         self.total = len(fileList)
         if self.debug:

@@ -65,8 +65,11 @@ $(document).ready(function() {
         $("#site").unbind("click");
         $("#scaninfo").fadeIn("slow");
         
-        // wait 5 secs then set db querying
-        timeout = setTimeout("query_start()",5000);
+        // delete previous values
+        clear_loaded();
+        
+        // wait 2 secs then set db querying
+        timeout = setTimeout("query_start()",2000);
         
         // execute the ajax query which scans the collection
         $("#popup").load("{% url laudio.views.ajax_scan_collection %}", function (){ 
@@ -94,7 +97,19 @@ $(document).ready(function() {
  * Start querying the db
  */
 function query_start(){
-    db("timer", setInterval( "update_percentage()", 10000 ) );    
+    db("timer", setInterval( "update_percentage()", 5000 ) );    
+}
+
+/*
+ * Clears the loaded data
+ * 
+ */
+function clear_loaded(){
+    $("#scanned").html(0);
+    $("#total").html("");
+    var $canvas = $(".percentage canvas");
+    var ctx = $canvas[0].getContext("2d");
+    ctx.clearRect(0,0, 300 ,24);
 }
 
 /*
@@ -104,6 +119,8 @@ function query_start(){
 function update_percentage(){
     // get the percentage from the db
     $.getJSON("{% url laudio.views.ajax_scan_perc %}", function(json){
+        $("#scanned").html(json.scanned + "/");
+        $("#total").html(json.total);
         var percent = json.scanned / json.total;
         var width = Math.floor(percent * 300);
         var $canvas = $(".percentage canvas");
