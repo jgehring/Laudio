@@ -1,3 +1,12 @@
+laudio (0.4-beta9-1) maverick; urgency=low
+
+  * Added hint for loading music at startup
+  * Added option to load all music on startup in settings
+  * Integrated link to webchat
+  * Updated the about page with installing instructions and current information
+
+ -- Bernhard Posselt <bernhard.posselt@gmx.at>  Mon, 08 Feb 2011 02:00:11 +0100
+
 laudio (0.4-beta8-1) maverick; urgency=low
 
   * Fixed some copyright issues
