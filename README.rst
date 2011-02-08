@@ -4,7 +4,7 @@
 
 .. image::  http://github.com/downloads/Raydiation/Laudio/screenshot_large_v04.png
 
-:Version: 0.4-beta9
+:Version: 0.4-beta10
 :Keywords: python, jquery, django, web, html5, audio, player, javascript, last.fm, libre.fm, json, mp3, ogg, vorbis
 
 Laudio is a webbased player which takes advantage of the HTML5 audio

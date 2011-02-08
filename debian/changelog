@@ -1,3 +1,10 @@
+laudio (0.4-beta10-1) maverick; urgency=low
+
+  * Added an indicator for the scan progress
+
+ -- Bernhard Posselt <bernhard.posselt@gmx.at>  Mon, 08 Feb 2011 14:30:11 +0100
+
+
 laudio (0.4-beta9-1) maverick; urgency=low
 
   * Added hint for loading music at startup
