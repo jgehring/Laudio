@@ -42,6 +42,21 @@ Other
 Obtaining Source: Unstable
 --------------------------
 
+You can install the newest dev version from our PPA:
+
+Add the PPA to your sources::
+
+    $ sudo apt-add-repository ppa:bernhard-posselt/laudio-ppa
+
+Then update and install it::
+
+    $ sudo apt-get update
+    $ sudo apt-get install laudio-git
+
+Your Laudio installation is now up and running at http://localhost/laudio
+
+Git
+---
 To get the unstable trunk fire up your console and change to the path where you
 want the source to be downloaded. Then type in::
 
