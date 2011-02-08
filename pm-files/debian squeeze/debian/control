@@ -1,16 +1,17 @@
 Source: laudio
 Section: web
 Priority: extra
-Maintainer: Bernhard Posselt <bernhard.posselt@gmx.at>
-Build-Depends: debhelper (>= 7.0.50~)
-Standards-Version: 3.8.4
 Homepage: https://github.com/Raydiation/Laudio
 Vcs-Git: git://github.com/Raydiation/Laudio.git
 Vcs-Browser: https://github.com/Raydiation/Laudio
+Version: 0.4
+Build-Depends: debhelper (>= 7.0.50~)
+Standards-Version: 3.8.4
+Maintainer: Bernhard Posselt <bernhard.posselt@gmx.at>
 
 Package: laudio
 Architecture: all
-Depends: python, python-lxml, python-django, python-mutagen, apache2, sqlite3, libapache2-mod-wsgi, python-pysqlite2, ${misc:Depends}
+Depends: python-lxml (>= 2.2.8), python-django (>= 1.2), python-mutagen (>= 1.9), apache2 (>= 2.2.16), sqlite3 (>= 3.7.3), libapache2-mod-wsgi (>= 3.3), python-pysqlite2 (>= 2.6.0), ${misc:Depends}
 Description: An HTML5 musicplayer
  Laudio is an HTML5 Music Player and Ampache Alternative which can be accessed
  from anyone with a webbrowser. You set up Laudio on your machine with the music 
