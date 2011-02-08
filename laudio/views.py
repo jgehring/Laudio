@@ -94,7 +94,7 @@ def laudio_index(request):
 
 def laudio_about(request):
     """A plain about site"""
-    return render(request, 'about.html', {})
+    return render(request, 'about.html', {"version": settings.LAUDIO_VERSION })
     
     
 @check_login("admin")

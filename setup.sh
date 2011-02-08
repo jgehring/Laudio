@@ -119,9 +119,10 @@ case "$DISTRO" in
         chown -R $APACHE:$APACHE $DATABASE_FILE
         chmod -R 0755 $DATABASE_FILE
 
-        echo "Restarting apache and adding it to default runlevel"
-        rc-update add apache2 default
+        echo "Restarting apache"
         /etc/init.d/apache2 restart
+        echo "If you want to start Laudio at boot, add apache2 to your default"
+        echo "runlevel: rc-update add apache2 default"
     ;;
 
     *)
