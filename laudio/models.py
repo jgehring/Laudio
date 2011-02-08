@@ -63,7 +63,7 @@ class Settings(models.Model):
     showLib = models.BooleanField("Show all songs on startup", 
         help_text="This displays your whole collection automatically on startup. \
                     Be carefull with bigger collections as it may impact your \
-                    browsers speed")
+                    browser's speed")
     debugAudio = models.BooleanField("Debug", 
         help_text="Enable output to your firebug console including audio debug information \
                     and writing of debug information while scanning your collection \
