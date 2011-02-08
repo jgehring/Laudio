@@ -23,7 +23,7 @@ Installing Laudio
 =================
 Ubuntu Maverick
 ---------------
-Download the deb package laudio-0.4-maverick from 
+Download the deb package laudio-0.4-maverick.deb from 
 https://github.com/Raydiation/Laudio/downloads
 
 Or 
@@ -42,7 +42,7 @@ Your Laudio installation is now up and running at http://localhost/laudio
 
 Debian Squeeze
 --------------
-Download the deb package laudio-0.4-squeeze
+Download the deb package laudio-0.4-squeeze.deb
 from https://github.com/Raydiation/Laudio/downloads
 
 
@@ -101,7 +101,7 @@ want the source to be downloaded. Then type in::
 to get into the directory. Proceed with ``Installation other``
 
 FAQ
-=======================
+===
 
 Which Browsers does Laudio support?
 -----------------------------------
