@@ -17,6 +17,8 @@ Installed on the machine where your music collection resides, it can be accessed
 in the whole network. By forwarding Port 80 on your router,
 even your friends can listen to it over the Internet.
 
+Get a live preview on http://laudio-player.org/
+
 Installing Laudio
 =================
 Ubuntu Maverick
@@ -48,35 +50,6 @@ from https://github.com/Raydiation/Laudio/downloads
 Other
 -----
 
-Obtaining Source: Unstable
---------------------------
-
-You can install the newest dev version from our PPA:
-
-Add the PPA to your sources::
-
-    $ sudo apt-add-repository ppa:bernhard-posselt/laudio-ppa
-
-Then update and install it::
-
-    $ sudo apt-get update
-    $ sudo apt-get install laudio-git
-
-Your Laudio installation is now up and running at http://localhost/laudio
-
-Git
----
-To get the unstable trunk fire up your console and change to the path where you
-want the source to be downloaded. Then type in::
-
-    $ git clone git://github.com/Raydiation/Laudio.git
-    $ cd Laudio*
-
-to get into the directory. Proceed with ``Installation other``
-
-Obtaining Source: Stable
-------------------------
-
 Download the source as tar.gz from the `Download Page`_ and extract it to your
 personal directory. Fire up a terminal and type in::
 
@@ -101,7 +74,31 @@ Your Laudio installation is now up and running at http://localhost/laudio
 .. _`Download Page`: http://github.com/Raydiation/Laudio/downloads
 .. _`Ampache`: http://ampache.org/
 
+Developement Versions
+---------------------
 
+You can install the newest dev version from our PPA:
+
+Add the PPA to your sources::
+
+    $ sudo apt-add-repository ppa:bernhard-posselt/laudio-ppa
+
+Then update and install it::
+
+    $ sudo apt-get update
+    $ sudo apt-get install laudio-git
+
+Your Laudio installation is now up and running at http://localhost/laudio
+
+Git
+---
+To get the unstable trunk fire up your console and change to the path where you
+want the source to be downloaded. Then type in::
+
+    $ git clone git://github.com/Raydiation/Laudio.git
+    $ cd Laudio*
+
+to get into the directory. Proceed with ``Installation other``
 
 FAQ
 =======================
