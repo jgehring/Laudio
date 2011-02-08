@@ -21,7 +21,7 @@
 
 
 /**
- * This file defines usefull scripts which are often used on all sites
+ * This loads all songs into the library view
  */
 $(document).ready(function() { 
     search("", "all");
