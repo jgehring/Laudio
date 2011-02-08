@@ -30,3 +30,12 @@
     -webkit-box-shadow: 0 0 0!important;
     text-decoration: underline;
 }
+
+.bash {
+    border: 1px solid #777;
+    background-color: #333;
+    color: #fefefe;
+    padding: 3px;
+    border-left: 3px solid #777;
+    font-family: monospace, sans-serif;
+}

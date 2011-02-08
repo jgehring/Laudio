@@ -93,8 +93,8 @@ def laudio_index(request):
 def laudio_about(request):
     """A plain about site"""
     return render(request, 'about.html', {})
-
-
+    
+    
 @check_login("admin")
 def laudio_settings(request):
     """Site where the configuration happens"""
