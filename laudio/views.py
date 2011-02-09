@@ -400,10 +400,10 @@ def ajax_adv_autocompletion(request, row):
     """
     if request.method == "GET":
         songs = Song.objects.filter(
-                title__contains=request.GET.get("title", ""),
-                artist__contains=request.GET.get("artist", ""),
-                album__contains=request.GET.get("album", ""),
-                genre__contains=request.GET.get("genre", ""),
+                title__contains=urllib.unquote_plus( request.GET.get("title", "") ),
+                artist__contains=urllib.unquote_plus( request.GET.get("artist", "") ),
+                album__contains=urllib.unquote_plus( request.GET.get("album", "") ),
+                genre__contains=urllib.unquote_plus( request.GET.get("genre", "") ),
         ).values(row).distinct()
         return render_to_response('requests/autocomplete.html', {'songs': songs, 'row': row})
     #'values': songs.get(row)

@@ -85,7 +85,7 @@ function play_song(id){
                 update_play_icon();
             },
             whileplaying: function() {
-                update_progressbar();
+                update_progressbar(this);
             },
         });
 

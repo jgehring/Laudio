@@ -177,31 +177,26 @@ $(document).ready(function() {
 /**
  * Updates the filling of the progressbar
  */
-function update_progressbar(){
+function update_progressbar(song){
     // get audio data
-    var playing = db("playing", false);
-    var duration = soundManager.getSoundById(playing).duration / 1000;
-    var currTime = soundManager.getSoundById(playing).position / 1000;
-    // prevent duration from being Nan
-    if(isNaN(duration)){
-        duration = db("duration", false);
+    if(song.isBuffering){
+        var duration = song.durationEstimate / 1000;
+    } else {
+        var duration = song.duration / 1000;
     }
+    var currTime = song.position / 1000;
     var $canvas = $("#progressbar canvas");
     var ctx = $canvas[0].getContext("2d");
     ctx.clearRect(0,0, 300 ,24);
     // fill loaded bar
-    sm = soundManager.getSoundById(playing)
-    var loaded =  sm.bytesTotal / sm.bytesLoaded;
-    var width = 0;
-    var width = Math.floor(loaded * 300);
+    var loaded =  song.bytesLoaded / song.bytesTotal;
     ctx.fillStyle = "#666";
-    ctx.fillRect(0,0, width ,24);
+    ctx.fillRect(0,0, Math.floor(loaded * 300) ,24);
     // fill rectangle which indicates position in the song
-    var width = 0;
     width = Math.floor((300 / duration) * currTime);  
     ctx.fillStyle = "#333";
     ctx.fillRect(0,0, width ,24);
-    $("#progressbar").attr("title", Math.floor(currTime) + "/" + Math.floor(duration));    
+    $("#progressbar").attr("title", currTime + "/" + duration);    
 }
 
 
