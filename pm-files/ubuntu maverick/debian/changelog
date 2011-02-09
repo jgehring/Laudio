@@ -1,9 +1,9 @@
-laudio (0.4.1) maverick; urgency=low
+laudio (0.4.1-1) maverick; urgency=low
 
   * License fixes and lintian fixes
   * PPA version fix
 
- -- Bernhard Posselt <bernhard.posselt@gmx.at>  Tue, 08 Feb 2011 24:16:11 +0100
+ -- Bernhard Posselt <bernhard.posselt@gmx.at>  Wed, 09 Feb 2011 01:16:11 +0100
 
 laudio (0.4-1) maverick; urgency=low
 
