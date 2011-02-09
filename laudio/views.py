@@ -436,15 +436,15 @@ def ajax_search_collection(request, search):
 @check_login("user")
 def ajax_adv_search_collection(request):
     """Get songs where the fields contain the search params"""
-    title = urllib.unquote( request.GET.get("title", "") )
-    length = urllib.unquote( request.GET.get("length", "") )
-    tracknr = urllib.unquote( request.GET.get("tracknr", "") )
-    artist = urllib.unquote( request.GET.get("artist", "") )
-    album = urllib.unquote( request.GET.get("album", "") )
-    date = urllib.unquote( request.GET.get("date", "") )
-    genre = urllib.unquote( request.GET.get("genre", "") )
-    codec = urllib.unquote( request.GET.get("codec", "") )
-    bitrate = urllib.unquote( request.GET.get("bitrate", "") )
+    title = urllib.unquote_plus( request.GET.get("title", "") )
+    length = urllib.unquote_plus( request.GET.get("length", "") )
+    tracknr = urllib.unquote_plus( request.GET.get("tracknr", "") )
+    artist = urllib.unquote_plus( request.GET.get("artist", "") )
+    album = urllib.unquote_plus( request.GET.get("album", "") )
+    date = urllib.unquote_plus( request.GET.get("date", "") )
+    genre = urllib.unquote_plus( request.GET.get("genre", "") )
+    codec = urllib.unquote_plus( request.GET.get("codec", "") )
+    bitrate = urllib.unquote_plus( request.GET.get("bitrate", "") )
     songs = Song.objects.filter(title__contains=title,
                                 length__contains=length,
                                 tracknumber__contains=tracknr,
@@ -456,5 +456,5 @@ def ajax_adv_search_collection(request):
                                 bitrate__contains=bitrate
     ).extra( select={'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 
     'ltrnr': 'tracknumber',} ).order_by('lartist', 'lalbum', 'ltrnr')
-    return render_to_response('requests/songs.html', {'songs': songs, })
+    return render_to_response('requests/songs.html', {'songs': songs, "info": artist})
 

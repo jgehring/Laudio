@@ -52,7 +52,8 @@ $(document).ready(function() {
             
             // then we start a search
             var args = [];
-            args[field] = json[field];
+            // we need to decode html entities from the query
+            args[field] = decode_html_entities(json[field]);
             search(args, "advanced");
             
         });
@@ -147,6 +148,7 @@ $(document).ready(function() {
 
     
 });
+
 
 
 /**

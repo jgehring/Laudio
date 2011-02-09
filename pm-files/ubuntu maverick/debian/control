@@ -12,9 +12,8 @@ Vcs-Browser: https://github.com/Raydiation/Laudio
 Package: laudio
 Architecture: all
 Depends: ${python:Depends}, python-lxml (>= 2.2.6), python-django (>= 1.2), python-mutagen (>= 1.19), apache2 (>= 2.2.16), sqlite3 (>= 3.7.2), libapache2-mod-wsgi (>= 3.2), python-pysqlite2 (>= 2.6.0), ${misc:Depends}
-Description: An HTML5 musicplayer
- Laudio is an HTML5 Music Player and Ampache Alternative which can be accessed
- from anyone with a webbrowser. You set up Laudio on your machine with the music 
- collection, then add your directory and scan your music. If you like to, 
- you can add useraccounts and restrict usage for registered users.
- Laudio is an alternative to the heavyweight Ampache application.
+Description: HTML5 musicplayer for your LAN
+ Laudio is an HTML5 Music Player and alternative to Ampache which can be 
+ accessed from anyone with a webbrowser. You set up Laudio on your machine with 
+ the music  collection, then add your directory and scan your music. If you 
+ like to,  you can add useraccounts and restrict usage for registered users.

@@ -68,4 +68,15 @@ function row_to_id(row){
     return row.replace("row", "");
 }
 
+/**
+ * Decodes HTML Entities
+ * @param string str: string which you want to decode
+ * @return string: the decoded string
+ */
+function decode_html_entities(str) {
+    var text=content.document.createElement('textarea'); 
+    text.innerHTML = str;
+    return text.value;
+    text.parentNode.removeChild(text);
+}
 

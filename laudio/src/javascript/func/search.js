@@ -41,7 +41,9 @@ function search(search, depth){
             if(i !== 0){
                 queryString += "&";
             }
-            queryString += field + "=" + encodeURI( search[field] );
+            
+            queryString += field + "=" + encodeURIComponent(search[field]);
+            i++;
         }
         
         var url = "{% url laudio.views.ajax_adv_search_collection %}" + queryString;
