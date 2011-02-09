@@ -44,6 +44,7 @@ from django.core.context_processors import csrf
 
 # other python libs
 import time
+import datetime
 import os
 import urllib
 
@@ -307,7 +308,7 @@ def ajax_scrobble_song(request, id):
     
     # if user is logged in submit stats
     if request.user.is_authenticated():
-        now = int(time.mktime(time.gmtime()))
+        now = int( time.mktime(datetime.datetime.now().timetuple()) )
         userprofile = request.user.get_profile()
         # check for last.fm scrobbling
         try:

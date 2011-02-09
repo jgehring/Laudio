@@ -1,7 +1,8 @@
 Source: laudio
 Section: web
 Priority: extra
-Maintainer: Bernhard Posselt <bernhard.posselt@gmx.at>
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: Bernhard Posselt <bernhard.posselt@gmx.at>
 Build-Depends: debhelper (>= 7.0.50~)
 Standards-Version: 3.9.1
 Homepage: https://github.com/Raydiation/Laudio
