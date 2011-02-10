@@ -456,5 +456,5 @@ def ajax_adv_search_collection(request):
                                 bitrate__contains=bitrate
     ).extra( select={'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 
     'ltrnr': 'tracknumber',} ).order_by('lartist', 'lalbum', 'ltrnr')
-    return render_to_response('requests/songs.html', {'songs': songs, "info": artist})
+    return render_to_response('requests/songs.html', {'songs': songs})
 

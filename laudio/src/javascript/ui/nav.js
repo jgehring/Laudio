@@ -113,39 +113,42 @@ $(document).ready(function() {
      * TODO:
      * implement autocompletion
      */
-    $("#searchtitle").autocomplete(
-        {
-            source: function(request, response){
-                // get other variables
-                var title = encodeURIComponent($("#advSearch tr:eq(0) input").val());
-                var artist = encodeURIComponent($("#advSearch tr:eq(1) input").val());
-                var album = encodeURIComponent($("#advSearch tr:eq(2) input").val());
-                var genre = encodeURIComponent($("#advSearch tr:eq(3) input").val());
+    $("#advSearch input").each(function(){
+        var inputId = $(this).attr("id");
+        $(this).autocomplete(
+            {
+                source: function(request, response){
+                    // get other variables
+                    var title = encodeURIComponent($("#advSearch tr:eq(0) input").val());
+                    var artist = encodeURIComponent($("#advSearch tr:eq(1) input").val());
+                    var album = encodeURIComponent($("#advSearch tr:eq(2) input").val());
+                    var genre = encodeURIComponent($("#advSearch tr:eq(3) input").val());
+                    
+                    var row = inputId.replace("search", "");
+                    var url = "{% url laudio.views.laudio_index %}advautocomplete/" + row + "/";
+                    url += "?title=" + title;
+                    url += "&artist=" + artist;
+                    url += "&album=" + album;
+                    url += "&genre=" + genre;
+                    
+                    $.getJSON(url, function(data) {
+                        response($.map(data.results, function(item) {
+                                return {
+                                    value: decode_html_entities(item.value)
+                                };
+                        }));
+                    });
 
-                var url = "{% url laudio.views.laudio_index %}advautocomplete/title/";
-                url += "?title=" + title;
-                url += "&artist=" + artist;
-                url += "&album=" + album;
-                url += "&genre=" + genre;
-                
-                $.getJSON(url, function(data) {
-                    response($.map(data.results, function(item) {
-                            return {
-                                value: item.value
-                            };
-                    }));
-                });
-
-            },
-            minLength: 3,
-            select: function(event, ui) {
-                if (ui.item){
-                    $(this).attr("value", ui.item.value);
-                }
-        }
+                },
+                minLength: 3,
+                select: function(event, ui) {
+                    if (ui.item){
+                        var val = ui.item.value;
+                        $(this).attr("value", val);
+                    }
+            }
+        })
     });
-    
-
     
 });
 
