@@ -119,7 +119,7 @@ License: GPL-2 or other
 
 
 Files: laudio/media/js/jquery-ui-1.8.1.custom.min.js
-Files: laudio/media/style/jquery-ui.css
+       laudio/media/style/jquery-ui.css
 Copyright:
   (c) 2008 Paul Bakaus (ui.jquery.com)
   Brandon Aaron
