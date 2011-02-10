@@ -94,9 +94,7 @@ function play_song(id){
     
         // update title information
         title =  json.title + " - " + json.artist;
-        title = title.replace("&#39;", "'");
-        title = title.replace("&quot;", "'");
-        document.title = title;
+        document.title = decode_html_entities(title);
         // set the background color for the song
         $( id_to_row(id, true) ).addClass("playing");
         
