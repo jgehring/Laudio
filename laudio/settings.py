@@ -63,7 +63,7 @@ USE_I18N = True
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 
-LAUDIO_VERSION = "0.4.2.1"
+LAUDIO_VERSION = "0.4.2.2"
 LAST_FM_API_KEY = "a1d1111ab0b08262e6d7484cc5dc949a"
 INSTALL_DIR = os.path.dirname( os.path.abspath(__file__) )
 MEDIA_ROOT = os.path.join( os.path.dirname( os.path.abspath(__file__) ), 'media/')
