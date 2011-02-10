@@ -22,6 +22,9 @@
 $(document).ready(function() { 
     soundManager.url = '{% url laudio.views.laudio_index %}media/js/soundmanager/swf/';
     soundManager.useHTML5Audio = true;
+    soundManager.flashVersion = 8;
+    soundManager.debugFlash = true;
+    soundManager.audioFormats.mp4.required = false;
     db("playing", 0);
     db("volume", 100);
     db("shuffle", 0);

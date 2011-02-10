@@ -56,9 +56,10 @@ class Settings(models.Model):
         help_text="Sets ONLY the path to your music files! To add the \
                     files to your library hit the \"Scan collection\" \
                     button button above. All directories above the music \
-                    directory need to have the rights a+x")
+                    directory need to have the rights a+x, all music files \
+                    need to be 0755")
     requireLogin = models.BooleanField("Require Login", 
-        help_text="All User which want to listen to your files have to sign in")
+        help_text="All users who want to listen to your files have to log in")
     showLib = models.BooleanField("Show all songs on startup", 
         help_text="This displays your whole collection automatically on startup. \
                     Be carefull with bigger collections as it may impact your \
