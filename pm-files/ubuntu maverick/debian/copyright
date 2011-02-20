@@ -156,6 +156,22 @@ License: GPL-2 or other
     .
     On Debian GNU/Linux systems, the complete text of the GNU General
     Public License can be found in `/usr/share/common-licenses/GPL-2'
+    
+    
+Files: laudio/media/js/jquery.contextmenu.js
+       laudio/media/style/jquery.contextmenu.css
+Copyright: (c) 2008 Matt Kruse <javascripttoolbox.com>
+License: GPL-3 or other
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of either:
+    .
+        a) the GNU General Public License as published by the Free Software
+           Foundation; version 3.
+    .
+        b) the MIT license.
+    .
+    On Debian GNU/Linux systems, the complete text of the GNU General
+    Public License can be found in `/usr/share/common-licenses/GPL-2'
 
 
 

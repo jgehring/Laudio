@@ -31,6 +31,7 @@ $(document).ready(function() {
     db("repeat", 0);
 });
 
+
 /**
  * Colors all lines in the collection
  */

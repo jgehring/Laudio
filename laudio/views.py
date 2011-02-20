@@ -41,6 +41,7 @@ from django.contrib.auth import authenticate, login
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.core.context_processors import csrf
+from django.core.servers.basehttp import FileWrapper
 
 # other python libs
 import time
@@ -73,6 +74,22 @@ def render(request, tpl, tplvars={}):
 
     return render_to_response(tpl, tplvars,
                                context_instance=RequestContext(request))
+
+def send_file(request, path):
+    """                                                                         
+    Send a file    
+    
+    Keyword arguments:
+    download -- the path to the file
+                                              
+    """
+    filename = os.path.basename(path).replace(" ", "_")                            
+    wrapper = FileWrapper(file(path))
+    response = HttpResponse(wrapper, content_type='text/plain')
+    response['Content-Disposition'] = u'attachment; filename=%s' % filename
+    response['Content-Length'] = os.path.getsize(path)
+    return response
+    #return HttpResponse(filename)
 
 ########################################################################
 # Visible Sites                                                        #
@@ -457,4 +474,17 @@ def ajax_adv_search_collection(request):
     ).extra( select={'lartist': 'lower(artist)', 'lalbum': 'lower(album)', 
     'ltrnr': 'tracknumber',} ).order_by('lartist', 'lalbum', 'ltrnr')
     return render_to_response('requests/songs.html', {'songs': songs})
+
+
+@check_login("user")
+def ajax_song_download(request, id):
+    """Returns a download of the requested song
+    
+    Keyword arguments:
+    id -- the id of the song
+    
+    """
+    song = Song.objects.get(id=id)
+    path = os.path.join(settings.AUDIO_DIR, song.path)
+    return send_file(request, path)
 

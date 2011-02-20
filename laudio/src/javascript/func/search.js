@@ -81,6 +81,23 @@ function search(search, depth){
                 
                 // update table sorting
                 $("#collection").trigger("update");
+                // set context menu
+                /**
+                 * Enable a context menu for rightclick
+                 */
+                var songMenu = [ 
+                    {
+                        'Download': function(menuItem,menu) { 
+                            id = row_to_id(this.id);
+                            // send download
+                            window.open("{% url laudio.views.laudio_index %}song_download/" + id + "/");
+                            //$.get("{% url laudio.views.laudio_index %}song_download/" + id + "/");
+                        } 
+                    }, $.contextMenu.separator,];
+                    
+                $(function() {
+                    $('#collection tbody tr').contextMenu(songMenu,{theme:'vista'}); 
+                });
                 
             });
         });
