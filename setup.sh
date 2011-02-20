@@ -58,7 +58,7 @@ case "$DISTRO" in
             chown -R $APACHE:$APACHE $elem
             chmod -R 0755 $elem
         done
-        mv laudio/* $INSTALL_DIR
+        mv laudio $INSTALL_DIR
         chown -R $APACHE:$APACHE $INSTALL_DIR
         chmod -R 0755 $INSTALL_DIR
         
@@ -99,7 +99,7 @@ case "$DISTRO" in
             chown -R $APACHE:$APACHE $elem
             chmod -R 0755 $elem
         done
-        mv laudio/* $INSTALL_DIR 
+        mv laudio $INSTALL_DIR 
         chown -R $APACHE:$APACHE $INSTALL_DIR
         chmod -R 0755 $INSTALL_DIR
         
@@ -137,7 +137,7 @@ case "$DISTRO" in
             chown -R $APACHE:$APACHE $elem
             chmod -R 0755 $elem
         done
-        mv laudio/* $INSTALL_DIR
+        mv laudio $INSTALL_DIR
         chown -R $APACHE:$APACHE $INSTALL_DIR
         chmod -R 0755 $INSTALL_DIR
         
