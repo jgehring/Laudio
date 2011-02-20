@@ -44,7 +44,12 @@ case "$DISTRO" in
         echo "Setting up Apache"
         APACHE=$STANDARD_HTTP_USER
         mv laudio_apache.conf /etc/apache2/conf.d/
-
+        echo "Removing previous installations"
+        for elem in ${CREATE_DIRS[@]}; do
+            if ! [[ -e $elem ]]; then
+                rm -r $elem
+            fi
+        done
         echo "Creating Directories and installing laudio"
         for elem in ${CREATE_DIRS[@]}; do
             if ! [[ -e $elem ]]; then
@@ -72,7 +77,17 @@ case "$DISTRO" in
         echo "Setting up Apache"  
         APACHE=$ARCH_HTTP_USER
         mv laudio_apache.conf /etc/httpd/conf/extra/
-        echo "Include conf/extra/laudio_apache.conf" >> /etc/httpd/conf/httpd.conf
+        # check if the entry is already there
+        conf=`grep -e laudio_apache.conf /etc/httpd/conf/httpd.conf`
+        if [ "$conf" = "" ]; then
+            echo "Include conf/extra/laudio_apache.conf" >> /etc/httpd/conf/httpd.conf
+        fi
+        echo "Removing previous installations"
+        for elem in ${CREATE_DIRS[@]}; do
+            if ! [[ -e $elem ]]; then
+                rm -r $elem
+            fi
+        done
         echo "Creating Directories and installing laudio"
         for elem in ${CREATE_DIRS[@]}; do
             if ! [[ -e $elem ]]; then
@@ -84,7 +99,7 @@ case "$DISTRO" in
         mv laudio/* $INSTALL_DIR 
 
         echo "Creating Database"
-        python /usr/share/laudio/manage.py syncdb --noinput
+        python2 /usr/share/laudio/manage.py syncdb --noinput
         chown -R $APACHE:$APACHE $DATABASE_FILE
         chmod -R 0755 $DATABASE_FILE
 
@@ -103,7 +118,12 @@ case "$DISTRO" in
         echo "Setting up Apache"
         APACHE=$STANDARD_HTTP_USER
         mv laudio_apache.conf /etc/apache2/vhosts.d/
-
+        echo "Removing previous installations"
+        for elem in ${CREATE_DIRS[@]}; do
+            if ! [[ -e $elem ]]; then
+                rm -r $elem
+            fi
+        done
         echo "Creating Directories and installing laudio"
         for elem in ${CREATE_DIRS[@]}; do
             if ! [[ -e $elem ]]; then
