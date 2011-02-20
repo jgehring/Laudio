@@ -80,3 +80,5 @@ function decode_html_entities(str) {
     text.parentNode.removeChild(text);
 }
 
+
+

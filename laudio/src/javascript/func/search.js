@@ -81,22 +81,35 @@ function search(search, depth){
                 
                 // update table sorting
                 $("#collection").trigger("update");
+                
                 // set context menu
-                /**
-                 * Enable a context menu for rightclick
-                 */
-                var songMenu = [ 
+                var songMenu = [
                     {
-                        'Download': function(menuItem,menu) { 
-                            id = row_to_id(this.id);
+                        'Play': {
+                            
+                            onclick: function(menuItem, menu) { 
+                                var id = row_to_id(this.id);
+                                play_song(id);
+                            },
+                            icon: "{% url laudio.views.laudio_index %}media/style/img/play_small.png",
+                        }
+                        
+                        
+                    }, $.contextMenu.separator, 
+                    {
+                        'Download': function(menuItem, menu) { 
+                            var id = row_to_id(this.id);
                             // send download
                             window.open("{% url laudio.views.laudio_index %}song_download/" + id + "/");
-                            //$.get("{% url laudio.views.laudio_index %}song_download/" + id + "/");
                         } 
-                    }, $.contextMenu.separator,];
+                    }];
                     
                 $(function() {
-                    $('#collection tbody tr').contextMenu(songMenu,{theme:'vista'}); 
+                    $('#collection tbody tr').contextMenu(songMenu,
+                        { 
+                            theme:'vista',
+                        }
+                    ); 
                 });
                 
             });

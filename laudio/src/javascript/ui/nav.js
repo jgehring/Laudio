@@ -81,7 +81,7 @@ $(document).ready(function() {
      * call search after when the user entered 3 or more letters
      */
     $("#search .search").keyup(function(e) {
-        if($(this).attr("value").length >= 3){
+        if($(this).attr("value").length >= 2){
             clearTimeout( db("timer", false) );
             var value = escape( $(this).attr("value") );
             db("timer", setTimeout("search('" + value + "', 'simple')", 500) );
