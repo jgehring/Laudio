@@ -46,7 +46,7 @@ case "$DISTRO" in
         mv laudio_apache.conf /etc/apache2/conf.d/
         echo "Removing previous installations"
         for elem in ${CREATE_DIRS[@]}; do
-            if ! [[ -e $elem ]]; then
+            if [[ -e $elem ]]; then
                 rm -r $elem
             fi
         done
@@ -59,6 +59,9 @@ case "$DISTRO" in
             chmod -R 0755 $elem
         done
         mv laudio/* $INSTALL_DIR
+        chown -R $APACHE:$APACHE $INSTALL_DIR
+        chmod -R 0755 $INSTALL_DIR
+        
         
         echo "Creating Database"
         python /usr/share/laudio/manage.py syncdb --noinput
@@ -84,7 +87,7 @@ case "$DISTRO" in
         fi
         echo "Removing previous installations"
         for elem in ${CREATE_DIRS[@]}; do
-            if ! [[ -e $elem ]]; then
+            if [[ -e $elem ]]; then
                 rm -r $elem
             fi
         done
@@ -97,7 +100,9 @@ case "$DISTRO" in
             chmod -R 0755 $elem
         done
         mv laudio/* $INSTALL_DIR 
-
+        chown -R $APACHE:$APACHE $INSTALL_DIR
+        chmod -R 0755 $INSTALL_DIR
+        
         echo "Creating Database"
         python2 /usr/share/laudio/manage.py syncdb --noinput
         chown -R $APACHE:$APACHE $DATABASE_FILE
@@ -120,7 +125,7 @@ case "$DISTRO" in
         mv laudio_apache.conf /etc/apache2/vhosts.d/
         echo "Removing previous installations"
         for elem in ${CREATE_DIRS[@]}; do
-            if ! [[ -e $elem ]]; then
+            if [[ -e $elem ]]; then
                 rm -r $elem
             fi
         done
@@ -133,7 +138,9 @@ case "$DISTRO" in
             chmod -R 0755 $elem
         done
         mv laudio/* $INSTALL_DIR
-
+        chown -R $APACHE:$APACHE $INSTALL_DIR
+        chmod -R 0755 $INSTALL_DIR
+        
         echo "Creating Database"
         python /usr/share/laudio/manage.py syncdb --noinput
         chown -R $APACHE:$APACHE $DATABASE_FILE
