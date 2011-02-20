@@ -160,6 +160,7 @@ License: GPL-2 or other
     
 Files: laudio/media/js/jquery.contextmenu.js
        laudio/media/style/jquery.contextmenu.css
+       laudio/media/style/img/cmenu-*
 Copyright: (c) 2008 Matt Kruse <javascripttoolbox.com>
 License: GPL-3 or other
     This program is free software; you can redistribute it and/or modify
