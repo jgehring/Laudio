@@ -97,7 +97,7 @@ function search(search, depth){
                         }
                         
                         
-                    }, $.contextMenu.separator, 
+                    }, 
                     {
                         'Download': {
                             onclick: function(menuItem, menu) {
@@ -114,7 +114,19 @@ function search(search, depth){
                             },
                             icon: "{% url laudio.views.laudio_index %}media/style/img/download_small.png",
                         }
-                    }];
+                    }, {
+                        'Details': function(){
+                            var id = row_to_id(this.id);
+                            alert(id);
+                        }
+                    }, $.contextMenu.separator, 
+                    
+                    {
+                        'Select All': function(){
+                            $('#collection tbody tr').addClass("selected");
+                        }
+                    }
+                    ];
                     
                 $(function() {
                     $('#collection tbody tr').contextMenu(songMenu,

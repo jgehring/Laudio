@@ -47,6 +47,23 @@ $(document).ready(function() {
             return false;
         }
     });
+    
+    // check for ctrl key pressed
+    db("ctrl", 0);
+    
+    $(window).keydown(function(e) {
+        if(e.which === 17){
+            db("ctrl", 1);
+            return false;
+        }
+    });
+    
+    $(window).keyup(function(e) {
+        if(e.which === 17){
+            db("ctrl", 0);
+            return false;
+        }
+    });
 
 
 });
@@ -87,7 +104,10 @@ function select_line(id, context){
     
         if( db("shift", false) === 0){
             
-            $(".selected").removeClass("selected");
+            if( db("ctrl", false) === 0){
+                $(".selected").removeClass("selected");
+            }
+            
             $("#" + id).addClass("selected");
             
             // store selection
