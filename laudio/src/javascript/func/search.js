@@ -99,18 +99,21 @@ function search(search, depth){
                         
                     }, $.contextMenu.separator, 
                     {
-                        'Download': function(menuItem, menu) {
-                            if( $(".selected").length > 1){
-                                $(".selected").each( function(){
-                                    var id = row_to_id( $(this).attr("id") );
+                        'Download': {
+                            onclick: function(menuItem, menu) {
+                                if( $(".selected").length > 1){
+                                    $(".selected").each( function(){
+                                        var id = row_to_id( $(this).attr("id") );
+                                        window.open("{% url laudio.views.laudio_index %}song_download/" + id + "/");
+                                    });
+                                } else {
+                                    var id = row_to_id( $(".selected").attr("id") );
+                                    // send download
                                     window.open("{% url laudio.views.laudio_index %}song_download/" + id + "/");
-                                });
-                            } else {
-                                var id = row_to_id( $(".selected").attr("id") );
-                                // send download
-                                window.open("{% url laudio.views.laudio_index %}song_download/" + id + "/");
-                            }
-                        } 
+                                }
+                            },
+                            icon: "{% url laudio.views.laudio_index %}media/style/img/download_small.png",
+                        }
                     }];
                     
                 $(function() {
