@@ -67,6 +67,8 @@ function search(search, depth){
     }
     
     // now that we got the get url, start query
+    // and unbind previous items from context
+    $('#collection tbody tr').unbind('contextmenu');
     $("#collection tbody").load(url, function (){
         $(".loading").fadeOut('fast', function(){
             $("#collection tbody").fadeIn('slow');
@@ -97,10 +99,17 @@ function search(search, depth){
                         
                     }, $.contextMenu.separator, 
                     {
-                        'Download': function(menuItem, menu) { 
-                            var id = row_to_id(this.id);
-                            // send download
-                            window.open("{% url laudio.views.laudio_index %}song_download/" + id + "/");
+                        'Download': function(menuItem, menu) {
+                            if( $(".selected").length > 1){
+                                $(".selected").each( function(){
+                                    var id = row_to_id( $(this).attr("id") );
+                                    window.open("{% url laudio.views.laudio_index %}song_download/" + id + "/");
+                                });
+                            } else {
+                                var id = row_to_id( $(".selected").attr("id") );
+                                // send download
+                                window.open("{% url laudio.views.laudio_index %}song_download/" + id + "/");
+                            }
                         } 
                     }];
                     

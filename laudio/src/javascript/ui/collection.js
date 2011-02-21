@@ -29,6 +29,7 @@ $(document).ready(function() {
     db("volume", 100);
     db("shuffle", 0);
     db("repeat", 0);
+    db("selected", "row0");
     
     // check for shift key pressed
     db("shift", 0);
@@ -79,13 +80,32 @@ function update_line_colors(){
  * @param id = id of the line
  *
  */
-function select_line(id){
+function select_line(id, context){
     
-    if( db("shift", false) === 0){
-        $(".selected").removeClass("selected");
-        $("#" + id).addClass("selected");
-    } else {
-        $(".selected").nextUntil("#" + id + " + *").addClass("selected");
+    // check if new selection is already selected
+    if( !($("#" + id).hasClass("selected") && context === 1) ){
+    
+        if( db("shift", false) === 0){
+            
+            $(".selected").removeClass("selected");
+            $("#" + id).addClass("selected");
+            
+            // store selection
+            db("selected", id);
+            
+        } else {
+            
+            // check in which direction we have to select
+            if( $("#" + db("selected", false) ).index() <= $("#" + id).index() ){
+                var from = db("selected", false);
+                var to = id;
+            } else {
+                var from = id;
+                var to = db("selected", false);
+            }
+            
+            $("#" + from).nextUntil("#" + to + " + *").addClass("selected");
+            db("selected", id);
+        }
     }
-    
 }

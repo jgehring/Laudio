@@ -60,12 +60,12 @@ function id_to_row(id, hash){
 
 /**
  * Same as id_to_row except the other way round, e.g. row1 to 1
- * @param Integer id:   The rowid
+ * @param String id:   The rowid
  * 
  * @return:             The songid
  */
 function row_to_id(row){
-    return row.replace("row", "");
+    return parseInt( row.replace("row", "") );
 }
 
 /**
