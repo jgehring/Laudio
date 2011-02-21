@@ -66,9 +66,11 @@ function search(search, depth){
     
     }
     
-    // now that we got the get url, start query
-    // and unbind previous items from context
+    
+    // and unbind previous items from context to prevent slowdown
     $('#collection tbody tr').unbind('contextmenu');
+    
+    // now that we got the get url, start query
     $("#collection tbody").load(url, function (){
         $(".loading").fadeOut('fast', function(){
             $("#collection tbody").fadeIn('slow');
@@ -84,57 +86,8 @@ function search(search, depth){
                 // update table sorting
                 $("#collection").trigger("update");
                 
-                // set context menu
-                var songMenu = [
-                    {
-                        'Play': {
-                            
-                            onclick: function(menuItem, menu) { 
-                                var id = row_to_id(this.id);
-                                play_song(id);
-                            },
-                            icon: "{% url laudio.views.laudio_index %}media/style/img/play_small.png",
-                        }
-                        
-                        
-                    }, 
-                    {
-                        'Download': {
-                            onclick: function(menuItem, menu) {
-                                if( $(".selected").length > 1){
-                                    $(".selected").each( function(){
-                                        var id = row_to_id( $(this).attr("id") );
-                                        window.open("{% url laudio.views.laudio_index %}song_download/" + id + "/");
-                                    });
-                                } else {
-                                    var id = row_to_id( $(".selected").attr("id") );
-                                    // send download
-                                    window.open("{% url laudio.views.laudio_index %}song_download/" + id + "/");
-                                }
-                            },
-                            icon: "{% url laudio.views.laudio_index %}media/style/img/download_small.png",
-                        }
-                    }, {
-                        'Details': function(){
-                            var id = row_to_id(this.id);
-                            alert(id);
-                        }
-                    }, $.contextMenu.separator, 
-                    
-                    {
-                        'Select All': function(){
-                            $('#collection tbody tr').addClass("selected");
-                        }
-                    }
-                    ];
-                    
-                $(function() {
-                    $('#collection tbody tr').contextMenu(songMenu,
-                        { 
-                            theme:'vista',
-                        }
-                    ); 
-                });
+                // update context menu
+                context_menu();
                 
             });
         });

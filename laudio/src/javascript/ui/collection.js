@@ -129,3 +129,57 @@ function select_line(id, context){
         }
     }
 }
+
+
+/**
+ * Sets the context menu for the current elements in the list
+ */
+function context_menu(){
+    // set context menu details
+    var songMenu = [
+        {
+            'Play': {
+                onclick: function(menuItem, menu) { 
+                    var id = row_to_id(this.id);
+                    play_song(id);
+                },
+                icon: "{% url laudio.views.laudio_index %}media/style/img/play_small.png",
+            }
+                        
+        }, 
+        {
+            'Download': {
+                onclick: function(menuItem, menu) {
+                    if( $(".selected").length > 1){
+                        $(".selected").each( function(){
+                            var id = row_to_id( $(this).attr("id") );
+                            window.open("{% url laudio.views.laudio_index %}song_download/" + id + "/");
+                        });
+                    } else {
+                        var id = row_to_id( $(".selected").attr("id") );
+                        // send download
+                        window.open("{% url laudio.views.laudio_index %}song_download/" + id + "/");
+                    }
+                },
+                icon: "{% url laudio.views.laudio_index %}media/style/img/download_small.png",
+            }
+        }, 
+        
+        $.contextMenu.separator, 
+                    
+        {
+            'Select All': function(){
+                $('#collection tbody tr').addClass("selected");
+            }
+        }
+    ];
+    
+    // bind context menu to the collection
+    $(function() {
+        $('#collection tbody tr').contextMenu(songMenu,
+            { 
+                theme:'vista',
+            }
+        ); 
+    });
+}
