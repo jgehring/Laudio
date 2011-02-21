@@ -1,7 +1,7 @@
 {% for song in songs %}
     <tr id="row{{ song.id|escape }}" 
         class="{% cycle 'line1' 'line2' %}" 
-        onclick="select_line({{ song.id|escape }})"
+        onclick="select_line('row{{ song.id|escape }}')"
         ondblclick="play_song({{ song.id|escape }})">
         <td class="collNr">{{song.tracknumber|escape}}</td>
         <td class="collTitle">{{song.title|escape}}</td>

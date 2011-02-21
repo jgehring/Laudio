@@ -29,6 +29,25 @@ $(document).ready(function() {
     db("volume", 100);
     db("shuffle", 0);
     db("repeat", 0);
+    
+    // check for shift key pressed
+    db("shift", 0);
+    
+    $(window).keydown(function(e) {
+        if(e.which === 16){
+            db("shift", 1);
+            return false;
+        }
+    });
+    
+    $(window).keyup(function(e) {
+        if(e.which === 16){
+            db("shift", 0);
+            return false;
+        }
+    });
+
+
 });
 
 
@@ -57,13 +76,16 @@ function update_line_colors(){
 
 /**
  * Selects a line (sets a darker bg) when you click on it
- * @param id = id of the line (without row, like 143)
+ * @param id = id of the line
  *
  */
 function select_line(id){
-    var lastSong = db("select", false);
-    $("#row" + lastSong).removeClass("selected");
-    // store the id for later use
-    db("select", id);
-    $("#row" + id).addClass("selected");
+    
+    if( db("shift", false) === 0){
+        $(".selected").removeClass("selected");
+        $("#" + id).addClass("selected");
+    } else {
+        $(".selected").nextUntil("#" + id + " + *").addClass("selected");
+    }
+    
 }
