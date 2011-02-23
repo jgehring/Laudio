@@ -1,0 +1,7 @@
+include MANIFEST.in AUTHORS COPYING COPYRIGHT laudio_apache.conf README.rst setup.sh
+
+recursive-include laudio/src *
+recursive-include laudio/media *
+recursive-include laudio/tpl *
+
+recursive-include pm-files/*maverick *
