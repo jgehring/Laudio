@@ -38,7 +38,7 @@ class UserProfileForm(forms.ModelForm):
 class UserForm(forms.ModelForm):
     is_superuser = forms.BooleanField(label="Superuser", 
         help_text="Sets if the user is a superuser. If a superuser exists, \
-        only superusers can view the settings dialogue")
+        only superusers can view the settings dialogue", required=False)
     class Meta:
         model = User
         exclude = ("first_name", "last_name", "is_staff", "last_login", 
