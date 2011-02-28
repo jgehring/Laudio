@@ -57,6 +57,21 @@ function id_to_row(id, hash){
     }
 }
 
+/**
+ * Converts a song id to the tr id, e.g. 1 to plrow1
+ * @param Integer id:   The songid
+ * @param Boolean hash: If true a # is written before the row
+ * 
+ * @return:             The id for the row
+ */
+function id_to_plrow(id, hash){
+    if(hash){
+        return "#plrow" + id;
+    } else {
+        return "plrow" + id;
+    }
+}
+
 
 /**
  * Same as id_to_row except the other way round, e.g. row1 to 1
@@ -74,7 +89,7 @@ function row_to_id(row){
  * @return string: the decoded string
  */
 function decode_html_entities(str) {
-    var text=content.document.createElement('textarea'); 
+    var text=document.createElement('textarea'); 
     text.innerHTML = str;
     return text.value;
     text.parentNode.removeChild(text);

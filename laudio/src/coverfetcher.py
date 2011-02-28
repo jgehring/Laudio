@@ -35,8 +35,8 @@ class CoverFetcher(object):
         songpath -- The django model of the song we need. We basically 
                     only need the the attributes: path, artist and album
         """
-        self.artist = song.artist
-        self.album = song.album
+        self.artist = song.artist.encode("utf-8")
+        self.album = song.album.encode("utf-8")
         
         # standardpath, we default to this if no cover is being found
         self.standardCover = '/laudio/media/style/img/nocover.png'

@@ -1,0 +1,103 @@
+#contentHeader #playlistHeader {
+    min-width: 400px; 
+    float: left;
+    text-align: center;
+    color: #333;
+    font-weight: bold;
+    line-height: 20px;
+    height: 20px;
+    border-bottom: 1px solid #aaa;
+    border-left: 1px solid #aaa;
+/*
+    display: none;
+*/
+}
+
+#playlistPlaylistMenu {
+    display: none;
+}
+
+.headerMenu {
+    float: right;
+    list-style-type: none;
+    margin-right: 5px;
+    line-height: 20px;
+    height: 20px;
+}
+
+.headerMenu li {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+.headerMenu li a {
+    text-decoration: none;
+    color: #333;
+    padding: 0 8px;
+    line-height: 20px;
+    background-color: #999;
+    -webkit-box-shadow: 0px 2px 2px #ccc;
+    -moz-box-shadow: 0px 2px 2px #ccc;
+    box-shadow: 0px 2px 2px #ccc; 
+}
+
+.headerMenu li a:hover {
+    background-color: #888;
+}
+
+#playlist {
+    min-width: 400px;
+    height: 100%;
+    float: left;
+    padding: 0;
+    background-color: #fefefe;
+    border-right: 1px solid #aaa;
+    overflow-y: auto;
+/*
+    display: none;
+*/
+}
+
+#playlist table {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+#playlistSongs table td {
+    padding: 1px 1px 1px 5px;
+}
+
+
+#playlistList {
+    display: none;
+}
+
+#playlistList tr td {
+    background-color: #ddd;
+    background: -moz-linear-gradient(top, #eee, #dadada);
+    background: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#ddd));
+    line-height: 30px;
+    height: 28px;
+    color: #333;
+    width: 100%;
+    border-bottom: 1px solid #ccc;
+}
+
+
+
+#playlistList tr td a {
+    width: 100%;
+    color: #333;
+    text-decoration: none;
+    line-height: 30px;
+    display: block;
+    padding-left: 10px;
+}
+
+#playlistList {
+    background-color: #ddd;
+}
+
+

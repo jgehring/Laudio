@@ -40,7 +40,7 @@ $(document).ready(function() {
                 $(this).addClass("sortup");
             }
             $("#collection").trigger("sorton",[sorting]);
-            update_line_colors(); 
+            update_line_colors("#collection"); 
         }
     return false; 
     });
@@ -63,7 +63,7 @@ $(document).ready(function() {
                 $(this).addClass("sortup");
             } 
             $("#collection").trigger("sorton",[sorting]); 
-            update_line_colors();
+            update_line_colors("#collection"); 
         }
         return false; 
     });
@@ -86,7 +86,7 @@ $(document).ready(function() {
                 $(this).addClass("sortup");
             } 
             $("#collection").trigger("sorton",[sorting]); 
-            update_line_colors();
+            update_line_colors("#collection"); 
         }
         return false; 
     });
@@ -109,7 +109,7 @@ $(document).ready(function() {
                 $(this).addClass("sortup");
             }  
             $("#collection").trigger("sorton",[sorting]); 
-            update_line_colors();
+            update_line_colors("#collection"); 
         }
         return false; 
     });
@@ -132,7 +132,7 @@ $(document).ready(function() {
                 $(this).addClass("sortup");
             }  
             $("#collection").trigger("sorton",[sorting]); 
-            update_line_colors();
+            update_line_colors("#collection"); 
         }
         return false; 
     });

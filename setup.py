@@ -14,3 +14,4 @@ setup(name='laudio',
 'laudio/tpl/settings/*', 'laudio/src/*', 'laudio/src/javascript/func/*', 
 'laudio/src/javascript/inc/*', 'laudio/src/javascript/ui/*']}
 )
+

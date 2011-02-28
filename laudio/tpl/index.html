@@ -8,7 +8,16 @@
 
 {% block content %}
 <div id="contentHeader">
-    <div class="spacer">Information</div>
+    <div id="sidebarHeader">Information</div>
+    <div id="playlistHeader"><span id="playlistName">Playlist</span>
+        <ul class="headerMenu" id="playlistSongMenu">
+            <li><a href="#" id="savePlaylist" onclick="return false;">Save</a></li>
+            <li><a href="#" id="openPlaylist" onclick="return false;">Open</a></li>
+        </ul>
+        <ul class="headerMenu" id="playlistPlaylistMenu">
+            <li><a href="#" id="closePlaylist" onclick="return false;">Cancel</a></li>
+        </ul>
+    </div>
     <div class="header">
         <table cellpadding="0" cellspacing="0">
             <tr>
@@ -67,6 +76,25 @@
             </tr>
         </table>
     </div>
+</div>
+
+<div id="playlist">
+    <table id="playlistList" cellpadding="0" cellspacing="0">
+        <tr>
+            <td><a href="#" onclick="return false;">Playlist</a></td>
+        </tr>    
+        <tr>
+            <td><a href="#" onclick="return false;">Playlist</a></td>
+        </tr>    
+        <tr>
+            <td><a href="#" onclick="return false;">Playlist</a></td>
+        </tr>    
+    </table>
+    <table id="playlistSongs" cellpadding="0" cellspacing="0">
+        <tbody>
+        
+        </tbody>
+    </table>
 </div>
 
 <div id="library">

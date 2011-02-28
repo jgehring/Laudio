@@ -87,7 +87,7 @@ function search(search, depth){
                 $("#collection").trigger("update");
                 
                 // update context menu
-                context_menu();
+                collection_context_menu();
                 
             });
         });

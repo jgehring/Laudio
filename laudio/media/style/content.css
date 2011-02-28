@@ -40,15 +40,6 @@
     height: 400px;
 }
 
-#playlist {
-    min-width: 396px;
-    height: 100%;
-    float: left;
-    padding-right: 3px;
-    background-color: #eee;
-    border-right: 1px solid #aaa;
-}
-
 .loading {
     width: 100%;
     height: 100%;
@@ -72,5 +63,5 @@
 .line2 { background-color: #fafafa; }
 .line2:hover { background-color: #dfdfdf; cursor: pointer; }
 
-#library .selected { background-color: #ccc; }
-#library .playing { background-color: #333; color: #fefefe}
+.selected { background-color: #ccc; }
+.playing { background-color: #333; color: #fefefe}

@@ -1,6 +1,16 @@
 /**********
  * Sidebar
  */
+#contentHeader #sidebarHeader {
+    min-width: 252px; 
+    float: left;
+    text-align: center;
+    color: #333;
+    font-weight: bold;
+    line-height: 20px;
+    border-bottom: 1px solid #aaa;
+}
+ 
 #sidebar {
     min-width: 249px;
     height: 100%;
@@ -9,6 +19,7 @@
     background: -moz-linear-gradient(top, #ccc, #aaa);
     background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#aaa));
     border-right: 1px solid #aaa;
+    overflow: auto;
 }
 #sidebar hr {
     margin: 5px 0;

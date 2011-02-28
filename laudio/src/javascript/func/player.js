@@ -25,7 +25,7 @@
  * @param id = id of the line (without row, like 143)
  *
  */
-function play_song(id){
+function play_song(id, tr){
     
     // get song data
     $.getJSON("{% url laudio.views.laudio_index %}song_data/" + id + "/", function(json){
@@ -57,7 +57,7 @@ function play_song(id){
         // stop the currently playing song and remove the playing class from 
         // the previous played song
         if(lastSong !== 0){
-            $( id_to_row(lastSong, true) ).removeClass("playing");
+            $(".playing").removeClass("playing");
             soundManager.stopAll()
         }
 
@@ -96,8 +96,7 @@ function play_song(id){
         title =  json.title + " - " + json.artist;
         document.title = decode_html_entities(title);
         // set the background color for the song
-        $( id_to_row(id, true) ).addClass("playing");
-        
+        $( "#" + tr ).addClass("playing");
         
         
         // get cover
@@ -170,6 +169,16 @@ function get_next_song(){
     var songId = db("playing", false);
     var shuffle = db("shuffle", false);
     var repeat = db("repeat", false); 
+    var playlist = db("playlist", false);
+    
+    // adjust playlist variables
+    if( playlist === 0){
+        var $currentSong = $( id_to_row(songId, true) );
+        var tableId = "#collection";
+    } else {
+        var $currentSong = $( id_to_plrow(songId, true) );
+        var tableId = "#playlistSongs";
+    }
     
     // First we got to check for repeat, 1 = repeat, 2 = repeat all
     //                                   0 = no repeat
@@ -182,16 +191,26 @@ function get_next_song(){
         /* If the next song on the list isnt there, we return
          * the first song in the list
          */
-        if ($( id_to_row(songId, true) ).next().length === 0){
+        if ($currentSong.next().length === 0){
             
-            // check if there is a first song
-            if($("#collection tbody tr:first").length !== 0){
-                var id = $("#collection tbody tr:first").attr("id");
-                return row_to_id(id);
+            if(playlist === 0){
+                // check if there is a first song
+                if($("#collection tbody tr:first").length !== 0){
+                    var id = $("#collection tbody tr:first").attr("id");
+                    return row_to_id(id);
+                } else {
+                    return false;
+                }
             } else {
-                return false;
+                // check if there is a first song
+                if($("#playlistSongs tbody tr:first").length !== 0){
+                    var id = $("#playlistSongs tbody tr:first").attr("title");
+                    return id;
+                } else {
+                    return false;
+                }
             }
-
+            
         }
     }
     
@@ -199,26 +218,45 @@ function get_next_song(){
     // then check for shuffle, 1 = shuffle, 0 = no shuffle
     if (shuffle === 1){
         
-        // calculate a random number
-        var entriesLen = $("#collection tbody tr").length;
-        var randNumber = Math.floor(Math.random() * entriesLen);
-        randId = $("#collection tbody tr:eq(" + randNumber + ")").attr("id");
-        return row_to_id(randId);
+        if(playlist === 0){
+            // calculate a random number
+            var entriesLen = $("#collection tbody tr").length;
+            var randNumber = Math.floor(Math.random() * entriesLen);
+            var randId = $("#collection tbody tr:eq(" + randNumber + ")").attr("id");
+            return row_to_id(randId);
+        } else {
+            // calculate a random number
+            var entriesLen = $("#playlistSongs tbody tr").length;
+            var randNumber = Math.floor(Math.random() * entriesLen);
+            var randId = $("#playlistSongs tbody tr:eq(" + randNumber + ")").attr("title");
+            return randId;
+
+        }
         
     }
     
     // If no repeat and shuffle were enabled, just return the next song
-    if($( id_to_row(songId, true) ).next().length !== 0){
+    if($currentSong.next().length !== 0){
         
-        var nextSongId = $( id_to_row(songId, true) ).next().attr("id");
-        return row_to_id(nextSongId);
-
+        if(playlist === 0){
+            var nextSongId = $currentSong.next().attr("id");
+            return row_to_id(nextSongId);
+        } else {
+            var nextSongId = $currentSong.next().attr("title");
+            return nextSongId;
+        }
+        
     } else {
         // if current song which is playing is not in the collection, play 
         // the first song in the list
-        if( $( id_to_row(songId, true) ).length === 0 && $("#collection tbody tr:first").length !== 0){
-            var id = $("#collection tbody tr:first").attr("id");
-            return row_to_id(id);
+        if( $currentSong.length === 0 && $(tableId + " tbody tr:first").length !== 0){
+            if(playlist === 0){
+                var id = $("#collection tbody tr:first").attr("id");
+                return row_to_id(id);
+            } else {
+                var id = $("#playlistSongs tbody tr:first").attr("title");
+                return id;                
+            }
         } else {
             return false;
         }
@@ -232,7 +270,13 @@ function get_next_song(){
 function next_song(){
     var songId = get_next_song();
     if (songId !== false){
-        play_song(songId);
+        if( db("playlist", false) === 0){
+            var $currentSong = $( id_to_row(db("playing", false), true) )
+            play_song(songId, $currentSong.next().attr("id"));
+        } else {
+            var $currentSong = $('[title="'+db("playing", false)+'"]')
+            play_song(songId, $currentSong.next().attr("id"));
+        }
     }
 }
 

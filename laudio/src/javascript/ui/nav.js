@@ -29,6 +29,55 @@ $(document).ready(function() {
         $("#advSearch").slideToggle();
     });
     
+    /**
+     * Toggles the playlist
+     */
+    $("#playlistLink").click( function(){
+        $("#playlist").toggle("slide");
+        $("#playlistHeader").toggle("slide");
+    });
+    
+    /**
+     * Toggles the sidebar
+     */
+    $("#sidebarLink").click( function(){
+        $("#sidebar").toggle("slide");
+        $("#sidebarHeader").toggle("slide");
+    });
+    
+    /**
+     * Opens the open playlist menu
+     */
+    $("#openPlaylist").click( function(){
+        $("#playlistSongMenu").toggle("slide", function(){
+            $("#playlistPlaylistMenu").toggle("slide");
+            
+        });
+        $("#playlistSongs").fadeOut("fast", function(){
+            $("#playlistList").fadeIn("fast");
+        });
+    });
+    
+    /**
+     * Closes the open playlist menu
+     */
+    $("#closePlaylist").click( function(){
+        $("#playlistPlaylistMenu").toggle("slide", function(){
+            $("#playlistSongMenu").toggle("slide");
+        });
+        
+        $("#playlistList").fadeOut("fast", function(){
+            $("#playlistSongs").fadeIn("fast");
+        });
+    });
+    
+    
+    
+    
+    $("#savePlaylist").click( function(){
+        
+    });
+    
     
     /**
      * toggle alphabet search

@@ -199,28 +199,6 @@
     border-top: 1px solid #aaa;
 }
 
-#contentHeader .spacer {
-    min-width: 252px; 
-    float: left;
-    text-align: center;
-    color: #333;
-    font-weight: bold;
-    padding-top: 2px;
-    height: 18px;
-    border-bottom: 1px solid #aaa;
-}
-
-#contentHeader .playlistHeader {
-    min-width: 400px; 
-    float: left;
-    text-align: center;
-    color: #333;
-    font-weight: bold;
-    padding-top: 2px;
-    height: 18px;
-    border-bottom: 1px solid #aaa;
-}
-
 #contentHeader .header {
     overflow: auto;
     border-bottom: 1px solid #aaa;
