@@ -68,9 +68,13 @@ def render(request, tpl, tplvars={}):
         config = Settings.objects.get(pk=1)
         tplvars["audio_debug"] = config.debugAudio
         tplvars["auto_load"] = config.showLib
+        tplvars["hide_playlist"] = config.hidePlaylist
+        tplvars["hide_sidebar"] = config.hideSidebar
     except Settings.DoesNotExist, AttributeError:
         tplvars["audio_debug"] = False 
         tplvars["auto_load"] = False 
+        tplvars["hide_playlist"] = False 
+        tplvars["hide_sidebar"] = False 
 
     return render_to_response(tpl, tplvars,
                                context_instance=RequestContext(request))
@@ -127,7 +131,8 @@ def laudio_settings(request):
                 settings = Settings.objects.get(pk=1)
             except Settings.DoesNotExist:
                 settings = Settings()
-            fields = ("requireLogin", "debugAudio", "collection", "showLib")
+            fields = ("requireLogin", "debugAudio", "collection", "showLib",
+                      "hideSidebar", "hidePlaylist")
             # write data into db
             for key in fields:
                 setattr(settings, key, settingsForm.cleaned_data[key])
@@ -488,3 +493,91 @@ def ajax_song_download(request, id):
     path = os.path.join(settings.AUDIO_DIR, song.path)
     return send_file(request, path)
 
+
+"""
+START playlist requests
+"""
+@check_login("user")
+def save_playlist(request, playlistName):
+    """Saves a Playlist with name and items
+    
+    Keyword arguments:
+    playlistName -- the name of the playlist
+    
+    """
+    
+    # check if any elements were passed at all
+    playlistName = urllib2.unquote(playlistName)
+    playlistItems = request.GET["urls"].split(",")
+    
+    # look up if a playlist with the name exists already, if so delete it
+    try:
+        pl = Playlist.objects.get(name=playlistName, user=request.user)
+        pl.delete()
+    except Playlist.DoesNotExist:
+        pass
+    
+    # now create a new playlist with the passed items
+    pl = Playlist(name=playlistName, added= int( time.time() ), user=request.user)
+    pl.save()
+    songs = []
+    for number in playlistItems:
+        try:
+            sg = Song.objects.get(id=number)
+            pe = PlaylistEntry(song=sg, playlist=pl)
+            pe.save()
+        except Song.DoesNotExist:
+            pass
+    msg = "saved playlist %s with %i songs" % (playlistName, playlistItems)
+    return render_to_response('requests/empty.html', {"msg": msg})
+
+
+@check_login("user")
+def open_playlist(request, playlistName):
+    """Opens a Playlist with name and items
+    
+    Keyword arguments:
+    playlistName -- the name of the playlist
+    
+    """
+    playlistName = urllib2.unquote(playlistName)
+    playlist = Playlist.objects.get(name=playlistName, user=request.user)
+    songs = playlist.songs.all()
+    return render_to_response('requests/songs.html', {'songs': songs, 'playlist': playlistName})
+    
+    
+@check_login("user")
+def delete_playlist(request, playlistName):
+    """Deletes a Playlist with name and items
+    
+    Keyword arguments:
+    playlistName -- the name of the playlist
+    
+    """
+    playlistName = urllib2.unquote(playlistName)
+    playlist = Playlist.objects.get(name=playlistName, user=request.user).delete()
+    msg = "deleted playlist %s" % playlistName
+    return render_to_response('requests/empty.html', {"msg": msg})
+    
+    
+@check_login("user")
+def rename_playlist(request, oldName, newName):
+    """Saves a Playlist with name and items
+    
+    Keyword arguments:
+    oldName -- the old name of the playlist
+    newName -- the new name of the playlist
+    
+    """
+    playlist = Playlist.objects.get(name=urllib2.unquote(oldName), user=request.user)
+    playlist.name = urllib2.unquote(newName)
+    playlist.save()
+    msg = "renamed playlist %s to %s" % (oldName, newName)
+    return render_to_response('requests/empty.html', {"msg": msg})
+    
+    
+@check_login("user")
+def list_playlists(request):
+    """Returns a list of all playlists"""
+    playlists = Playlist.objects.filter(user=request.user)
+    return render_to_response('requests/list_playlists.html', {'playlists': playlists})

@@ -8,8 +8,10 @@
 
 {% block content %}
 <div id="contentHeader">
-    <div id="sidebarHeader">Information</div>
-    <div id="playlistHeader"><span id="playlistName">Playlist</span>
+
+    <div id="sidebarHeader" {% if hide_sidebar %}style="display: none;"{% endif %}>Information</div>
+    <div id="playlistHeader" {% if hide_playlist %}style="display: none;"{% endif %}><span id="playlistName">Playlist</span>
+        {% if user.is_authenticated %}
         <ul class="headerMenu" id="playlistSongMenu">
             <li><a href="#" id="savePlaylist" onclick="return false;">Save</a></li>
             <li><a href="#" id="openPlaylist" onclick="return false;">Open</a></li>
@@ -17,7 +19,9 @@
         <ul class="headerMenu" id="playlistPlaylistMenu">
             <li><a href="#" id="closePlaylist" onclick="return false;">Cancel</a></li>
         </ul>
+        {% endif %}
     </div>
+
     <div class="header">
         <table cellpadding="0" cellspacing="0">
             <tr>
@@ -33,7 +37,7 @@
 
 
 
-<div id="sidebar">
+<div id="sidebar" {% if hide_sidebar %}style="display: none;"{% endif %}>
     <div id="currentSong">
         <p id="cover"><img src="{% url laudio.views.laudio_index %}media/style/img/nocover.png" alt="cover" title="no cover"/></p>
         <h1>Now Playing</h1>
@@ -78,7 +82,7 @@
     </div>
 </div>
 
-<div id="playlist">
+<div id="playlist" {% if hide_playlist%}style="display: none;"{% endif %}>
     <table id="playlistList" cellpadding="0" cellspacing="0">
         <tr>
             <td><a href="#" onclick="return false;">Playlist</a></td>

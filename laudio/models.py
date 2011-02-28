@@ -44,6 +44,7 @@ class Playlist(models.Model):
     name = models.CharField(max_length=250)
     added = models.IntegerField()
     songs = models.ManyToManyField(Song, through="PlaylistEntry")
+    user = models.ForeignKey(User)
 
 
 class PlaylistEntry(models.Model):
@@ -68,6 +69,12 @@ class Settings(models.Model):
         help_text="Enable output to your firebug console including audio debug information \
                     and writing of debug information while scanning your collection \
                     to %s" % settings.DEBUG_LOG)
+    hidePlaylist = models.BooleanField("Hide playlist by default", help_text="Automatically \
+                    hides the playlist in the Collection view so you have \
+                    to click playlist to view it")
+    hideSidebar = models.BooleanField("Hide sidebar by default", help_text="Automatically \
+                    hides the sidebar in the Collection view so you have \
+                    to click sidebar to view it")
     
 
 

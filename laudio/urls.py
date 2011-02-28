@@ -59,6 +59,13 @@ urlpatterns = patterns('',
     (r'^advautocomplete/(?P<row>.*)/$', ajax_adv_autocompletion),
     (r'^settings/scan/info/$', ajax_scan_perc),
     
+    # playlist requests
+    (r'^playlist/save/(?P<playlistName>.*)/$', save_playlist),
+    (r'^playlist/open/(?P<playlistName>.*)/$', open_playlist),
+    (r'^playlist/delete/(?P<playlistName>.*)/$', delete_playlist),
+    (r'^playlist/rename/(?P<oldName>.*)/(?P<newName>.*)/$', rename_playlist),
+    (r'^playlist/list/$', list_playlists),
+    
     # other sites
     (r'^about/$', laudio_about),
     (r'^profile/$', laudio_profile),
