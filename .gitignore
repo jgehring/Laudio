@@ -9,4 +9,4 @@ audio
 tmp
 *.db
 error.log
-
+geany_run_script.sh

@@ -56,7 +56,7 @@
 #playlist table {
     padding: 0;
     margin: 0;
-    width: 100%;
+    width: 400px;
 }
 
 #playlistSongs table td {
@@ -64,36 +64,46 @@
 }
 
 
-#playlistList {
+.playlistAction {
     display: none;
     background-color: #ddd;
     min-height: 100%;
 }
 
-#playlistList tr td {
-    
+.playlistAction tr td {
     line-height: 30px;
     height: 28px;
     color: #333;
-    width: 100%;
+    width: 20%;
     border-bottom: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+}
+
+.playlistAction tr td:first-child {
+    width: 60%;
+    border-left: 0;
+}
+
+.playlistAction tr td:first-child a {
+    text-align: left;
+    padding-left: 10px;
 }
 
 
 
-#playlistList tr td a {
+.playlistAction tr td a {
     width: 100%;
     color: #333;
     text-decoration: none;
     line-height: 30px;
     display: block;
-    padding-left: 10px;
     background-color: #ddd;
+    text-align: center;
     background: -moz-linear-gradient(top, #eee, #dadada);
     background: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#dadada));
 }
 
-#playlistList tr td a:hover {
+.playlistAction tr td a:hover {
     background-color: #ccc;
     background: -moz-linear-gradient(top, #ddd, #ccc);
     background: -webkit-gradient(linear, left top, left bottom, from(#ddd), to(#ccc));
@@ -101,8 +111,25 @@
 
 
 
-#playlistList {
+.playlistAction {
     background-color: #ddd;
 }
 
 
+.playlistAction th {
+    line-height: 30px;
+    font-size: 12pt;
+    border-bottom: 1px solid #ccc;
+}
+
+.playlistAction input {
+    margin-left: 10px;
+    border: 1px solid #aaa;
+    line-height: 24px;
+    height: 24px;
+    width: 290px;;
+}
+
+#playlistRename tr td:last-child a{
+    width: 94px !important;
+}

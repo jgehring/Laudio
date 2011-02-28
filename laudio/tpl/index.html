@@ -11,15 +11,16 @@
 
     <div id="sidebarHeader" {% if hide_sidebar %}style="display: none;"{% endif %}>Information</div>
     <div id="playlistHeader" {% if hide_playlist %}style="display: none;"{% endif %}><span id="playlistName">Playlist</span>
-        {% if user.is_authenticated %}
+        
         <ul class="headerMenu" id="playlistSongMenu">
-            <li><a href="#" id="savePlaylist" onclick="return false;">Save</a></li>
-            <li><a href="#" id="openPlaylist" onclick="return false;">Open</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="#" id="savePlaylist" onclick="return false;">Save</a></li>
+                <li><a href="#" id="openPlaylist" onclick="return false;">Open</a></li>
+            {% endif %}
         </ul>
         <ul class="headerMenu" id="playlistPlaylistMenu">
-            <li><a href="#" id="closePlaylist" onclick="return false;">Cancel</a></li>
+            <li><a href="#" id="cancelPlaylist" onclick="return false;">Cancel</a></li>
         </ul>
-        {% endif %}
     </div>
 
     <div class="header">
@@ -83,22 +84,61 @@
 </div>
 
 <div id="playlist" {% if hide_playlist%}style="display: none;"{% endif %}>
-    <table id="playlistList" cellpadding="0" cellspacing="0">
+    <table id="playlistList" class="playlistAction" cellpadding="0" cellspacing="0">
         <tr>
             <td><a href="#" onclick="return false;">Playlist</a></td>
+            <td><a href="#" onclick="return false;">Delete</a></td>
+            <td><a href="#" onclick="return false;">Rename</a></td>
         </tr>    
         <tr>
             <td><a href="#" onclick="return false;">Playlist</a></td>
+            <td><a href="#" onclick="return false;">Delete</a></td>
+            <td><a href="#" onclick="return false;">Rename</a></td>
         </tr>    
         <tr>
             <td><a href="#" onclick="return false;">Playlist</a></td>
+            <td><a href="#" onclick="return false;">Delete</a></td>
+            <td><a href="#" onclick="return false;">Rename</a></td>
         </tr>    
     </table>
+    
+    <table id="playlistConfirm" class="playlistAction" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <th colspan="2">Are you sure?</th>
+            </tr>
+            <tr>
+                <td>
+                    <a href="#" id="confirmNo" onclick="return false;">No</a>
+                </td>
+                <td>
+                    <a href="#" id="confirmYes" onclick="return false;">Yes</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <table id="playlistRename" class="playlistAction" cellpadding="0" cellspacing="0">
+        <tbody>
+            <tr>
+                <th colspan="2">Enter a name</th>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" name="playlistName" />
+                </td>
+                <td>
+                    <a href="#" id="confirmYes" onclick="return false;">Save</a>
+                </td>
+        </tbody>
+    </table>
+    
     <table id="playlistSongs" cellpadding="0" cellspacing="0">
         <tbody>
         
         </tbody>
-    </table>
+    </table>    
+    
 </div>
 
 <div id="library">

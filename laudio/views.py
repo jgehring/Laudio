@@ -67,9 +67,14 @@ def render(request, tpl, tplvars={}):
     try:
         config = Settings.objects.get(pk=1)
         tplvars["audio_debug"] = config.debugAudio
-        tplvars["auto_load"] = config.showLib
-        tplvars["hide_playlist"] = config.hidePlaylist
-        tplvars["hide_sidebar"] = config.hideSidebar
+        if request.user.is_authenticated():
+            tplvars["auto_load"] = request.user.get_profile().showLib
+            tplvars["hide_playlist"] = request.user.get_profile().hidePlaylist
+            tplvars["hide_sidebar"] = request.user.get_profile().hideSidebar
+        else:
+            tplvars["auto_load"] = config.showLib
+            tplvars["hide_playlist"] = config.hidePlaylist
+            tplvars["hide_sidebar"] = config.hideSidebar
     except Settings.DoesNotExist, AttributeError:
         tplvars["audio_debug"] = False 
         tplvars["auto_load"] = False 
@@ -173,7 +178,8 @@ def laudio_settings_new_user(request):
             # profile
             profile = UserProfile(user=user)
             for key in ("lastFMName", "lastFMPass", "lastFMSubmit", 
-                         "libreFMName", "libreFMPass", "libreFMSubmit"):
+                         "libreFMName", "libreFMPass", "libreFMSubmit",
+                         "hidePlaylist", "hideSidebar", "showLib"):
                 setattr(profile, key, profileform.cleaned_data[key])
             profile.save()
             return HttpResponseRedirect( reverse ("laudio.views.laudio_settings") )
@@ -207,7 +213,8 @@ def laudio_settings_edit_user(request, userid):
             profile = UserProfile.objects.get(user=user)
             profile.user = user
             for key in ("lastFMName", "lastFMPass", "lastFMSubmit", 
-                         "libreFMName", "libreFMPass", "libreFMSubmit"):
+                         "libreFMName", "libreFMPass", "libreFMSubmit",
+                         "hidePlaylist", "hideSidebar", "showLib"):
                 setattr(profile, key, profileform.cleaned_data[key])
             profile.save()
             return HttpResponseRedirect( reverse ("laudio.views.laudio_settings") )
@@ -250,7 +257,8 @@ def laudio_profile(request):
             profile = UserProfile.objects.get(user=user)
             profile.user = user
             for key in ("lastFMName", "lastFMPass", "lastFMSubmit", 
-                         "libreFMName", "libreFMPass", "libreFMSubmit"):
+                         "libreFMName", "libreFMPass", "libreFMSubmit",
+                         "hidePlaylist", "hideSidebar", "showLib"):
                 setattr(profile, key, profileform.cleaned_data[key])
             profile.save()
             return HttpResponseRedirect( reverse ("laudio.views.laudio_profile") )

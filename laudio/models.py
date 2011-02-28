@@ -90,3 +90,13 @@ class UserProfile(models.Model):
     libreFMSubmit = models.BooleanField("Scrobble libre.fm",
         help_text="Activate this if you want to submit your played tracks \
                     to your libre.fm account")
+    showLib = models.BooleanField("Show all songs on startup", 
+                help_text="This displays your whole collection automatically on startup. \
+                            Be carefull with bigger collections as it may impact your \
+                            browser's speed")
+    hidePlaylist = models.BooleanField("Hide playlist by default", help_text="Automatically \
+                    hides the playlist in the Collection view so you have \
+                    to click playlist to view it")
+    hideSidebar = models.BooleanField("Hide sidebar by default", help_text="Automatically \
+                    hides the sidebar in the Collection view so you have \
+                    to click sidebar to view it")

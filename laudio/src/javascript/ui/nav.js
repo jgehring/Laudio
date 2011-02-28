@@ -57,19 +57,46 @@ $(document).ready(function() {
             $("#playlistList").fadeIn("fast");
         });
     });
+
+    /**
+     * Opens the save playlist menu
+     */
+    $("#savePlaylist").click( function(){
+        $("#playlistSongMenu").toggle("slide", function(){
+            $("#playlistPlaylistMenu").toggle("slide");
+            
+        });
+        $("#playlistSongs").fadeOut("fast", function(){
+            $("#playlistRename").fadeIn("fast");
+        });
+    });
     
     /**
-     * Closes the open playlist menu
+     * Closes the special playlist menu
      */
-    $("#closePlaylist").click( function(){
+    $("#cancelPlaylist").click( function(){
         $("#playlistPlaylistMenu").toggle("slide", function(){
             $("#playlistSongMenu").toggle("slide");
         });
         
-        $("#playlistList").fadeOut("fast", function(){
+        $("#playlist table").fadeOut("fast", function(){
             $("#playlistSongs").fadeIn("fast");
         });
     });
+    
+    /**
+     * Opens the delete playlist menu
+     */
+    $("#deletePlaylist").click( function(){
+        $("#playlistSongMenu").toggle("slide", function(){
+            $("#playlistPlaylistMenu").toggle("slide");
+            
+        });
+        $("#playlistSongs").fadeOut("fast", function(){
+            $("#playlistRemove").fadeIn("fast");
+        });
+    });
+    
     
     
     

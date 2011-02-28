@@ -330,6 +330,14 @@ function playlist_context_menu(){
             'Select All': function(){
                 $('#playlistSongs tbody tr').addClass("selected");
             }
+        },
+        {
+            'Clear All': {
+                onclick: function(menuItem, menu) {
+                    $("#playlistSongs tbody").empty("tr");
+                },
+                icon: "{% url laudio.views.laudio_index %}media/style/img/remove_small.png",
+            }
         }
     ];
     

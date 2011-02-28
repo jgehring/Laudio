@@ -44,8 +44,12 @@ class JavaScript(object):
         """check settings values"""         
         try:
             config = Settings.objects.get(pk=1)
-            if config.showLib and self.view == "library":
-                files.append("func/autoload.js")
+            if request.user.is_authenticated():
+                if request.user.get_profile().showLib and self.view == "library":
+                    files.append("func/autoload.js")                
+            else:
+                if config.showLib and self.view == "library":
+                    files.append("func/autoload.js")
         except Settings.DoesNotExist, AttributeError:
             pass
         
