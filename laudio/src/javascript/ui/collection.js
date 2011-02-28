@@ -279,11 +279,13 @@ function playlist_context_menu(){
                 icon: "{% url laudio.views.laudio_index %}media/style/img/play_small.png",
             }
                         
-        },
+        },$.contextMenu.separator, 
         {
             'Move up': {
                 onclick: function(menuItem, menu) { 
-                    $(this).prev().before($(this));
+                    $("#playlistSongs .selected").each( function(){
+                        $(this).prev().before($(this));
+                    });
                     update_line_colors("#playlistSongs");
                 },
                 icon: "{% url laudio.views.laudio_index %}media/style/img/up_small.png",
@@ -293,13 +295,14 @@ function playlist_context_menu(){
         {
             'Move down': {
                 onclick: function(menuItem, menu) { 
-                    $(this).next().after($(this));
+                    $($("#playlistSongs .selected").get().reverse()).each( function(){
+                        $(this).next().after($(this));
+                    });
                     update_line_colors("#playlistSongs");
                 },
                 icon: "{% url laudio.views.laudio_index %}media/style/img/down_small.png",
             }
-                        
-        },$.contextMenu.separator, 
+        },
         {
             'Download': {
                 onclick: function(menuItem, menu) {

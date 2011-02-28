@@ -8,9 +8,7 @@
     height: 20px;
     border-bottom: 1px solid #aaa;
     border-left: 1px solid #aaa;
-/*
     display: none;
-*/
 }
 
 #playlistPlaylistMenu {
@@ -54,9 +52,7 @@
     background-color: #fefefe;
     border-right: 1px solid #aaa;
     overflow-y: auto;
-/*
     display: none;
-*/
 }
 
 #playlist table {
