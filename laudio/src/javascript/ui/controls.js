@@ -196,7 +196,7 @@ function update_progressbar(song){
     width = Math.floor((300 / duration) * currTime);  
     ctx.fillStyle = "#333";
     ctx.fillRect(0,0, width ,24);
-    $("#progressbar").attr("title", currTime + "/" + duration);    
+    $("#progressbar").attr("title", Math.floor(currTime) + "/" + Math.floor(duration));    
 }
 
 
@@ -221,8 +221,13 @@ function update_pause_icon(){
 function update_volume(){
     var playing = db("playing", false);
     if(playing !== 0){
-        var volume = soundManager.getSoundById(playing).volume;
+        if(soundManager.getSoundById(playing).muted){
+            var volume = 0;
+        } else {
+            var volume = soundManager.getSoundById(playing).volume;
+        }
     } else {
+        
         var volume = 100;
     }
 

@@ -72,12 +72,12 @@
 
 #playlistList {
     display: none;
+    background-color: #ddd;
+    min-height: 100%;
 }
 
 #playlistList tr td {
-    background-color: #ddd;
-    background: -moz-linear-gradient(top, #eee, #dadada);
-    background: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#ddd));
+    
     line-height: 30px;
     height: 28px;
     color: #333;
@@ -94,7 +94,18 @@
     line-height: 30px;
     display: block;
     padding-left: 10px;
+    background-color: #ddd;
+    background: -moz-linear-gradient(top, #eee, #dadada);
+    background: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#dadada));
 }
+
+#playlistList tr td a:hover {
+    background-color: #ccc;
+    background: -moz-linear-gradient(top, #ddd, #ccc);
+    background: -webkit-gradient(linear, left top, left bottom, from(#ddd), to(#ccc));
+}
+
+
 
 #playlistList {
     background-color: #ddd;

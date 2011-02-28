@@ -84,6 +84,16 @@ function row_to_id(row){
 }
 
 /**
+ * Same as id_to_row except the other way round, e.g. plrow1 to 1
+ * @param String id:   The plrow
+ * 
+ * @return:             The songid
+ */
+function plrow_to_id(row){
+    return parseInt( row.replace("plrow", "") );
+}
+
+/**
  * Decodes HTML Entities
  * @param string str: string which you want to decode
  * @return string: the decoded string

@@ -32,6 +32,7 @@ $(document).ready(function() {
     db("selected", "row0");
     db("playlist", 0);
     db("playlistIdCounter", 0);
+    db("playlistPlaying", 0);
     
     // check for shift key pressed
     db("shift", 0);
@@ -67,7 +68,13 @@ $(document).ready(function() {
         }
     });
 
-
+    $("#playlistSongs tbody").sortable({
+        revert: true,
+        stop: function(){
+            update_line_colors("#playlistSongs");
+        }
+    });
+    
 });
 
 

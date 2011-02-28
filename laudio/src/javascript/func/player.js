@@ -91,7 +91,11 @@ function play_song(id, tr){
 
         // store the id for later use
         db("playing", id);
-    
+        if( db("playlist", false) === 0){
+            db("playlistPlaying", 0);
+        } else {
+            db("playlistPlaying", plrow_to_id(tr) );
+        }
         // update title information
         title =  json.title + " - " + json.artist;
         document.title = decode_html_entities(title);
@@ -116,6 +120,7 @@ function play_song(id, tr){
 function mute(){
     var playing = db("playing", false);
     soundManager.toggleMute(playing);
+    update_volume();
 }
 
 /**
@@ -133,22 +138,38 @@ function play_pause(){
  * @return Integer: Id of the previous song
  */
 function get_previous_song(){
-    var $currentSongTR = $( id_to_row( db("playing", false), true ) );
+    var playlistId = db("playlistPlaying", false);
+    var playing = db("playing", false);
+    var playlist = db("playlist", false);
     
+    if(playlist === 0){
+        var $currentSongTR = $( id_to_row( playing, true ) );
+    } else {
+        var $currentSongTR = $( id_to_plrow( playlistId, true ) );
+    }
     // check if the song is in the current selection
     // if not, return the id of the first song
     if($currentSongTR.length === 0){
         
-        var id = $("#collection tbody tr:first").attr("id");
-        return row_to_id(id);
-        
+        if(playlist === 0){
+            var id = $("#collection tbody tr:first").attr("id");
+            return row_to_id(id);
+        } else {
+            var id = $("#playlistSongs tbody tr:first").attr("id");
+            return plrow_to_id(id);
+        }
     } else {
         
         // check if the played song is the first in the list
         if ($currentSongTR.prev().length !== 0){
             
             var id = $currentSongTR.prev().attr("id");
-            return row_to_id(id);
+            
+            if(playlist === 0){
+                return row_to_id(id);
+            } else {
+                return plrow_to_id(id);
+            }
             
         } else {
             
@@ -167,6 +188,7 @@ function get_previous_song(){
  */
 function get_next_song(){
     var songId = db("playing", false);
+    var playlistId = db("playlistPlaying", false);
     var shuffle = db("shuffle", false);
     var repeat = db("repeat", false); 
     var playlist = db("playlist", false);
@@ -176,7 +198,7 @@ function get_next_song(){
         var $currentSong = $( id_to_row(songId, true) );
         var tableId = "#collection";
     } else {
-        var $currentSong = $( id_to_plrow(songId, true) );
+        var $currentSong = $( id_to_plrow(playlistId, true) );
         var tableId = "#playlistSongs";
     }
     
@@ -184,8 +206,12 @@ function get_next_song(){
     //                                   0 = no repeat
     if (repeat === 1){
         
-        return songId;
-    
+        if(playlist === 0){
+            return songId;
+        } else {
+            return playlistId;
+        }
+        
     } else if(repeat === 2){
         
         /* If the next song on the list isnt there, we return
@@ -204,8 +230,8 @@ function get_next_song(){
             } else {
                 // check if there is a first song
                 if($("#playlistSongs tbody tr:first").length !== 0){
-                    var id = $("#playlistSongs tbody tr:first").attr("title");
-                    return id;
+                    var id = $("#playlistSongs tbody tr:first").attr("id");
+                    return plrow_to_id(id);
                 } else {
                     return false;
                 }
@@ -228,8 +254,8 @@ function get_next_song(){
             // calculate a random number
             var entriesLen = $("#playlistSongs tbody tr").length;
             var randNumber = Math.floor(Math.random() * entriesLen);
-            var randId = $("#playlistSongs tbody tr:eq(" + randNumber + ")").attr("title");
-            return randId;
+            var randId = $("#playlistSongs tbody tr:eq(" + randNumber + ")").attr("id");
+            return plrow_to_id(randId);
 
         }
         
@@ -238,12 +264,12 @@ function get_next_song(){
     // If no repeat and shuffle were enabled, just return the next song
     if($currentSong.next().length !== 0){
         
+        var nextSongId = $currentSong.next().attr("id");
+       
         if(playlist === 0){
-            var nextSongId = $currentSong.next().attr("id");
             return row_to_id(nextSongId);
         } else {
-            var nextSongId = $currentSong.next().attr("title");
-            return nextSongId;
+            return plrow_to_id(nextSongId);
         }
         
     } else {
@@ -254,8 +280,8 @@ function get_next_song(){
                 var id = $("#collection tbody tr:first").attr("id");
                 return row_to_id(id);
             } else {
-                var id = $("#playlistSongs tbody tr:first").attr("title");
-                return id;                
+                var id = $("#playlistSongs tbody tr:first").attr("id");
+                return plrow_to_id(id);                
             }
         } else {
             return false;
@@ -271,11 +297,12 @@ function next_song(){
     var songId = get_next_song();
     if (songId !== false){
         if( db("playlist", false) === 0){
-            var $currentSong = $( id_to_row(db("playing", false), true) )
-            play_song(songId, $currentSong.next().attr("id"));
+            var tr = id_to_row(songId);
+            play_song(songId, tr);
         } else {
-            var $currentSong = $('[title="'+db("playing", false)+'"]')
-            play_song(songId, $currentSong.next().attr("id"));
+            var tr = id_to_plrow(songId);
+            var id = $("#" + tr).attr("title");
+            play_song(id, tr);
         }
     }
 }
@@ -286,6 +313,13 @@ function next_song(){
 function previous_song(){
     var songId = get_previous_song();
     if (songId !== false){
-        play_song(songId);
+        if( db("playlist", false) === 0){
+            var tr = id_to_row(songId);
+            play_song(songId, tr);
+        } else {
+            var tr = id_to_plrow(songId);
+            var id = $("#" + tr).attr("title");
+            play_song(id, tr);
+        }
     }
 }
