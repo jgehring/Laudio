@@ -85,6 +85,11 @@ case "$DISTRO" in
         if [ "$conf" = "" ]; then
             echo "Include conf/extra/laudio_apache.conf" >> /etc/httpd/conf/httpd.conf
         fi
+        # check if the mod_wsgi is enabled
+        conf=`grep -e LoadModule wsgi_module /etc/httpd/conf/httpd.conf`
+        if [ "$conf" = "" ]; then
+            echo "LoadModule wsgi_module modules/mod_wsgi.so" >> /etc/httpd/conf/httpd.conf
+        fi
         echo "Removing previous installations"
         for elem in ${CREATE_DIRS[@]}; do
             if [[ -e $elem ]]; then
