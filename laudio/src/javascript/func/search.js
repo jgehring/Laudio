@@ -79,7 +79,7 @@ function search(search, depth){
                 
                 // if we didnt just start it see if the currently played
                 // song is in the collection and highlight it
-                if (lastSong !== 0){
+                if (lastSong !== 0 && db("playlist", false) === 0){
                     $( id_to_row(lastSong, true) ).addClass("playing");
                 }
                 

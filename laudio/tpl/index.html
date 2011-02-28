@@ -15,7 +15,7 @@
         <ul class="headerMenu" id="playlistSongMenu">
             {% if user.is_authenticated %}
                 <li><a href="#" id="savePlaylist" onclick="return false;">Save</a></li>
-                <li><a href="#" id="openPlaylist" onclick="return false;">Open</a></li>
+                <li><a href="#" id="openPlaylist" onclick="return false;">Lists</a></li>
             {% endif %}
         </ul>
         <ul class="headerMenu" id="playlistPlaylistMenu">
@@ -125,7 +125,7 @@
             </tr>
             <tr>
                 <td>
-                    <input type="text" name="playlistName" />
+                    <input type="text" name="playlistName" maxlength="249" />
                 </td>
                 <td>
                     <a href="#" id="confirmYes" onclick="return false;">Save</a>
