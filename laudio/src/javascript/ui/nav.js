@@ -73,9 +73,9 @@ $(document).ready(function() {
         if( $("#playlistSongs tbody").children("tr").length > 0){
             $("#playlistSongMenu").toggle("slide", function(){
                 $("#playlistPlaylistMenu").toggle("slide");
-                
             });
             $("#playlistSongs").fadeOut("fast", function(){
+                $("#playlistSaveDialogue").val($("#playlistName").html());
                 $("#playlistSaveDialogue").fadeIn("fast");
             });
         }
