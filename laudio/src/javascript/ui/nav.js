@@ -76,7 +76,7 @@ $(document).ready(function() {
                 
             });
             $("#playlistSongs").fadeOut("fast", function(){
-                $("#playlistRename").fadeIn("fast");
+                $("#playlistSaveDialogue").fadeIn("fast");
             });
         }
     });
@@ -85,7 +85,7 @@ $(document).ready(function() {
      * Saves a playlist
      */
     $("#savePlaylistButton").click(function(){
-        var name = escape( $("#playlistRename input").val() );
+        var name = escape( $("#playlistSaveDialogue input").val() );
         var songs = "";
         $("#playlistSongs tr").each(function(){
             var title = $(this).attr("title");
@@ -93,6 +93,15 @@ $(document).ready(function() {
         });
         songs = songs.slice(0, -1);
         save_playlist(name, songs, false);
+    });
+    
+    /**
+     * Rename a playlist
+     */
+    $("#renamePlaylistButton").click(function(){
+        var from = $("#playlistRename #renameName").html();
+        var to = $("#playlistRename input").val();
+        rename_playlist(from, to);
     });
     
     /**

@@ -153,6 +153,46 @@ function delete_playlist(id, name, confirm){
 
 
 /**
+ * Shows a renaming playlist dialogue
+ * 
+ * @param string name: name of the playlist
+ */
+function rename_playlist_dialogue(name){
+    $("#playlistList").fadeOut("fast", function(){
+        $("#playlistRename th").html("Enter a new name for playlist <span id=\"renameName\">" + name + "</span");
+        $("#playlistRename input").val(name);
+        $("#playlistRename").fadeIn("fast");
+    });
+}
+
+/**
+ * Shows a renaming playlist dialogue
+ * 
+ * @param string from: name of the playlist
+ * @param string to: name of the future playlist
+ */
+function rename_playlist(from, to){
+    
+    fromurl = encodeURI(from);
+    tourl = encodeURI(to);
+    var url = "{% url laudio.views.laudio_index %}playlist/rename/" + fromurl + "/" + tourl + "/";
+    
+    $.getJSON(url, function(json){
+        if(json.exists === "1"){
+            alert("Error: Playlist wasn't renamed because the name already exists!");
+        } else {
+            // check if the playlist is currently playing
+            if($("#playlistName").html().trim() === from){
+                $("#playlistName").html(to);
+            }
+        }
+        cancel_playlist();
+    });
+}
+
+
+
+/**
  * Saves a playlist
  * 
  * @param string name: name of the playlist
@@ -177,7 +217,7 @@ function save_playlist(name, songs, confirm){
                 });
             } else {
                 // in case of overwriting an existing playlist
-                $("#playlistRename").fadeOut("fast", function(){
+                $("#playlistSaveDialogue").fadeOut("fast", function(){
                     $("#playlistConfirm th").html("Do you really want to overwrite playlist " + name+"?");
                     $("#playlistConfirm").fadeIn("fast");
                     $("#confirmYes").unbind("click");
@@ -210,7 +250,9 @@ function cancel_playlist(){
     $("#playlistList").fadeOut("fast", function(){
         $("#playlistRename").fadeOut("fast", function(){
             $("#playlistConfirm").fadeOut("fast", function(){
-                $("#playlistSongs").fadeIn("slow");
+                $("#playlistSaveDialogue").fadeOut("fast", function(){
+                    $("#playlistSongs").fadeIn("slow");
+                });
             });
         });
     });

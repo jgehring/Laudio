@@ -606,11 +606,16 @@ def rename_playlist(request, oldName, newName):
     newName -- the new name of the playlist
     
     """
-    playlist = Playlist.objects.get(name=urllib2.unquote(oldName), user=request.user)
-    playlist.name = urllib2.unquote(newName)
-    playlist.save()
-    msg = "renamed playlist %s to %s" % (oldName, newName)
-    return render_to_response('requests/empty.html', {"msg": msg})
+    # see if the new name already exists in the database
+    try:
+        playlist = Playlist.objects.get(name=urllib2.unquote(newName), user=request.user)
+        return render_to_response('requests/playlist_exists.html', {"exists": 1})
+    except Playlist.DoesNotExist:
+        playlist = Playlist.objects.get(name=urllib2.unquote(oldName), user=request.user)
+        playlist.name = urllib2.unquote(newName)
+        playlist.save()
+        msg = "renamed playlist %s to %s" % (oldName, newName)
+        return render_to_response('requests/playlist_exists.html', {"exists": 0})
     
     
 @check_login("user")
