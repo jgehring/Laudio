@@ -75,7 +75,7 @@ $(document).ready(function() {
                 $("#playlistPlaylistMenu").toggle("slide");
             });
             $("#playlistSongs").fadeOut("fast", function(){
-                $("#playlistSaveDialogue input").val($("#playlistName").html());
+                $("#playlistSaveDialogue input").val($("#playlistName").html().trim());
                 $("#playlistSaveDialogue").fadeIn("fast");
             });
         }
