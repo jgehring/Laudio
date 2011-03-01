@@ -566,6 +566,22 @@ def get_playlist_name(request, playlistId):
     playlist = Playlist.objects.get(id=playlistId, user=request.user)
     name = playlist.name
     return render_to_response('requests/empty.html', {"msg": name})
+
+
+@check_login("user")
+def playlist_exists(request, playlistName):
+    """Looks if a playlist with a certain name already exsists for this
+    user
+    
+    Keyword arguments:
+    playlistName -- the name of the playlist
+    
+    """
+    try:
+        playlist = Playlist.objects.get(name=playlistName, user=request.user)
+        return render_to_response('requests/playlist_exists.html', {"exists": 1})
+    except Playlist.DoesNotExist:
+        return render_to_response('requests/playlist_exists.html', {"exists": 0})
     
     
 @check_login("user")

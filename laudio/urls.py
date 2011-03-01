@@ -61,6 +61,7 @@ urlpatterns = patterns('',
     
     # playlist requests
     (r'^playlist/save/(?P<playlistName>.*)/$', save_playlist),
+    (r'^playlist/exists/(?P<playlistName>.*)/$', playlist_exists),
     (r'^playlist/getname/(?P<playlistId>.*)/$', get_playlist_name),
     (r'^playlist/open/(?P<playlistId>.*)/$', open_playlist),
     (r'^playlist/delete/(?P<playlistId>.*)/$', delete_playlist),

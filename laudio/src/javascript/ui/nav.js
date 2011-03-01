@@ -70,13 +70,15 @@ $(document).ready(function() {
      * Opens the save playlist menu
      */
     $("#savePlaylist").click( function(){
-        $("#playlistSongMenu").toggle("slide", function(){
-            $("#playlistPlaylistMenu").toggle("slide");
-            
-        });
-        $("#playlistSongs").fadeOut("fast", function(){
-            $("#playlistRename").fadeIn("fast");
-        });
+        if( $("#playlistSongs tbody").children("tr").length > 0){
+            $("#playlistSongMenu").toggle("slide", function(){
+                $("#playlistPlaylistMenu").toggle("slide");
+                
+            });
+            $("#playlistSongs").fadeOut("fast", function(){
+                $("#playlistRename").fadeIn("fast");
+            });
+        }
     });
 
     /**
@@ -90,7 +92,7 @@ $(document).ready(function() {
             songs += title + ",";
         });
         songs = songs.slice(0, -1);
-        save_playlist(name, songs);
+        save_playlist(name, songs, false);
     });
     
     /**

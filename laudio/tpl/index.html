@@ -10,7 +10,7 @@
 <div id="contentHeader">
 
     <div id="sidebarHeader" {% if hide_sidebar %}style="display: none;"{% endif %}>Information</div>
-    <div id="playlistHeader" {% if hide_playlist %}style="display: none;"{% endif %}><span id="playlistName">Playlist</span>
+    <div id="playlistHeader" {% if hide_playlist %}style="display: none;"{% endif %}><span id="playlistName"></span>
         
         <ul class="headerMenu" id="playlistSongMenu">
             {% if user.is_authenticated %}

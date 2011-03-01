@@ -138,7 +138,7 @@ function delete_playlist(id, name, confirm){
         $("#playlistList").fadeOut("fast", function(){
             $("#playlistConfirm th").html("Do you really want to delete playlist " + name+"?");
             $("#playlistConfirm").fadeIn("fast");
-            $("confirmYes").unbind("click");
+            $("#confirmYes").unbind("click");
             $("#confirmYes").click( function(){
                delete_playlist(id, name, true); 
             });
@@ -151,13 +151,6 @@ function delete_playlist(id, name, confirm){
     }
 }
 
-/**
- * Check if playlist name and user id already exist
- * @param string name: the name of the playlist
- */
-function playlist_exists(name){
-    
-}
 
 /**
  * Saves a playlist
@@ -165,11 +158,42 @@ function playlist_exists(name){
  * @param string name: name of the playlist
  * @param string songs: songids split with commas, e.g.: 1,2,3,4
  */
-function save_playlist(name, songs){
-    name = encodeURI(name);
-    var url = "{% url laudio.views.laudio_index %}playlist/save/"+name+"/"
-    $.get(url, { songs: songs}, function(){
-        cancel_playlist();
+function save_playlist(name, songs, confirm){
+    // trim playlistname
+    name = $.trim(name);
+    // check if playlist with same name already exists
+    urlname = encodeURI(name);
+    var url = "{% url laudio.views.laudio_index %}playlist/exists/" + urlname + "/";
+    $.getJSON(url, function(json){
+        if(json.exists === "1"){
+            // if the name is the same as the current, just assume update
+            // and save the playlist
+            if($("#playlistName").html().trim() === name || confirm){
+                // in case of normal playlist update
+                var url = "{% url laudio.views.laudio_index %}playlist/save/"+urlname+"/"
+                $.get(url, { songs: songs}, function(){
+                    cancel_playlist();
+                    $("#playlistName").html(name);
+                });
+            } else {
+                // in case of overwriting an existing playlist
+                $("#playlistRename").fadeOut("fast", function(){
+                    $("#playlistConfirm th").html("Do you really want to overwrite playlist " + name+"?");
+                    $("#playlistConfirm").fadeIn("fast");
+                    $("#confirmYes").unbind("click");
+                    $("#confirmYes").click( function(){
+                       save_playlist(name, songs, true); 
+                    });
+                });
+            }
+        } else {
+            // we assume this is the first save of a playlist
+            var url = "{% url laudio.views.laudio_index %}playlist/save/"+urlname+"/"
+            $.get(url, { songs: songs}, function(){
+                cancel_playlist();
+                $("#playlistName").html(name);
+            });
+    }
     });
 }
 
@@ -450,6 +474,7 @@ function playlist_context_menu(){
             'Clear All': {
                 onclick: function(menuItem, menu) {
                     $("#playlistSongs tbody").empty("tr");
+                    $("#playlistName").html("");
                 },
                 icon: "{% url laudio.views.laudio_index %}media/style/img/remove_small.png",
             }
