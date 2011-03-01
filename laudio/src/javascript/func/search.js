@@ -30,7 +30,7 @@ function search(search, depth){
     // Start eyecandy animation
     $("#collection tbody").fadeOut('fast');
     $("#advSearch").fadeOut('fast');
-    $(".loading").fadeIn("slow");
+    $("#library .loading").fadeIn("slow");
     
     if (depth === "advanced"){
         
@@ -72,7 +72,7 @@ function search(search, depth){
     
     // now that we got the get url, start query
     $("#collection tbody").load(url, function (){
-        $(".loading").fadeOut('fast', function(){
+        $("#library .loading").fadeOut('fast', function(){
             $("#collection tbody").fadeIn('slow');
                 // set color to just playing song
                 var lastSong = db("playing", false);

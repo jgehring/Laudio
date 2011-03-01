@@ -1,0 +1,7 @@
+{% for playlist in playlists %}
+<tr>
+    <td><a href="#" onclick="load_playlist({{playlist.id}}); return false;" >{{playlist.name}}</a></td>
+    <td><a href="#" onclick="delete_playlist({{playlist.id}}, '{{playlist.name}}', false); return false;">Delete</a></td>
+    <td><a href="#" onclick="rename_playlist({{playlist.id}}); return false;">Rename</a></td>
+</tr>
+{% endfor %}

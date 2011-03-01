@@ -48,6 +48,7 @@ import time
 import datetime
 import os
 import urllib
+import urllib2
 
 
 ########################################################################
@@ -516,7 +517,7 @@ def save_playlist(request, playlistName):
     
     # check if any elements were passed at all
     playlistName = urllib2.unquote(playlistName)
-    playlistItems = request.GET["urls"].split(",")
+    playlistItems = request.GET["songs"].split(",")
     
     # look up if a playlist with the name exists already, if so delete it
     try:
@@ -536,35 +537,47 @@ def save_playlist(request, playlistName):
             pe.save()
         except Song.DoesNotExist:
             pass
-    msg = "saved playlist %s with %i songs" % (playlistName, playlistItems)
+    msg = "saved playlist %s with %i songs" % (playlistName, len(playlistItems))
     return render_to_response('requests/empty.html', {"msg": msg})
 
 
 @check_login("user")
-def open_playlist(request, playlistName):
+def open_playlist(request, playlistId):
     """Opens a Playlist with name and items
     
     Keyword arguments:
-    playlistName -- the name of the playlist
+    playlistId -- the id of the playlist
     
     """
-    playlistName = urllib2.unquote(playlistName)
-    playlist = Playlist.objects.get(name=playlistName, user=request.user)
+    playlist = Playlist.objects.get(id=playlistId, user=request.user)
     songs = playlist.songs.all()
-    return render_to_response('requests/songs.html', {'songs': songs, 'playlist': playlistName})
+    name = playlist.name
+    return render_to_response('requests/playlist_songs.html', {'songs': songs, 'playlist': name})
+
+
+@check_login("user")
+def get_playlist_name(request, playlistId):
+    """Looks up a playlist name to the id
+    
+    Keyword arguments:
+    playlistId -- the id of the playlist
+    
+    """
+    playlist = Playlist.objects.get(id=playlistId, user=request.user)
+    name = playlist.name
+    return render_to_response('requests/empty.html', {"msg": name})
     
     
 @check_login("user")
-def delete_playlist(request, playlistName):
+def delete_playlist(request, playlistId):
     """Deletes a Playlist with name and items
     
     Keyword arguments:
-    playlistName -- the name of the playlist
+    playlistId -- the id of the playlist
     
     """
-    playlistName = urllib2.unquote(playlistName)
-    playlist = Playlist.objects.get(name=playlistName, user=request.user).delete()
-    msg = "deleted playlist %s" % playlistName
+    playlist = Playlist.objects.get(id=playlistId, user=request.user).delete()
+    msg = "deleted playlist"
     return render_to_response('requests/empty.html', {"msg": msg})
     
     

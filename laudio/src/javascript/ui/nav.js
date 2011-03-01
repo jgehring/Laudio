@@ -51,10 +51,18 @@ $(document).ready(function() {
     $("#openPlaylist").click( function(){
         $("#playlistSongMenu").toggle("slide", function(){
             $("#playlistPlaylistMenu").toggle("slide");
-            
         });
         $("#playlistSongs").fadeOut("fast", function(){
-            $("#playlistList").fadeIn("fast");
+            // show loading
+            $("#playlist .loading").fadeIn("slow");
+            var url = "{% url laudio.views.list_playlists %}"
+            // fetch playlist entries
+            $("#playlistList tbody").load(url, function (){
+                $("#playlist .loading").fadeOut('fast', function(){
+                    $("#playlistSongs tbody").fadeIn('slow');
+                    $("#playlistList").fadeIn("fast");
+                });
+            });
         });
     });
 
@@ -70,18 +78,26 @@ $(document).ready(function() {
             $("#playlistRename").fadeIn("fast");
         });
     });
+
+    /**
+     * Saves a playlist
+     */
+    $("#savePlaylistButton").click(function(){
+        var name = escape( $("#playlistRename input").val() );
+        var songs = "";
+        $("#playlistSongs tr").each(function(){
+            var title = $(this).attr("title");
+            songs += title + ",";
+        });
+        songs = songs.slice(0, -1);
+        save_playlist(name, songs);
+    });
     
     /**
      * Closes the special playlist menu
      */
     $("#cancelPlaylist").click( function(){
-        $("#playlistPlaylistMenu").toggle("slide", function(){
-            $("#playlistSongMenu").toggle("slide");
-        });
-        
-        $("#playlist table").fadeOut("fast", function(){
-            $("#playlistSongs").fadeIn("fast");
-        });
+        cancel_playlist();
     });
     
     /**
@@ -90,7 +106,6 @@ $(document).ready(function() {
     $("#deletePlaylist").click( function(){
         $("#playlistSongMenu").toggle("slide", function(){
             $("#playlistPlaylistMenu").toggle("slide");
-            
         });
         $("#playlistSongs").fadeOut("fast", function(){
             $("#playlistRemove").fadeIn("fast");
@@ -98,12 +113,7 @@ $(document).ready(function() {
     });
     
     
-    
-    
-    
-    $("#savePlaylist").click( function(){
-        
-    });
+
     
     
     /**

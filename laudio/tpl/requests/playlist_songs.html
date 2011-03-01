@@ -1,0 +1,9 @@
+{% for song in songs %}
+    <tr title="{{ song.id|escape }}" 
+        id="plrow{{ forloop.counter }}"
+        class="{% cycle 'line1' 'line2' %}" 
+        onclick="select_line('plrow{{ forloop.counter }}', 0)"
+        ondblclick="db('playlist', 1); play_song({{ song.id|escape }}, 'plrow{{ forloop.counter }}');">
+        <td>{{ song.artist }} - {{ song.title }}</td>
+    </tr>
+{% endfor %}

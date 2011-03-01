@@ -75,8 +75,123 @@ $(document).ready(function() {
         }
     });
     
+    
+
+    
 });
 
+
+/**
+ * Loads a playlist
+ * 
+ * @param integer id: the id of the playlist
+ */
+function load_playlist(id){
+    // Start eyecandy animation
+    $("#playlistSongs tbody").fadeOut('fast');
+    $("#playlist .loading").fadeIn("slow");
+    cancel_playlist();
+    // and unbind previous items from context to prevent slowdown
+    $("#playlistSongs tbody tr").unbind("contextmenu");
+    
+    set_playlist_name(id);
+    
+    var url = "{% url laudio.views.laudio_index %}playlist/open/" + id + "/";
+    // now that we got the get url, start query
+    $("#playlistSongs tbody").load(url, function (){
+        $("#playlist .loading").fadeOut('fast', function(){
+            $("#playlistSongs tbody").fadeIn('slow');
+            // set color to just playing song
+            var lastSong = db("playlistPlaying", false);;
+            
+            // if we didnt just start it see if the currently played
+            // song is in the collection and highlight it
+            if (lastSong !== 0 && db("playlist", false) === 1){
+                $( id_to_plrow(lastSong, true) ).addClass("playing");
+            }
+            
+            // update context menu
+            playlist_context_menu();
+        });
+    });
+}
+
+/**
+ * Sets the name of the playlist
+ * @param integer id: the id of the playlist
+ */
+function set_playlist_name(id){
+    // set playlist name
+    var url = "{% url laudio.views.laudio_index %}playlist/getname/" + id + "/";
+    $.get(url).then(function(data){
+        $("#playlistName").html(data);
+    });
+}
+
+/**
+ * Deletes a playlist
+ * @param integer id: the id of the playlist
+ */
+function delete_playlist(id, name, confirm){
+    // set playlist name
+    if(confirm === false){
+        $("#playlistList").fadeOut("fast", function(){
+            $("#playlistConfirm th").html("Do you really want to delete playlist " + name+"?");
+            $("#playlistConfirm").fadeIn("fast");
+            $("confirmYes").unbind("click");
+            $("#confirmYes").click( function(){
+               delete_playlist(id, name, true); 
+            });
+        });
+    } else {
+        var url = "{% url laudio.views.laudio_index %}playlist/delete/" + id + "/";
+        $.get(url, function(){
+            cancel_playlist();
+        });
+    }
+}
+
+/**
+ * Check if playlist name and user id already exist
+ * @param string name: the name of the playlist
+ */
+function playlist_exists(name){
+    
+}
+
+/**
+ * Saves a playlist
+ * 
+ * @param string name: name of the playlist
+ * @param string songs: songids split with commas, e.g.: 1,2,3,4
+ */
+function save_playlist(name, songs){
+    name = encodeURI(name);
+    var url = "{% url laudio.views.laudio_index %}playlist/save/"+name+"/"
+    $.get(url, { songs: songs}, function(){
+        cancel_playlist();
+    });
+}
+
+
+/**
+ * Fades out playlist option specific gui
+ */
+function cancel_playlist(){
+    
+    $("#playlistPlaylistMenu").toggle("slide", function(){
+        $("#playlistSongMenu").toggle("slide");
+    });
+    
+    $("#playlistList").fadeOut("fast", function(){
+        $("#playlistRename").fadeOut("fast", function(){
+            $("#playlistConfirm").fadeOut("fast", function(){
+                $("#playlistSongs").fadeIn("slow");
+            });
+        });
+    });
+    
+}
 
 /**
  * Colors all lines in the collection

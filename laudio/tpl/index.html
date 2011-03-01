@@ -85,31 +85,19 @@
 
 <div id="playlist" {% if hide_playlist%}style="display: none;"{% endif %}>
     <table id="playlistList" class="playlistAction" cellpadding="0" cellspacing="0">
-        <tr>
-            <td><a href="#" onclick="return false;">Playlist</a></td>
-            <td><a href="#" onclick="return false;">Delete</a></td>
-            <td><a href="#" onclick="return false;">Rename</a></td>
-        </tr>    
-        <tr>
-            <td><a href="#" onclick="return false;">Playlist</a></td>
-            <td><a href="#" onclick="return false;">Delete</a></td>
-            <td><a href="#" onclick="return false;">Rename</a></td>
-        </tr>    
-        <tr>
-            <td><a href="#" onclick="return false;">Playlist</a></td>
-            <td><a href="#" onclick="return false;">Delete</a></td>
-            <td><a href="#" onclick="return false;">Rename</a></td>
-        </tr>    
+        <tbody>
+        
+        </tbody>
     </table>
     
     <table id="playlistConfirm" class="playlistAction" cellpadding="0" cellspacing="0">
         <tbody>
             <tr>
-                <th colspan="2">Are you sure?</th>
+                <th colspan="2"></th>
             </tr>
             <tr>
                 <td>
-                    <a href="#" id="confirmNo" onclick="return false;">No</a>
+                    <a href="#" onclick="cancel_playlist(); return false;">No</a>
                 </td>
                 <td>
                     <a href="#" id="confirmYes" onclick="return false;">Yes</a>
@@ -125,10 +113,10 @@
             </tr>
             <tr>
                 <td>
-                    <input type="text" name="playlistName" maxlength="249" />
+                    <input type="text" name="name" maxlength="249" />
                 </td>
                 <td>
-                    <a href="#" id="confirmYes" onclick="return false;">Save</a>
+                    <a href="#" id="savePlaylistButton" onclick="return false;">Save</a>
                 </td>
         </tbody>
     </table>
@@ -138,7 +126,7 @@
         
         </tbody>
     </table>    
-    
+    <div style="display: none;" class="loading"></div>
 </div>
 
 <div id="library">
