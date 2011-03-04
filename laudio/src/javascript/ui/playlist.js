@@ -25,8 +25,8 @@ $(document).ready(function() {
      * Opens the open playlist menu
      */
     $("#openPlaylist").click( function(){
-        $("#playlistSongMenu").toggle("slide", function(){
-            $("#playlistPlaylistMenu").toggle("slide");
+        $("#playlistSongMenu").toggle("drop", function(){
+            $("#playlistPlaylistMenu").toggle("drop");
         });
         $("#playlistSongs").fadeOut("fast", function(){
             // show loading
@@ -47,8 +47,8 @@ $(document).ready(function() {
      */
     $("#savePlaylist").click( function(){
         if( $("#playlistSongs tbody").children("tr").length > 0){
-            $("#playlistSongMenu").toggle("slide", function(){
-                $("#playlistPlaylistMenu").toggle("slide");
+            $("#playlistSongMenu").toggle("drop", function(){
+                $("#playlistPlaylistMenu").toggle("drop");
             });
             $("#playlistSongs").fadeOut("fast", function(){
                 // set standardname to already running playlist
@@ -113,8 +113,8 @@ $(document).ready(function() {
      * Opens the delete playlist menu
      */
     $("#deletePlaylist").click( function(){
-        $("#playlistSongMenu").toggle("slide", function(){
-            $("#playlistPlaylistMenu").toggle("slide");
+        $("#playlistSongMenu").toggle("drop", function(){
+            $("#playlistPlaylistMenu").toggle("drop");
         });
         $("#playlistSongs").fadeOut("fast", function(){
             $("#playlistRemove").fadeIn("fast");
@@ -152,8 +152,8 @@ function trigger_save_playlist(){
  * @param integer id: the id of the playlist
  */
 function load_playlist(id){
-    $("#playlistPlaylistMenu").toggle("slide", function(){
-        $("#playlistSongMenu").toggle("slide");
+    $("#playlistPlaylistMenu").toggle("drop", function(){
+        $("#playlistSongMenu").toggle("drop");
     });
     // Start eyecandy animation
     $("#playlistList").fadeOut("fast", function(){
@@ -318,8 +318,8 @@ function save_playlist(name, songs, confirm){
  */
 function cancel_playlist(){
     
-    $("#playlistPlaylistMenu").toggle("slide", function(){
-        $("#playlistSongMenu").toggle("slide");
+    $("#playlistPlaylistMenu").toggle("drop", function(){
+        $("#playlistSongMenu").toggle("drop");
     });
     
     $("#playlistList").fadeOut("fast", function(){
