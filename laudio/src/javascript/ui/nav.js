@@ -105,6 +105,10 @@ $(document).ready(function() {
         }
     });
     
+    /**
+     * Set autofocus for search bar
+     */
+    $("#search .search").focus();
     
     /**
      * Hits an advanced search if the cursor is in an input field and

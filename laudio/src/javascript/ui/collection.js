@@ -66,10 +66,7 @@ $(document).ready(function() {
             db("ctrl", 0);
             return false;
         }
-    });
-
-
-    
+    });    
     
 
     
