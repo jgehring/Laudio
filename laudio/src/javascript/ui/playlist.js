@@ -88,7 +88,20 @@ $(document).ready(function() {
         var to = $("#playlistRename input").val();
         rename_playlist(from, to);
     });
-    
+
+    /**
+     * Rename playlist on enter
+     */
+    $("#playlistRename input").keypress(function(e){
+        if(e.which == 13){
+            var from = $("#playlistRename #renameName").html();
+            var to = $("#playlistRename input").val();
+            rename_playlist(from, to);
+            e.preventDefault();
+            return false;
+        }
+    });
+
     /**
      * Closes the special playlist menu
      */
@@ -289,7 +302,7 @@ function save_playlist(name, songs, confirm){
                 cancel_playlist();
                 $("#playlistName").html(name);
             });
-    }
+        }
     });
 }
 
