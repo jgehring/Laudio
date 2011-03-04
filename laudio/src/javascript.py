@@ -62,6 +62,7 @@ class JavaScript(object):
             files.append("ui/collection.js")
             files.append("ui/controls.js")
             files.append("ui/tablesorting.js")
+            files.append("ui/playlist.js")
             files.append("ui/nav.js")
             files.append("func/player.js")
             files.append("func/search.js")
