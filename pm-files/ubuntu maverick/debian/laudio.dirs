@@ -1,4 +1,0 @@
-etc/apache2/conf.d/
-var/lib/laudio/
-var/log/laudio/
-usr/share/
