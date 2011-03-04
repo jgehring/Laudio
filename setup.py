@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='laudio',
-	version='0.4.3.1',
+	version='0.5.1.0',
 	description='laudio Music Player',
 	author='Bernhard Posselt',
 	author_email='bernhard.posselt@gmx.at',
