@@ -33,6 +33,7 @@ $(document).ready(function() {
     db("playlist", 0);
     db("playlistIdCounter", 0);
     db("playlistPlaying", 0);
+    collection_area_context_menu();
     
     // check for shift key pressed
     db("shift", 0);
@@ -214,6 +215,29 @@ function collection_context_menu(){
     // bind context menu to the collection
     $(function() {
         $('#collection tbody tr').contextMenu(songMenu,
+            { 
+                theme:'vista',
+            }
+        ); 
+    });
+}
+
+/**
+ * Sets the context menu for the table body where no songs are
+ */
+function collection_area_context_menu(){
+    // set context menu details
+    var songAreaMenu = [
+        {
+            'Select All': function(){
+                $('#collection tbody tr').addClass("selected");
+            }
+        }
+    ];
+    
+    // bind context menu to the collection
+    $(function() {
+        $('#library').contextMenu(songAreaMenu,
             { 
                 theme:'vista',
             }

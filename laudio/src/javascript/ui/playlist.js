@@ -21,6 +21,8 @@
 
 $(document).ready(function() { 
     
+    playlist_area_context_menu();
+    
     /**
      * Opens the open playlist menu
      */
@@ -422,3 +424,37 @@ function playlist_context_menu(){
         ); 
     });
 }
+
+
+/**
+ * Sets the context menu for the playlist area
+ */
+function playlist_area_context_menu(){
+    // set context menu details
+    var playListAreaMenu = [                    
+        {
+            'Select All': function(){
+                $('#playlistSongs tbody tr').addClass("selected");
+            }
+        },
+        {
+            'Clear All': {
+                onclick: function(menuItem, menu) {
+                    $("#playlistSongs tbody").empty("tr");
+                    $("#playlistName").html("");
+                },
+                icon: "{% url laudio.views.laudio_index %}media/style/img/remove_small.png",
+            }
+        }
+    ];
+    
+    // bind context menu to the collection
+    $(function() {
+        $('#playlist').contextMenu(playListAreaMenu,
+            { 
+                theme:'vista',
+            }
+        ); 
+    });
+}
+

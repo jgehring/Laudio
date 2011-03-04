@@ -200,7 +200,9 @@
 		
 		// Show the context menu
 		show: function(t,e) {
-            select_line(t.id, 1);
+            if(t.tagName.toLowerCase() === "tr"){
+                select_line(t.id, 1);
+            }
 			var cmenu=this, x=e.pageX, y=e.pageY;
 			cmenu.target = t; // Preserve the object that triggered this context menu so menu item click methods can see it
 			if (cmenu.beforeShow()!==false) {
