@@ -152,31 +152,37 @@ function trigger_save_playlist(){
  * @param integer id: the id of the playlist
  */
 function load_playlist(id){
+    $("#playlistPlaylistMenu").toggle("slide", function(){
+        $("#playlistSongMenu").toggle("slide");
+    });
     // Start eyecandy animation
-    $("#playlistSongs tbody").fadeOut('fast');
-    $("#playlist .loading").fadeIn("slow");
-    cancel_playlist();
-    // and unbind previous items from context to prevent slowdown
-    $("#playlistSongs tbody tr").unbind("contextmenu");
-    
-    set_playlist_name(id);
-    
-    var url = "{% url laudio.views.laudio_index %}playlist/open/" + id + "/";
-    // now that we got the get url, start query
-    $("#playlistSongs tbody").load(url, function (){
-        $("#playlist .loading").fadeOut('fast', function(){
-            $("#playlistSongs tbody").fadeIn('slow');
-            // set color to just playing song
-            var lastSong = db("playlistPlaying", false);;
-            
-            // if we didnt just start it see if the currently played
-            // song is in the collection and highlight it
-            if (lastSong !== 0 && db("playlist", false) === 1){
-                $( id_to_plrow(lastSong, true) ).addClass("playing");
-            }
-            
-            // update context menu
-            playlist_context_menu();
+    $("#playlistList").fadeOut("fast", function(){
+        $("#playlistSongs").fadeOut("fast", function(){
+            $("#playlist .loading").fadeIn("fast", function(){
+                // and unbind previous items from context to prevent slowdown
+                $("#playlistSongs tbody tr").unbind("contextmenu");
+                
+                set_playlist_name(id);
+                
+                var url = "{% url laudio.views.laudio_index %}playlist/open/" + id + "/";
+                // now that we got the get url, start query
+                $("#playlistSongs tbody").load(url, function (){
+                    $("#playlist .loading").fadeOut('fast', function(){
+                        $("#playlistSongs").fadeIn('slow');
+                        // set color to just playing song
+                        var lastSong = db("playlistPlaying", false);;
+                        
+                        // if we didnt just start it see if the currently played
+                        // song is in the collection and highlight it
+                        if (lastSong !== 0 && db("playlist", false) === 1){
+                            $( id_to_plrow(lastSong, true) ).addClass("playing");
+                        }
+                        
+                        // update context menu
+                        playlist_context_menu();
+                    });
+                });                
+            });
         });
     });
 }
