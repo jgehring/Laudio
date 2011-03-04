@@ -27,21 +27,7 @@ $(document).ready(function() {
      * Opens the open playlist menu
      */
     $("#openPlaylist").click( function(){
-        $("#playlistSongMenu").toggle("drop", function(){
-            $("#playlistPlaylistMenu").toggle("drop");
-        });
-        $("#playlistSongs").fadeOut("fast", function(){
-            // show loading
-            $("#playlist .loading").fadeIn("slow");
-            var url = "{% url laudio.views.list_playlists %}"
-            // fetch playlist entries
-            $("#playlistList tbody").load(url, function (){
-                $("#playlist .loading").fadeOut('fast', function(){
-                    $("#playlistSongs tbody").fadeIn('slow');
-                    $("#playlistList").fadeIn("fast");
-                });
-            });
-        });
+        playlist_list(true);
     });
 
     /**
@@ -133,6 +119,41 @@ $(document).ready(function() {
     
 });
 
+/**
+ * Shows the playlist list
+ * @param bool show: if show is yes its being assumed that you change from
+ *                   the playlist songs menu, if not you return from a 
+ *                   playlist list dialogue
+ */
+function playlist_list(show){
+    if(show === true){
+        $("#playlistSongMenu").toggle("drop", function(){
+            $("#playlistPlaylistMenu").toggle("drop");
+        });
+        $("#playlistSongs").fadeOut("fast", function(){
+            // show loading
+            $("#playlist .loading").fadeIn("slow");
+            var url = "{% url laudio.views.list_playlists %}"
+            // fetch playlist entries
+            $("#playlistList tbody").load(url, function (){
+                $("#playlist .loading").fadeOut('fast', function(){
+                    $("#playlistList").fadeIn("fast");
+                });
+            });
+        });
+    } else {
+        // show loading
+        $("#playlist .loading").fadeIn("slow");
+        var url = "{% url laudio.views.list_playlists %}"
+        // fetch playlist entries
+        $("#playlistList tbody").load(url, function (){
+            $("#playlist .loading").fadeOut('fast', function(){
+                $("#playlistList").fadeIn("fast");
+            });
+        });
+    }
+}
+
 
 /**
  * Calls the save playlist function
@@ -214,13 +235,15 @@ function delete_playlist(id, name, confirm){
             $("#playlistConfirm").fadeIn("fast");
             $("#confirmYes").unbind("click");
             $("#confirmYes").click( function(){
-               delete_playlist(id, name, true); 
+               delete_playlist(id, name, true);
             });
         });
     } else {
         var url = "{% url laudio.views.laudio_index %}playlist/delete/" + id + "/";
         $.get(url, function(){
-            cancel_playlist();
+            $("#playlistConfirm").fadeOut("fast", function(){
+                playlist_list(false);
+            });
         });
     }
 }
@@ -263,7 +286,9 @@ function rename_playlist(from, to){
                 $("#playlistName").html(to);
             }
         }
-        cancel_playlist();
+        $("#playlistRename").fadeOut("fast", function(){
+            playlist_list(false);
+        });
     });
 }
 
