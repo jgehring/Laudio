@@ -65,15 +65,20 @@ $(document).ready(function() {
      * Saves a playlist
      */
     $("#savePlaylistButton").click(function(){
-        var name = escape( $("#playlistSaveDialogue input").val() );
-        var songs = "";
-        $("#playlistSongs tr").each(function(){
-            var title = $(this).attr("title");
-            songs += title + ",";
-        });
-        songs = songs.slice(0, -1);
-        save_playlist(name, songs, false);
+        trigger_save_playlist();
     });
+    
+    /**
+     * Safe playlist on enter
+     */
+    $("#playlistSaveDialogue input").keypress(function(e){
+        if(e.which == 13){
+            trigger_save_playlist();
+            e.preventDefault();
+            return false;
+        }
+    });
+
     
     /**
      * Rename a playlist
@@ -114,6 +119,19 @@ $(document).ready(function() {
 });
 
 
+/**
+ * Calls the save playlist function
+ */
+function trigger_save_playlist(){
+    var name = $("#playlistSaveDialogue input").val();
+    var songs = "";
+    $("#playlistSongs tr").each(function(){
+        var title = $(this).attr("title");
+        songs += title + ",";
+    });
+    songs = songs.slice(0, -1);
+    save_playlist(name, songs, false);
+}
 
 /**
  * Loads a playlist
@@ -158,7 +176,8 @@ function set_playlist_name(id){
     // set playlist name
     var url = "{% url laudio.views.laudio_index %}playlist/getname/" + id + "/";
     $.get(url).then(function(data){
-        $("#playlistName").html(data);
+        var playlist = decode_html_entities(data);
+        $("#playlistName").html(playlist);
     });
 }
 
