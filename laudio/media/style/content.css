@@ -12,6 +12,7 @@
 }
 
 
+
 #soundmanager-debug {
     display: none !important;
 }
@@ -59,9 +60,9 @@
 .collGenre { width: 15%; }
 
 .line1 { background-color: #efefef; }
-.line1:hover { background-color: #dfdfdf; cursor: pointer; }
+.line1:hover { background-color: #dfdfdf; cursor: pointer; color: #000 !important; }
 .line2 { background-color: #fafafa; }
-.line2:hover { background-color: #dfdfdf; cursor: pointer; }
+.line2:hover { background-color: #dfdfdf; cursor: pointer; color: #000 !important;}
 
 .selected { background-color: #ccc; }
 .playing { background-color: #333; color: #fefefe}

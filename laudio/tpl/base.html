@@ -19,6 +19,7 @@
         {% endif %}
         <script type="text/javascript" charset="utf-8">{{ js|safe }}</script>
         <link rel="icon" type="image/png" href="{% url laudio.views.laudio_index %}media/style/img/favicon.png?" />
+        {% block head %}{% endblock %}
     </head>
 
     <body>
@@ -36,7 +37,7 @@
                 {% else %}
                     <li><a href="{% url django.contrib.auth.views.login %}?next={% url laudio.views.laudio_index %}">Login</a></li>
                 {% endif %}
-                <li><a href="http://webchat.freenode.net/?channels=laudio&uio=OT10cnVlJjEyPXRydWU62">Chat</a></li>
+                <li><a href="{% url laudio.views.laudio_index %}chat/">Chat</a></li>
                 <li><a href="{% url laudio.views.laudio_about %}">About</a></li>
             </ul>
         </div>

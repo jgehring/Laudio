@@ -71,6 +71,7 @@ urlpatterns = patterns('',
     # other sites
     (r'^about/$', laudio_about),
     (r'^profile/$', laudio_profile),
+    (r'^chat/$', 'django.views.generic.simple.direct_to_template', {'template': 'chat.html'}),
     (r'^login/', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
     (r'^logout/$', 'django.contrib.auth.views.logout', {'template_name': 'logout.html'}),
 )
