@@ -32,7 +32,7 @@
 }
 
 #nav ul li a:hover {
-    background-color: #EBC16C;
+    background-color: #ddd;
     background: -moz-linear-gradient(top, #ddd, #ccc);
     background: -webkit-gradient(linear, left top, left bottom, from(#EBB13A), to(#EBC16C));
     color: #000;
@@ -40,7 +40,7 @@
 
 #nav .visible {
     color: #000;
-    background-color: #EBC16C;
+    background-color: #ddd;
     background: -moz-linear-gradient(top, #eee, #ddd);
     background: -webkit-gradient(linear, left top, left bottom, from(#EBB13A), to(#EBC16C));
 }
