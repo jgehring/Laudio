@@ -49,7 +49,7 @@
     <div id="currentSong">
         <p id="cover"><img src="{% url laudio.views.laudio_index %}media/style/img/nocover.png" alt="cover" title="no cover"/></p>
         <h1>Now Playing</h1>
-        <table cellpadding="0" cellspacing="0">
+        <table id="songinfo" cellpadding="0" cellspacing="0">
             <tr id="title" class="line1">
                 <th>Title</th>
                 <td></td>
@@ -88,7 +88,7 @@
             </tr>
         </table>
         <h1>Database</h1>
-        <table cellpadding="0" cellspacing="0">
+        <table id="database" cellpadding="0" cellspacing="0">
             <tr class="line1">
                 <th>Songs</th>
                 <td>{{ numberOfSongs }}</td>

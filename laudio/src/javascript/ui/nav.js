@@ -68,7 +68,7 @@ $(document).ready(function() {
      * When you click on a value on the sidebar it loads songs with the
      * same data you clicked on
      */
-    $("#sidebar table tr").click(function(){
+    $("#sidebar table#songinfo tr").click(function(){
         var field = $(this).attr("id");
         var songId = db("playing", false);
         

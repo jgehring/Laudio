@@ -64,6 +64,9 @@
 .line2 { background-color: #fafafa; }
 .line2:hover { background-color: #dfdfdf; cursor: pointer; color: #000 !important;}
 
+#database .line1:hover { cursor: default; }
+#database .line2:hover { cursor: default; }
+
 .selected { background-color: #ccc; }
 .playing { background-color: #333; color: #fefefe}
 
