@@ -119,17 +119,23 @@ def laudio_index(request):
     # get javascript
     js = JavaScript("library", request)
     # get number of songs
-    count = Song.objects.aggregate( Count("id") )
+    count = Song.objects.aggregate( Count("id"), Sum("length") )
     mp3s = Song.objects.filter(codec="mp3").aggregate( Count("id") )
     oggs = Song.objects.filter(codec="ogg").aggregate( Count("id") )
-    count = count["id__count"]
+    songs = count["id__count"]
+    hours = int( count["length__sum"] / (60 * 60) )
+    days = int( hours / 24 )
+    weeks = int( days / 7 )
     mp3s = mp3s["id__count"]
     oggs = oggs["id__count"]
     return render(request, 'index.html', { 
                                             'js': js, 
-                                            'numberOfSongs': count,
+                                            'numberOfSongs': songs,
                                             'numberOfMp3s': mp3s,
                                             'numberOfOggs': oggs,
+                                            'numberOfHours': hours,
+                                            'numberOfDays': days,
+                                            'numberOfWeeks': weeks,
                                             }
                     )
                                 

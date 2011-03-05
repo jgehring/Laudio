@@ -35,7 +35,7 @@ class Song(models.Model):
     path = models.CharField(max_length=250, unique=True)
     lastmodified = models.IntegerField()
     added =  models.IntegerField()
-    length = models.CharField(max_length=100);
+    length = models.IntegerField();
     bitrate = models.CharField(max_length=100);
     date = models.CharField(max_length=100);
 
