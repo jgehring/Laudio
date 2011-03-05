@@ -27,17 +27,17 @@
     
         <div id="nav">
             <ul>
-                <li><a href="{% url laudio.views.laudio_index %}">Music</a></li>
+                <li><a href="{% url laudio.views.laudio_index %}" {% block nav_index %}{% endblock %}>Music</a></li>
                 {% block nav %}{% endblock %}
-                <li><a href="{% url laudio.views.laudio_settings %}">Settings</a></li>
+                <li><a href="{% url laudio.views.laudio_settings %}" {% block nav_settings %}{% endblock %}>Settings</a></li>
                 {% if user.is_authenticated %}
-                    <li><a href="{% url laudio.views.laudio_profile %}">Profile</a></li>
+                    <li><a href="{% url laudio.views.laudio_profile %}" {% block nav_profile %}{% endblock %}>Profile</a></li>
                     <li><a href="{% url django.contrib.auth.views.logout %}">Logout</a></li>
                 {% else %}
-                    <li><a href="{% url django.contrib.auth.views.login %}?next={% url laudio.views.laudio_index %}">Login</a></li>
+                    <li><a href="{% url django.contrib.auth.views.login %}?next={% url laudio.views.laudio_index %}" {% block nav_login %}{% endblock %}>Login</a></li>
                 {% endif %}
-                <li><a href="{% url laudio.views.laudio_index %}chat/">Chat</a></li>
-                <li><a href="{% url laudio.views.laudio_about %}">About</a></li>
+                <li><a href="{% url laudio.views.laudio_index %}chat/" {% block nav_chat %}{% endblock %}>Chat</a></li>
+                <li><a href="{% url laudio.views.laudio_about %}" {% block nav_about %}{% endblock %}>About</a></li>
             </ul>
         </div>
 
