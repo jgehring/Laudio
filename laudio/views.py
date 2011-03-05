@@ -31,6 +31,7 @@ from laudio.forms import *
 # django
 from django.shortcuts import render_to_response
 from django.db.models import Q
+from django.db.models import Count, Sum
 from django.utils.datastructures import MultiValueDictKeyError
 from django.conf import settings
 from django.http import HttpResponse
@@ -42,6 +43,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.core.context_processors import csrf
 from django.core.servers.basehttp import FileWrapper
+
 
 # other python libs
 import time
@@ -116,7 +118,20 @@ def laudio_index(request):
         return HttpResponseRedirect( reverse ("laudio.views.laudio_settings") )
     # get javascript
     js = JavaScript("library", request)
-    return render(request, 'index.html', { 'js': js })
+    # get number of songs
+    count = Song.objects.aggregate( Count("id") )
+    mp3s = Song.objects.filter(codec="mp3").aggregate( Count("id") )
+    oggs = Song.objects.filter(codec="ogg").aggregate( Count("id") )
+    count = count["id__count"]
+    mp3s = mp3s["id__count"]
+    oggs = oggs["id__count"]
+    return render(request, 'index.html', { 
+                                            'js': js, 
+                                            'numberOfSongs': count,
+                                            'numberOfMp3s': mp3s,
+                                            'numberOfOggs': oggs,
+                                            }
+                    )
                                 
 
 def laudio_about(request):
