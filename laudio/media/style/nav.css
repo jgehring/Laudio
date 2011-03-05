@@ -19,6 +19,7 @@
 
 #nav ul li {
     display: inline-block;
+    float: left;
 }
 
 #nav ul li a {
@@ -26,15 +27,21 @@
     text-decoration: none;
     font-size: 12pt;
     padding: 6px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
     line-height: 30px;
 }
 
 #nav ul li a:hover {
-    background-color: #EFEFEF;
-    color: #333;
+    background-color: #EBC16C;
+    color: #000;
 }
+
+#nav .visible {
+    background-color: #EBAB2B;
+    color: #000;
+}
+
 
 /**********
  * Search

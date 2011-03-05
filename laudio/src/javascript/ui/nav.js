@@ -35,6 +35,7 @@ $(document).ready(function() {
     $("#playlistLink").click( function(){
         $("#playlist").toggle("slide");
         $("#playlistHeader").toggle("slide");
+        $(this).toggleClass("visible");
     });
     
     /**
@@ -43,9 +44,17 @@ $(document).ready(function() {
     $("#sidebarLink").click( function(){
         $("#sidebar").toggle("slide");
         $("#sidebarHeader").toggle("slide");
+        $(this).toggleClass("visible");
     });
 
-    
+    // adjust colors for activated sidebar and playlist
+    if( $("#playlist").css("display") === "block" ){
+        $("#playlistLink").toggleClass("visible");
+    }
+    // adjust colors for activated sidebar and playlist
+    if( $("#sidebar").css("display") === "block" ){
+        $("#sidebarLink").toggleClass("visible");
+    }
     
     /**
      * toggle alphabet search

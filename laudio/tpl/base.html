@@ -27,9 +27,8 @@
     
         <div id="nav">
             <ul>
-                <li><a href="{% url laudio.views.laudio_index %}">Collection</a></li>
-                <li><a href="#" onclick="return false;" id="playlistLink">Playlist</a></li>
-                <li><a href="#" onclick="return false;" id="sidebarLink">Sidebar</a></li>
+                <li><a href="{% url laudio.views.laudio_index %}">Music</a></li>
+                {% block nav %}{% endblock %}
                 <li><a href="{% url laudio.views.laudio_settings %}">Settings</a></li>
                 {% if user.is_authenticated %}
                     <li><a href="{% url laudio.views.laudio_profile %}">Profile</a></li>
