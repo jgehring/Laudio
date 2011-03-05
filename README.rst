@@ -2,7 +2,7 @@
  LAudio - A webbased audioplayer for your LAN
 ==============================================
 
-.. image::  https://dl.dropbox.com/u/15205713/screenshot_v04_small.png
+.. image::  https://dl.dropbox.com/u/15205713/screenshot_v05_small.png
 
 :Version: 0.5.1.1
 :Keywords: python, jquery, django, web, html5, audio, player, javascript, last.fm, libre.fm, json, mp3, ogg, vorbis
