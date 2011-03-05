@@ -4,4 +4,3 @@ recursive-include laudio/src *
 recursive-include laudio/media *
 recursive-include laudio/tpl *
 
-recursive-include pm-files/*maverick *
