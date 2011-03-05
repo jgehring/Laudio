@@ -60,13 +60,18 @@
 .collGenre { width: 15%; }
 
 .line1 { background-color: #efefef; }
-.line1:hover { background-color: #dfdfdf; cursor: pointer; color: #000 !important; }
+.line1:hover {  background: none; background-color: #dfdfdf !important;; cursor: pointer; color: #000 !important; }
 .line2 { background-color: #fafafa; }
-.line2:hover { background-color: #dfdfdf; cursor: pointer; color: #000 !important;}
+.line2:hover { background: none; background-color: #dfdfdf !important;; cursor: pointer; color: #000 !important; }
 
 #database .line1:hover { cursor: default; }
 #database .line2:hover { cursor: default; }
 
-.selected { background-color: #ccc; }
-.playing { background-color: #333; color: #fefefe}
+.selected { background-color: #ccc;}
+.playing { 
+    background-color: #333; 
+    color: #fefefe;
+    background: -moz-linear-gradient(top, #222, #333);
+    background: -webkit-gradient(linear, left top, left bottom, from(#222), to(#333));    
+}
 
