@@ -621,5 +621,5 @@ def rename_playlist(request, oldName, newName):
 @check_login("user")
 def list_playlists(request):
     """Returns a list of all playlists"""
-    playlists = Playlist.objects.filter(user=request.user)
+    playlists = Playlist.objects.filter(user=request.user).order_by('name')
     return render_to_response('requests/list_playlists.html', {'playlists': playlists})
