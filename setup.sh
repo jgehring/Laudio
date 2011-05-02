@@ -64,7 +64,7 @@ case "$DISTRO" in
         
         
         echo "Creating Database"
-        python /usr/share/laudio/manage.py syncdb --noinput
+        python /usr/share/laudio/laudio/manage.py syncdb --noinput
         chown -R $APACHE:$APACHE $DATABASE_FILE
         chmod -R 0755 $DATABASE_FILE
 
@@ -109,7 +109,7 @@ case "$DISTRO" in
         chmod -R 0755 $INSTALL_DIR
         
         echo "Creating Database"
-        python2 /usr/share/laudio/manage.py syncdb --noinput
+        python2 /usr/share/laudio/laudio/manage.py syncdb --noinput
         chown -R $APACHE:$APACHE $DATABASE_FILE
         chmod -R 0755 $DATABASE_FILE
 
@@ -147,7 +147,7 @@ case "$DISTRO" in
         chmod -R 0755 $INSTALL_DIR
         
         echo "Creating Database"
-        python /usr/share/laudio/manage.py syncdb --noinput
+        python /usr/share/laudio/laudio/manage.py syncdb --noinput
         chown -R $APACHE:$APACHE $DATABASE_FILE
         chmod -R 0755 $DATABASE_FILE
 
