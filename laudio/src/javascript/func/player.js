@@ -64,7 +64,9 @@ function play_song(id, tr){
         // play song
         soundManager.createSound({
             id: json.id,
-            url: '{% url laudio.views.laudio_index %}media/audio/' +  json.path,
+            url: json.stream,
+//            url: '{% url laudio.views.laudio_index %}' +  json.stream,
+//            url: '{% url laudio.views.laudio_index %}media/audio/' +  json.path,
             volume: volume,
         });
 

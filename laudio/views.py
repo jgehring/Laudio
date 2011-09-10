@@ -52,6 +52,8 @@ import os
 import urllib
 import urllib2
 
+import syslog
+
 
 ########################################################################
 # Shortcuts                                                            #
@@ -344,6 +346,13 @@ def ajax_song_metadata(request, id):
     
     """
     song = Song.objects.get(id=id)
+    # TODO: move this to the song class (or somewhere other; not here!
+    if song.codec == "mp3" and int(song.bitrate) <= 128:
+        song.stream = os.path.join("media/audio", song.path)
+    else:
+        song.stream = "stream/" + str(id)
+    syslog.syslog(str(type(song.stream)))
+    syslog.syslog(str(type(song.path)))
     return render_to_response('requests/song_data.html', {"song": song})
 
 
@@ -644,3 +653,24 @@ def list_playlists(request):
     """Returns a list of all playlists"""
     playlists = Playlist.objects.filter(user=request.user).order_by('name')
     return render_to_response('requests/list_playlists.html', {'playlists': playlists})
+
+
+@check_login("user")
+def stream_generator(path):
+    chunksize = 1024
+    cmd = "ffmpeg -i '%s' -y -f mp3 -ab 128 -" % path
+    syslog.syslog(cmd)
+    import subprocess
+    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    data = p.stdout.read(chunksize)
+    while data:
+        yield data
+        data = p.stdout.read(chunksize)
+
+@check_login("user")
+def stream(request, id):
+    """Streams the song with the given ID, or transcodes it"""
+    song = Song.objects.get(id=id)
+    path = os.path.join(settings.AUDIO_DIR, song.path)
+    resp = HttpResponse(stream_generator(path), mimetype='audio/mp3')
+    return resp

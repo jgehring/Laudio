@@ -67,6 +67,9 @@ urlpatterns = patterns('',
     (r'^playlist/delete/(?P<playlistId>.*)/$', delete_playlist),
     (r'^playlist/rename/(?P<oldName>.*)/(?P<newName>.*)/$', rename_playlist),
     (r'^playlist/list/$', list_playlists),
+
+    # streaming
+    (r'^stream/(?P<id>.*)/$', stream),
     
     # other sites
     (r'^about/$', laudio_about),
